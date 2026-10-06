@@ -93,13 +93,38 @@ const toast = (msg) => {
 
 const songRow = (s, opts = {}) => {
   const p = progress[s.id];
-  return `<a class="song" href="#/song/${s.id}">
+  const [, c1, c2] = CAT_ART[s.cat] || CAT_ART.Kids;
+  return `<a class="song" href="#/song/${s.id}" style="--c1:${c1};--c2:${c2}">
     ${thumb(s)}
     <div class="meta"><div class="t">${esc(s.title)}</div>
       <div class="s">${esc(s.composer || 'Traditional')}${opts.time ? ' · ' + fmtTime(durationSeconds(parseSong(s))) : ''}</div>
       <div class="tags"><span class="tag ${s.level}">${s.level}</span><span class="tag cat">${s.cat}</span>${p?.done ? `<span class="tag done">✓ ${p.best}%</span>` : ''}</div>
     </div><span class="play">${icon('play')}</span></a>`;
 };
+
+// Colourful animated section heading with an emoji badge.
+const catChips = (active, attr = 'c') => ['All', ...CATEGORIES].map((c) => {
+  const [e, c1, c2] = CAT_ART[c] || ['🎵', '#c4b5fd', '#6d5dfc'];
+  return `<button class="chip cc ${c === active ? 'on' : ''}" data-${attr}="${c}" style="--c1:${c1};--c2:${c2}">${c === 'All' ? '🎵 All' : e + ' ' + c}</button>`;
+}).join('');
+
+const heading = (emoji, text, extra = '') => `<h3 class="sec"><span class="badge">${emoji}</span><span class="gt">${text}</span>${extra}</h3>`;
+
+// Previous / page numbers / Next, showing a window of pages around the current one.
+const pagerHtml = (page, pages, total, per) => {
+  if (pages <= 1) return '';
+  const from = (page - 1) * per + 1, to = Math.min(total, page * per);
+  const nums = [];
+  for (let i = 1; i <= pages; i++) if (i === 1 || i === pages || Math.abs(i - page) <= 1) nums.push(i);
+  const parts = [];
+  nums.forEach((n, i) => { if (i && n - nums[i - 1] > 1) parts.push('<span class="dots">…</span>'); parts.push(`<button class="${n === page ? 'on' : ''}" data-p="${n}">${n}</button>`); });
+  return `<div class="pager-info">Showing ${from}–${to} of ${total}</div>
+    <div class="pager-row"><button class="pnav" data-p="${page - 1}" ${page === 1 ? 'disabled' : ''}>${icon('arrowL')} Prev</button>
+    ${parts.join('')}
+    <button class="pnav next" data-p="${page + 1}" ${page === pages ? 'disabled' : ''}>Next ${icon('arrowR')}</button></div>`;
+};
+
+const THEME_BTN = '<button class="theme-fab" aria-label="Change theme"><i></i><span>Theme</span></button>';
 
 const setNav = (route) => {
   const map = { home: 'home', library: 'library', practice: 'practice', settings: 'settings' };
@@ -162,32 +187,41 @@ views.home = () => {
   const streak = load('np.streak', { days: 0 }).days;
   const pick = SONGS.length ? SONGS[new Date().getDate() * 7 % SONGS.length] : null;
   const pool = cat === 'All' ? SONGS : SONGS.filter((s) => s.cat === cat);
+  const hpage = Math.min(Math.max(1, Number(sessionStorage.getItem('np.homePage')) || 1), Math.max(1, Math.ceil(pool.length / 30)));
   const hour = new Date().getHours();
   const hi = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   app.innerHTML = `<section class="view">
     <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Ninja Piano</div>
-      <button class="theme-fab" aria-label="Change theme"><i></i></button><a class="iconbtn" href="#/library?focus=1" aria-label="Search">${icon('search')}</a></div>
-    <h2>${hi}${settings.name ? ', ' + esc(settings.name) : ''}! 👋</h2>
+      ${THEME_BTN}<a class="iconbtn" href="#/library?focus=1" aria-label="Search">${icon('search')}</a></div>
+    <h2 class="hello"><span class="gt">${hi}${settings.name ? ', ' + esc(settings.name) : ''}!</span> <span class="wave">👋</span></h2>
     <div class="muted">Choose a song to start learning</div>
-    ${lastSong ? `<h3>Continue learning</h3>
+    ${lastSong ? `${heading('▶️', 'Continue learning')}
       <div class="hero-card">${thumb(lastSong)}<div style="flex:1;min-width:0"><div style="font-weight:800;font-size:17px">${esc(lastSong.title)}</div>
       <div style="opacity:.8;font-size:13px">Best ${progress[lastSong.id].best || 0}% · ${progress[lastSong.id].plays} plays</div></div>
       <a class="btn sm" href="#/practice/${lastSong.id}">Practice</a></div>` : ''}
-    <h3>Your progress</h3>
-    <div class="stats"><div class="card stat"><b>${learned}</b><span>Songs learned</span></div>
-      <div class="card stat"><b>${streak}🔥</b><span>Day streak</span></div>
-      <div class="card stat"><b>${avg}%</b><span>Avg accuracy</span></div></div>
-    ${pick ? `<h3>Song of the day</h3><div class="list">${songRow(pick, { time: true })}</div>` : ''}
-    <h3>Browse <a href="#/library">See all ${SONGS.length}</a></h3>
-    <div class="chips" id="cats">${['All', ...CATEGORIES].map((c) => `<button class="chip ${c === cat ? 'on' : ''}" data-c="${c}">${c === 'All' ? 'All' : (CAT_ART[c]?.[0] || '') + ' ' + c}</button>`).join('')}</div>
-    <div class="list grid2">${pool.slice(0, 12).map((s) => songRow(s)).join('') || '<div class="empty">No songs yet.</div>'}</div>
-    ${pool.length > 12 ? `<div style="text-align:center;margin-top:14px"><a class="btn ghost sm" href="#/library?cat=${encodeURIComponent(cat)}">More ${cat === 'All' ? '' : cat} songs</a></div>` : ''}
+    ${heading('📈', 'Your progress')}
+    <div class="stats"><div class="card stat s1"><b>${learned}</b><span>Songs learned</span></div>
+      <div class="card stat s2"><b>${streak}🔥</b><span>Day streak</span></div>
+      <div class="card stat s3"><b>${avg}%</b><span>Avg accuracy</span></div></div>
+    ${pick ? `${heading('⭐', 'Song of the day')}<div class="list">${songRow(pick, { time: true })}</div>` : ''}
+    ${heading('🎹', 'Browse songs', `<a href="#/library">See all ${SONGS.length}</a>`)}
+    <div class="chips" id="cats">${catChips(cat)}</div>
+    <div class="list grid2" id="hlist">${pool.slice((hpage - 1) * 30, hpage * 30).map((s) => songRow(s, { time: true })).join('') || '<div class="empty">No songs yet.</div>'}</div>
+    <div class="pager" id="hpager">${pagerHtml(hpage, Math.ceil(pool.length / 30), pool.length, 30)}</div>
   </section>`;
+  app.querySelector('#hpager').onclick = (e) => {
+    const p = Number(e.target.closest('[data-p]')?.dataset.p);
+    if (!p) return;
+    sessionStorage.setItem('np.homePage', p);
+    views.home();
+    document.getElementById('cats').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   app.querySelector('#cats').onclick = (e) => {
     const c = e.target.closest('.chip')?.dataset.c;
     if (!c) return;
     sessionStorage.setItem('np.homeCat', c);
+    sessionStorage.setItem('np.homePage', 1);
     views.home();
   };
 };
@@ -198,9 +232,10 @@ views.library = (params) => {
   const st = { q: '', cat: params.get('cat') || 'All', level: 'All', fav: params.get('fav') === '1', page: 1 };
   if (st.cat !== 'All' && !CATEGORIES.includes(st.cat)) st.cat = 'All';
   app.innerHTML = `<section class="view">
-    <div class="top"><a class="iconbtn" href="#/home">${icon('back')}</a><h1>All Songs</h1><button class="theme-fab" aria-label="Change theme"><i></i></button><button class="iconbtn" id="fav" aria-label="Favourites">${icon('heart')}</button></div>
+    <div class="top"><a class="iconbtn" href="#/home">${icon('back')}</a><h1>All Songs</h1>${THEME_BTN}<button class="iconbtn" id="fav" aria-label="Favourites">${icon('heart')}</button></div>
     <label class="search">${icon('search')}<input id="q" type="search" placeholder="Search ${SONGS.length} songs, composers…" autocomplete="off"></label>
-    <div class="chips" id="cats">${['All', ...CATEGORIES].map((c) => `<button class="chip" data-c="${c}">${c}</button>`).join('')}</div>
+    <div class="banner"><div><div class="gt big">Song Library</div><div class="muted">${SONGS.length} songs · 30 per page</div></div><span class="bn-emoji">🎼</span></div>
+    <div class="chips" id="cats">${catChips(st.cat)}</div>
     <div class="chips" id="lv" style="padding-top:0">${['All', 'Easy', 'Medium', 'Hard'].map((c) => `<button class="chip" data-l="${c}">${c === 'All' ? 'All levels' : c}</button>`).join('')}</div>
     <div class="muted" id="count" style="font-size:13px;margin:4px 0 10px"></div>
     <div class="list grid2" id="list"></div>
@@ -219,13 +254,13 @@ views.library = (params) => {
     $('#count').textContent = `${list.length} song${list.length === 1 ? '' : 's'}${st.fav ? ' in favourites' : ''}`;
     $('#list').innerHTML = list.slice((st.page - 1) * PAGE, st.page * PAGE).map((s) => songRow(s, { time: true })).join('')
       || `<div class="empty">${st.fav ? 'Tap ♥ on a song to save it here.' : 'No songs match.'}</div>`;
-    $('#pager').innerHTML = pages > 1 ? Array.from({ length: pages }, (_, i) => `<button class="${i + 1 === st.page ? 'on' : ''}" data-p="${i + 1}">${i + 1}</button>`).join('') : '';
+    $('#pager').innerHTML = pagerHtml(st.page, pages, list.length, PAGE);
   };
   $('#q').oninput = (e) => { st.q = e.target.value; st.page = 1; draw(); };
   $('#cats').onclick = (e) => { const c = e.target.closest('.chip')?.dataset.c; if (c) { st.cat = c; st.page = 1; draw(); } };
   $('#lv').onclick = (e) => { const l = e.target.closest('.chip')?.dataset.l; if (l) { st.level = l; st.page = 1; draw(); } };
   $('#fav').onclick = () => { st.fav = !st.fav; st.page = 1; draw(); };
-  $('#pager').onclick = (e) => { const p = e.target.dataset.p; if (p) { st.page = Number(p); draw(); scrollTo({ top: 0, behavior: 'smooth' }); } };
+  $('#pager').onclick = (e) => { const p = Number(e.target.closest('[data-p]')?.dataset.p); if (p) { st.page = p; draw(); scrollTo({ top: 0, behavior: 'smooth' }); } };
   draw();
   if (params.get('focus')) $('#q').focus();
 };
@@ -236,12 +271,12 @@ views.practiceHub = () => {
   const easy = SONGS.filter((s) => s.level === 'Easy' && !progress[s.id]?.done).slice(0, 8);
   const ex = SONGS.filter((s) => s.cat === 'Exercises').slice(0, 6);
   app.innerHTML = `<section class="view">
-    <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Practice</div><button class="theme-fab" aria-label="Change theme"><i></i></button></div>
+    <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Practice</div>${THEME_BTN}</div>
     <div class="card pad" style="display:flex;gap:14px;align-items:center">
       <div style="font-size:40px">🥷</div>
       <div><b>How practice works</b><div class="muted" style="font-size:13.5px;margin-top:4px">The next note glows on the keyboard and its name shows on the sheet. Play it to move on. Use the on-screen keys, your computer keyboard (A S D F…) or a MIDI piano.</div></div>
     </div>
-    <h3>Practice styles</h3>
+    ${heading('🎯', 'Practice styles')}
     <div class="list grid2">
       <div class="card pad"><b>🎓 Learn</b><div class="muted" style="font-size:13px;margin-top:4px">Step by step. The app waits for the right key.</div></div>
       <div class="card pad"><b>🥁 Rhythm</b><div class="muted" style="font-size:13px;margin-top:4px">Play in time and get scored Perfect, Good or Miss.</div></div>
@@ -249,15 +284,15 @@ views.practiceHub = () => {
       <div class="card pad"><b>🚀 Speed Builder</b><div class="muted" style="font-size:13px;margin-top:4px">Loop a section from 60% up to full speed.</div></div>
     </div>
     <div class="muted" style="font-size:12.5px;margin:6px 2px">Open any song, tap Practice, then choose a style. You can also pick hands, bars and speed.</div>
-    <h3>Skill games</h3>
+    ${heading('🎮', 'Skill games')}
     <div class="list grid2">
       <a class="song" href="#/quiz/read"><div class="thumb" style="background:linear-gradient(135deg,#ddd6fe,#6d5dfc)">🎼</div><div class="meta"><div class="t">Note Reading</div><div class="s">See a note on the staff, play it</div><div class="tags"><span class="tag cat">Best ${load('np.quiz.read', 0)}🔥</span></div></div><span class="play">${icon('play')}</span></a>
       <a class="song" href="#/quiz/ear"><div class="thumb" style="background:linear-gradient(135deg,#a7f3d0,#059669)">👂</div><div class="meta"><div class="t">Ear Training</div><div class="s">Hear a note, find it on the keys</div><div class="tags"><span class="tag cat">Best ${load('np.quiz.ear', 0)}🔥</span></div></div><span class="play">${icon('play')}</span></a>
     </div>
-    <h3>Hard challenges</h3><div class="list grid2">${SONGS.filter((s) => s.level === 'Hard').slice(0, 6).map((s) => songRow(s)).join('')}</div>
-    ${inProgress.length ? `<h3>Keep going</h3><div class="list grid2">${inProgress.map((s) => songRow(s)).join('')}</div>` : ''}
-    <h3>Warm-up exercises</h3><div class="list grid2">${ex.map((s) => songRow(s)).join('') || '<div class="empty">Loading…</div>'}</div>
-    <h3>Easy songs to learn next</h3><div class="list grid2">${easy.map((s) => songRow(s)).join('')}</div>
+    ${heading('🔥', 'Hard challenges')}<div class="list grid2">${SONGS.filter((s) => s.level === 'Hard').slice(0, 6).map((s) => songRow(s)).join('')}</div>
+    ${inProgress.length ? `${heading('💪', 'Keep going')}<div class="list grid2">${inProgress.map((s) => songRow(s)).join('')}</div>` : ''}
+    ${heading('🔥', 'Warm-up exercises')}<div class="list grid2">${ex.map((s) => songRow(s)).join('') || '<div class="empty">Loading…</div>'}</div>
+    ${heading('🌱', 'Easy songs to learn next')}<div class="list grid2">${easy.map((s) => songRow(s)).join('')}</div>
   </section>`;
 };
 
@@ -805,7 +840,7 @@ views.settings = () => {
   setNav('settings');
   const sw = (k, label) => `<label class="row"><span>${label}</span><span class="sw"><input type="checkbox" data-k="${k}" ${settings[k] ? 'checked' : ''}><span></span></span></label>`;
   app.innerHTML = `<section class="view">
-    <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Settings</div><button class="theme-fab" aria-label="Change theme"><i></i></button></div>
+    <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Settings</div>${THEME_BTN}</div>
     <div class="card group"><h4>You</h4>
       <label class="row"><span>Your name</span><input id="name" value="${esc(settings.name)}" placeholder="Optional" style="border:1px solid var(--line);background:var(--solid);border-radius:12px;height:38px;padding:0 12px;width:150px"></label></div>
     <div class="card group"><h4>Music display</h4>

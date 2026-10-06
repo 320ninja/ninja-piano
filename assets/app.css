@@ -322,3 +322,78 @@ body::after{background:var(--a);bottom:-30vmax;right:-25vmax;animation-duration:
 @keyframes fade{from{opacity:0}}
 .th{position:relative}
 .th.on::after{content:"✓";position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--p);color:#fff;font-size:11px;display:grid;place-items:center}
+
+/* ---------- colourful pass ---------- */
+/* Animated gradient text for headings and big titles. */
+.gt{background:linear-gradient(90deg,var(--p),var(--a),color-mix(in srgb,var(--p) 40%,#f43f5e),var(--p));background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:gtflow 6s linear infinite}
+@keyframes gtflow{to{background-position:300% 0}}
+.top h1{background:linear-gradient(90deg,var(--ink),var(--p),var(--ink));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gtflow 8s linear infinite}
+.brand{background:linear-gradient(90deg,var(--p),var(--a));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hello{font-size:30px;margin-top:2px}
+.wave{display:inline-block;transform-origin:70% 70%;animation:wave 2.4s ease-in-out infinite}
+@keyframes wave{0%,60%,100%{transform:none}10%,30%{transform:rotate(14deg)}20%{transform:rotate(-8deg)}40%{transform:rotate(-4deg)}50%{transform:rotate(10deg)}}
+
+h3.sec{justify-content:flex-start;gap:10px;font-size:18px;margin:26px 0 12px;animation:rise .5s var(--ease) both}
+h3.sec .badge{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;font-size:17px;flex:none;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--p) 25%,transparent),color-mix(in srgb,var(--a) 25%,transparent));
+  box-shadow:0 6px 16px -8px var(--p);animation:badgeBob 3s ease-in-out infinite}
+h3.sec a{margin-left:auto}
+h3.sec::after{content:"";flex:0 0 0;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--p),var(--a));animation:lineGrow .9s var(--ease) .2s forwards}
+h3.sec:has(a)::after{display:none}
+@keyframes lineGrow{to{flex-basis:46px}}
+@keyframes badgeBob{50%{transform:translateY(-3px) rotate(-6deg)}}
+
+/* Stats: three different gradients. */
+.stat{border:0;color:#fff;position:relative;overflow:hidden}
+.stat span{color:rgba(255,255,255,.85)!important}
+.stat.s1{background:linear-gradient(135deg,var(--p),color-mix(in srgb,var(--p) 55%,#ec4899))}
+.stat.s2{background:linear-gradient(135deg,#f97316,#ef4444)}
+.stat.s3{background:linear-gradient(135deg,var(--a),color-mix(in srgb,var(--a) 50%,#0ea5e9))}
+.stat::after{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);top:-30px;right:-24px;animation:bubble 5s ease-in-out infinite}
+@keyframes bubble{50%{transform:translate(-10px,10px) scale(1.2)}}
+.done-screen .stat{color:#fff}
+
+/* Song rows tinted by their category colours. */
+.song{position:relative;overflow:hidden;background:linear-gradient(100deg,color-mix(in srgb,var(--c1,var(--p)) 22%,var(--card)),var(--card) 55%);border-left:0}
+.song::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:linear-gradient(var(--c1,var(--p)),var(--c2,var(--a)))}
+.song:hover{border-color:color-mix(in srgb,var(--c2,var(--p)) 50%,transparent);box-shadow:0 14px 30px -16px var(--c2,var(--p))}
+.song .play{background:linear-gradient(135deg,var(--c1,var(--p)),var(--c2,var(--a)));color:#fff}
+.song .t{transition:color .25s}
+.song:hover .t{color:var(--c2,var(--p))}
+
+/* Category chips in their own colours. */
+.chip.cc{background:color-mix(in srgb,var(--c1) 30%,var(--card));border-color:color-mix(in srgb,var(--c2) 25%,transparent)}
+.chip.cc.on{background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;box-shadow:0 8px 18px -8px var(--c2);text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.chip:hover{transform:translateY(-2px)}
+
+/* Library banner. */
+.banner{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-radius:24px;margin:4px 0 12px;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--p) 22%,var(--card)),color-mix(in srgb,var(--a) 20%,var(--card)));border:1px solid var(--line);
+  background-size:200% 200%;animation:bannerFlow 8s ease-in-out infinite alternate}
+@keyframes bannerFlow{to{background-position:100% 100%}}
+.gt.big{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.bn-emoji{font-size:44px;animation:badgeBob 3s ease-in-out infinite}
+
+/* Pager with Prev / Next. */
+.pager{display:block;margin:20px 0 6px}
+.pager-info{text-align:center;font-size:13px;color:var(--muted);margin-bottom:10px}
+.pager-row{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap}
+.pager button{min-width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-weight:700;transition:transform .2s var(--ease),background .2s}
+.pager button:hover:not(:disabled){transform:translateY(-2px)}
+.pager button.on{background:linear-gradient(135deg,var(--p),var(--a));color:#fff;border-color:transparent;box-shadow:0 8px 18px -8px var(--p)}
+.pager .pnav{display:inline-flex;align-items:center;gap:6px;padding:0 14px;color:var(--p)}
+.pager .pnav.next{background:linear-gradient(135deg,var(--p),color-mix(in srgb,var(--p) 60%,var(--a)));color:#fff;border:0}
+.pager .pnav:disabled{opacity:.35;cursor:default}
+.pager .pnav svg{width:16px;height:16px}
+.pager .dots{color:var(--muted);padding:0 2px}
+
+/* Theme button with a label. */
+.theme-fab{width:auto;padding:0 12px 0 6px;gap:6px;display:inline-flex;align-items:center;font-weight:700;font-size:13px;color:var(--ink)}
+.theme-fab i{position:relative;inset:auto;width:26px;height:26px;flex:none}
+
+/* Settings / practice cards get coloured headers. */
+.group h4{background:linear-gradient(90deg,var(--p),var(--a));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+.card.pad b{color:var(--p)}
+.nav a.on{background:linear-gradient(135deg,color-mix(in srgb,var(--p) 18%,transparent),color-mix(in srgb,var(--a) 18%,transparent))}
+.muted{transition:color .3s}

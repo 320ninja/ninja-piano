@@ -97,7 +97,10 @@ export const createKeyboard = (host, { low, high, labels, nameSystem, onPress })
       const el = keys.get(m);
       if (!el) return;
       const left = el.offsetLeft - host.clientWidth / 2 + el.offsetWidth / 2;
-      host.scrollTo({ left, behavior: 'smooth' });
+      // Jump when far away so a page scroll can't cancel a long smooth scroll.
+      const far = Math.abs(host.scrollLeft - left) > host.clientWidth;
+      if (far) host.scrollLeft = left;
+      else host.scrollTo({ left, behavior: 'smooth' });
     },
     destroy() {
       removeEventListener('keydown', onKey);

@@ -29,6 +29,7 @@ a{color:inherit;text-decoration:none}
 svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 #app{max-width:1100px;margin:0 auto;min-height:100%;padding:calc(var(--safe-t) + 8px) 16px calc(96px + var(--safe-b))}
+body.nonav #app{padding-bottom:calc(12px + var(--safe-b))}
 .view{animation:viewIn .45s var(--ease) both}
 @keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -164,15 +165,15 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .score svg .vf-stavenote.miss path{fill:var(--bad)!important;stroke:var(--bad)!important}
 .score svg text.nn{font-family:'Plus Jakarta Sans',sans-serif!important;font-weight:700;fill:var(--muted)}
 .score svg .cur text.nn{fill:var(--p)!important}
-.score .cursor{fill:color-mix(in srgb,var(--p) 18%,transparent)!important;stroke:none!important;transition:x .12s linear}
+.score .cursor{fill:color-mix(in srgb,var(--p) 18%,transparent)!important;stroke:none!important}
 
 /* Piano keyboard */
-.kb-dock{position:sticky;bottom:calc(8px + var(--safe-b));z-index:30;margin-top:14px}
-.kb-info{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;margin-bottom:8px}
+.kb-dock{position:sticky;bottom:0;z-index:30;margin:14px -16px 0;padding:14px 16px calc(8px + var(--safe-b));background:linear-gradient(transparent,var(--bg) 16px)}
+.kb-info{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;margin-bottom:6px}
 .kb-info .cn{font-size:12px;color:var(--muted)}
-.kb-info .cn b{display:block;font-size:24px;color:var(--ink)}
+.kb-info .cn b{display:inline;font-size:20px;color:var(--ink);margin-left:8px}
 .kb-info .next{font-size:13px;color:var(--p);font-weight:700}
-.kb{position:relative;height:150px;overflow-x:auto;overflow-y:hidden;border-radius:18px;background:#1a1b2e;padding:8px 6px 6px;
+.kb{position:relative;height:132px;overflow-x:auto;overflow-y:hidden;border-radius:18px;background:#1a1b2e;padding:8px 6px 6px;
   scrollbar-width:none;touch-action:pan-x;box-shadow:inset 0 6px 14px rgba(0,0,0,.5)}
 .kb::-webkit-scrollbar{display:none}
 .kb .keys{position:relative;height:100%;display:flex}
@@ -209,15 +210,15 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .prac-nav .btn{flex:1}
 
 /* Done */
-.done{min-height:calc(100dvh - 60px);display:flex;flex-direction:column;justify-content:center;text-align:center;color:#fff;border-radius:32px;margin:0 -8px;padding:28px 20px;
+.done-screen{min-height:calc(100dvh - 60px);display:flex;flex-direction:column;justify-content:center;text-align:center;color:#fff;border-radius:32px;margin:0 -8px;padding:28px 20px;
   background:radial-gradient(400px 260px at 50% 20%,color-mix(in srgb,var(--p) 50%,transparent),transparent),linear-gradient(180deg,var(--deep),#05060f);position:relative;overflow:hidden}
-.done .trophy{font-size:96px;animation:bounce 1.2s var(--ease) both;filter:drop-shadow(0 10px 30px rgba(250,204,21,.5))}
+.done-screen .trophy{font-size:96px;animation:bounce 1.2s var(--ease) both;filter:drop-shadow(0 10px 30px rgba(250,204,21,.5))}
 @keyframes bounce{0%{transform:scale(.2) rotate(-20deg);opacity:0}60%{transform:scale(1.15)}100%{transform:none;opacity:1}}
-.done h2{font-size:34px;margin:10px 0 4px}
-.done .card{color:#fff;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);margin:22px 0;text-align:left}
-.done .stats b{color:#fff}
-.done .stats span{color:rgba(255,255,255,.6)}
-.done .btn.ghost{color:#fff;border-color:rgba(255,255,255,.3)}
+.done-screen h2{font-size:34px;margin:10px 0 4px}
+.done-screen .card{color:#fff;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);margin:22px 0;text-align:left}
+.done-screen .stats b{color:#fff}
+.done-screen .stats span{color:rgba(255,255,255,.6)}
+.done-screen .btn.ghost{color:#fff;border-color:rgba(255,255,255,.3)}
 .stars{font-size:30px;letter-spacing:6px;margin-top:6px}
 .confetti{position:absolute;top:-10px;width:8px;height:14px;border-radius:2px;animation:conf 3s linear forwards}
 @keyframes conf{to{transform:translateY(110vh) rotate(720deg)}}

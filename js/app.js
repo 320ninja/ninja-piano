@@ -99,6 +99,7 @@ const setNav = (route) => {
   const map = { home: 'home', library: 'library', practice: 'practice', settings: 'settings' };
   const hidden = ['welcome', 'done', 'practice-run'].includes(route);
   nav.classList.toggle('hide', hidden);
+  document.body.classList.toggle('nonav', hidden);
   nav.querySelectorAll('a').forEach((a) => a.classList.toggle('on', a.dataset.r === map[route]));
 };
 
@@ -259,7 +260,7 @@ const scrollScoreTo = (scoreEl, y) => {
 views.song = (params, id) => {
   const song = songById(id);
   if (!song) return notFound();
-  setNav('library');
+  setNav('practice-run');
   const parsed = parseSong(song);
   const tl = buildTimeline(parsed);
   const secs = durationSeconds(parsed);
@@ -551,7 +552,7 @@ views.done = (params, id) => {
   const title = r.acc >= 95 ? 'Perfect!' : r.acc >= 75 ? 'Great Job!' : 'Nice effort!';
   const colors = ['#facc15', '#f472b6', '#60a5fa', '#34d399', '#a78bfa', '#fb923c'];
   const conf = Array.from({ length: 40 }, (_, i) => `<i class="confetti" style="left:${Math.random() * 100}%;background:${colors[i % 6]};animation-delay:${Math.random() * 1.5}s;animation-duration:${2.5 + Math.random() * 2}s"></i>`).join('');
-  app.innerHTML = `<section class="view done">${conf}
+  app.innerHTML = `<section class="view done-screen">${conf}
     <div><div class="trophy">🏆</div><h2>${title}</h2><div style="opacity:.75">You completed the song!</div>
     <div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div></div>
     <div class="card pad"><div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">${thumb(song)}<div><b>${esc(song.title)}</b><div><span class="tag done" style="background:rgba(34,197,94,.2);color:#4ade80">Completed ✓</span></div></div></div>

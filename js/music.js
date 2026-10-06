@@ -93,7 +93,7 @@ const SARGAM = { C: 'Sa', D: 'Re', E: 'Ga', F: 'Ma', G: 'Pa', A: 'Dha', B: 'Ni' 
 export const labelFor = (name, system = 'letters', withOctave = true) => {
   const p = typeof name === 'string' ? parsePitch(name) : name;
   if (!p) return '';
-  const acc = p.acc === '#' ? '♯' : p.acc === 'b' ? '♭' : '';
+  const acc = p.acc;
   if (system === 'solfege') return SOLFEGE[p.letter] + acc;
   if (system === 'sargam') return SARGAM[p.letter] + acc;
   return p.letter + acc + (withOctave ? p.octave : '');

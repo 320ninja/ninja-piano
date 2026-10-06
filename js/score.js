@@ -2,9 +2,12 @@
 import { labelFor } from './music.js';
 
 const VF = () => window.Vex.Flow;
-const SYSTEM_H = 250;
 const TREBLE_Y = 20;
-const BASS_Y = 128;
+const LINE_H = 12;
+let SYSTEM_H = 250;
+let BASS_Y = 128;
+
+const maxChord = (hand) => Math.max(1, ...hand.flat().map((n) => n.pitches.length));
 
 const vfDuration = (n) => n.code + (n.rest ? 'r' : '');
 
@@ -28,11 +31,13 @@ const buildNotes = (bar, clef, hand, b, keySig, opts) => {
         }
       });
       if (opts.showNames) {
-        const text = n.pitches.map((p) => labelFor(p, opts.nameSystem)).join(' ');
-        const ann = new Annotation(text)
-          .setVerticalJustification(Annotation.VerticalJustify.BOTTOM)
-          .setFont('Plus Jakarta Sans', n.pitches.length > 2 ? 8 : 10, 'bold');
-        note.addModifier(ann, 0);
+        // One name per line for chords, highest note first.
+        [...n.pitches].sort((a, b) => b.midi - a.midi).forEach((p) => {
+          const ann = new Annotation(labelFor(p, opts.nameSystem))
+            .setVerticalJustification(Annotation.VerticalJustify.BOTTOM)
+            .setFont('Plus Jakarta Sans', n.pitches.length > 1 ? 9 : 10, 'bold');
+          note.addModifier(ann, 0);
+        });
       }
     }
     return note;
@@ -68,6 +73,10 @@ const layoutSystems = (parsed, width) => {
 export const renderScore = (container, parsed, opts) => {
   const { Renderer, Stave, StaveConnector, Voice, Formatter, Beam, Fraction } = VF();
   container.innerHTML = '';
+  const extraT = opts.showNames ? (maxChord(parsed.rh) - 1) * LINE_H : 0;
+  const extraB = opts.showNames ? (maxChord(parsed.lh) - 1) * LINE_H : 0;
+  BASS_Y = 128 + extraT;
+  SYSTEM_H = 250 + extraT + extraB;
   const width = Math.max(320, container.clientWidth);
   const usable = width - 20;
   const systems = layoutSystems(parsed, usable);

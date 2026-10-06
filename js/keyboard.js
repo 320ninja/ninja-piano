@@ -1,8 +1,6 @@
 // On-screen piano keyboard plus computer-keyboard and MIDI input.
 import { isBlack, midiName, labelFor } from './music.js';
 
-const WHITE_W = () => (innerWidth >= 760 ? 54 : 46);
-const BLACK_W = () => (innerWidth >= 760 ? 32 : 28);
 
 // QWERTY layout: A W S E D F T G Y H U J K O L P ; ' = C4 … F5
 const QWERTY = { a: 60, w: 61, s: 62, e: 63, d: 64, f: 65, t: 66, g: 67, y: 68, h: 69, u: 70, j: 71, k: 72, o: 73, l: 74, p: 75, ';': 76, "'": 77 };
@@ -14,6 +12,13 @@ export const createKeyboard = (host, { low, high, labels, nameSystem, onPress })
   host.innerHTML = '<div class="keys"></div>';
   const wrap = host.firstElementChild;
   const keys = new Map();
+  let whiteCount = 0;
+  for (let m = low; m <= high; m++) if (!isBlack(m)) whiteCount++;
+  // Every key is sized in % of the width so the whole range fits on screen.
+  const whitePct = 100 / whiteCount;
+  const blackPct = whitePct * 0.62;
+  host.style.setProperty('--kw', `${whitePct}%`);
+  host.classList.toggle('tight', host.clientWidth / whiteCount < 24);
   let whiteIndex = 0;
   for (let m = low; m <= high; m++) {
     const el = document.createElement('div');
@@ -21,9 +26,11 @@ export const createKeyboard = (host, { low, high, labels, nameSystem, onPress })
     el.className = `key${black ? ' b' : ''}`;
     el.dataset.midi = m;
     const name = midiName(m);
-    if (labels && (!black || labels === 'all')) el.textContent = labelFor(name, nameSystem, !black && nameSystem === 'letters');
+    // On narrow keys only label the Cs so the board stays readable.
+    const tight = host.clientWidth / whiteCount < 24;
+    if (labels && !black && (!tight || m % 12 === 0)) el.textContent = labelFor(name, nameSystem, !black && nameSystem === 'letters');
     if (m === 60) el.insertAdjacentHTML('beforeend', '<i class="c4"></i>');
-    if (black) el.style.left = `${whiteIndex * (WHITE_W() + 2) - BLACK_W() / 2 - 1}px`;
+    if (black) { el.style.left = `${whiteIndex * whitePct - blackPct / 2}%`; el.style.width = `${blackPct}%`; }
     else whiteIndex++;
     wrap.appendChild(el);
     keys.set(m, el);

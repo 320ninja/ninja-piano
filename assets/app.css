@@ -173,14 +173,14 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .kb-info .cn{font-size:12px;color:var(--muted)}
 .kb-info .cn b{display:inline;font-size:20px;color:var(--ink);margin-left:8px}
 .kb-info .next{font-size:13px;color:var(--p);font-weight:700}
-.kb{position:relative;height:132px;overflow-x:auto;overflow-y:hidden;border-radius:18px;background:#1a1b2e;padding:8px 6px 6px;
+.kb{position:relative;height:132px;overflow:hidden;overflow-y:hidden;border-radius:18px;background:#1a1b2e;padding:8px 6px 6px;
   scrollbar-width:none;touch-action:pan-x;box-shadow:inset 0 6px 14px rgba(0,0,0,.5)}
 .kb::-webkit-scrollbar{display:none}
 .kb .keys{position:relative;height:100%;display:flex}
-.key{position:relative;flex:none;width:44px;height:100%;margin-right:2px;border-radius:0 0 9px 9px;background:linear-gradient(#fff,#f1f1f4);
+.key{position:relative;flex:none;width:var(--kw,44px);height:100%;border-right:2px solid #1a1b2e;border-radius:0 0 9px 9px;background:linear-gradient(#fff,#f1f1f4);
   display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:11px;font-weight:700;color:#8a8aa3;
   box-shadow:inset 0 -5px 0 #d8d8e2;transition:background .08s,transform .08s;touch-action:none}
-.key.b{position:absolute;top:0;width:28px;height:60%;margin:0;z-index:2;background:linear-gradient(#2d2f45,#0d0e19);color:#9ca3af;
+.key.b{position:absolute;top:0;height:60%;margin:0;border:0;z-index:2;background:linear-gradient(#2d2f45,#0d0e19);color:#9ca3af;
   box-shadow:inset 0 -4px 0 #000;border-radius:0 0 6px 6px;font-size:9px;padding-bottom:6px}
 .key.down,.key.b.down{background:var(--p);color:#fff;transform:translateY(2px);box-shadow:none}
 .key.target{background:linear-gradient(color-mix(in srgb,var(--a) 35%,#fff),var(--a));color:#fff}
@@ -191,7 +191,8 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 @keyframes pulse{50%{opacity:.25}}
 @keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 .key .c4{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--p)}
-@media (min-width:760px){.kb{height:180px}.key{width:52px}.key.b{width:32px}}
+@media (min-width:760px){.kb{height:170px}}
+.kb.tight .key{font-size:8px;padding-bottom:5px;color:#4b4b63;letter-spacing:-.02em}
 
 /* Practice */
 .prac-top{display:flex;align-items:center;gap:14px;padding:14px}

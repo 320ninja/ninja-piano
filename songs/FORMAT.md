@@ -17,7 +17,7 @@ Each `songs/<category>.json` file is a JSON array of songs:
 }
 ```
 
-- `cat`: one of Kids, Classical, Pop, Folk, Holiday, Hymns, Exercises, Jazz, Blues, Rock, EDM
+- `cat`: one of Kids, Classical, Pop, Folk, Holiday, Hymns, Exercises, Jazz, Blues, Rock, EDM, Fingerstyle
 - `level`: Easy, Medium or Hard
 - `key`: a major key (C G D A E F Bb Eb Ab) or a minor key (Am Em Bm Dm Gm Cm)
 - `time`: 2/4, 3/4, 4/4 or 6/8

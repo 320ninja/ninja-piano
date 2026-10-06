@@ -1,8 +1,8 @@
 // Renders a parsed song as a grand staff (treble + bass) with note names under each note.
-import { labelFor } from './music.js';
+import { labelFor, chordName } from './music.js';
 
 const VF = () => window.Vex.Flow;
-const TREBLE_Y = 20;
+let TREBLE_Y = 20;
 const LINE_H = 12;
 let SYSTEM_H = 250;
 let BASS_Y = 128;
@@ -18,7 +18,8 @@ const buildNotes = (bar, clef, hand, b, keySig, opts) => {
     const keys = n.rest
       ? [clef === 'treble' ? 'b/4' : 'd/3']
       : n.pitches.map((p) => `${p.letter.toLowerCase()}${p.acc}/${p.octave}`);
-    const note = new StaveNote({ clef, keys, duration: vfDuration(n), auto_stem: !n.rest });
+    // Stems always point up when names are shown, so beams stay clear of the name row underneath.
+    const note = new StaveNote({ clef, keys, duration: vfDuration(n), ...(opts.showNames ? { stem_direction: 1 } : { auto_stem: !n.rest }) });
     note.setAttribute('id', `${hand}-${b}-${i}`);
     if (n.dotted) Dot.buildAndAttach([note], { all: true });
     if (!n.rest) {
@@ -44,9 +45,10 @@ const buildNotes = (bar, clef, hand, b, keySig, opts) => {
   });
 };
 
-const minBarWidth = (parsed, b) => {
+// Each note needs room for its name (e.g. "D#5") so names never touch.
+const minBarWidth = (parsed, b, names = true) => {
   const count = Math.max(parsed.rh[b]?.length || 0, parsed.lh[b]?.length || 0);
-  return 34 + count * 27;
+  return 34 + count * (names ? 34 : 27);
 };
 
 const layoutSystems = (parsed, width) => {
@@ -75,10 +77,14 @@ export const renderScore = (container, parsed, opts) => {
   container.innerHTML = '';
   const extraT = opts.showNames ? (maxChord(parsed.rh) - 1) * LINE_H : 0;
   const extraB = opts.showNames ? (maxChord(parsed.lh) - 1) * LINE_H : 0;
-  BASS_Y = 128 + extraT;
-  SYSTEM_H = 250 + extraT + extraB;
+  const hasChords = opts.showChords !== false && [...parsed.rh, ...parsed.lh].flat().some((n) => n.pitches.length > 1 && chordName(n.pitches.map((p) => p.name)));
+  const top = hasChords ? 44 : 0;
+  TREBLE_Y = 20 + top;
+  BASS_Y = 128 + extraT + top;
+  SYSTEM_H = 250 + extraT + extraB + top;
+  const chordLabels = [];
   const width = Math.max(320, container.clientWidth);
-  const usable = width - 20;
+  const usable = width - 30;
   const systems = layoutSystems(parsed, usable);
   const renderer = new Renderer(container, Renderer.Backends.SVG);
   renderer.resize(width, systems.length * SYSTEM_H + 10);
@@ -115,11 +121,32 @@ export const renderScore = (container, parsed, opts) => {
       const bNotes = buildNotes(parsed.lh[m.b], 'bass', 'lh', m.b, parsed.keySig, opts);
       const mk = (notes) => new Voice({ num_beats: parsed.num, beat_value: parsed.den }).setMode(Voice.Mode.SOFT).addTickables(notes);
       const tv = mk(tNotes), bv = mk(bNotes);
-      const beams = [...Beam.generateBeams(tNotes, { groups: beamGroups }), ...Beam.generateBeams(bNotes, { groups: beamGroups })];
-      new Formatter().joinVoices([tv]).joinVoices([bv]).format([tv, bv], w - (startX - x) - 14);
+      const beamOpts = { groups: beamGroups, maintain_stem_directions: opts.showNames };
+      const beams = [...Beam.generateBeams(tNotes, beamOpts), ...Beam.generateBeams(bNotes, beamOpts)];
+      new Formatter({ softmaxFactor: opts.showNames ? 1.5 : 100 }).joinVoices([tv]).joinVoices([bv]).format([tv, bv], w - (startX - x) - 14);
       tv.draw(ctx, treble);
       bv.draw(ctx, bass);
       beams.forEach((bm) => bm.setContext(ctx).draw());
+      if (hasChords) {
+        // Bass-clef chords name the harmony, so they win over a right-hand chord at the same spot.
+        const seen = [];
+        let lastName = '';
+        const collect = (notes, bar) => notes.forEach((note, i) => {
+          const n = bar[i];
+          if (n.rest || n.pitches.length < 2) return;
+          const c = chordName(n.pitches.map((p) => p.name));
+          if (!c) return;
+          const cx = note.getAbsoluteX() + 6;
+          if (seen.some((sx) => Math.abs(sx - cx) < 14)) return;
+          seen.push(cx);
+          // Like a lead sheet: name a chord when it changes, not on every repeat in the bar.
+          if (c.name === lastName) return;
+          lastName = c.name;
+          chordLabels.push({ x: cx, y: y + TREBLE_Y + 6, sysY: y, ...c, id: note.getAttribute('id') });
+        });
+        collect(bNotes, parsed.lh[m.b]);
+        collect(tNotes, parsed.rh[m.b]);
+      }
       barX[m.b] = { x, w, y };
       x += w;
     });
@@ -128,6 +155,54 @@ export const renderScore = (container, parsed, opts) => {
   const svg = container.querySelector('svg');
   svg.removeAttribute('height');
   svg.setAttribute('viewBox', `0 0 ${width} ${systems.length * SYSTEM_H + 10}`);
+  const NS = 'http://www.w3.org/2000/svg';
+  // Fast runs on narrow screens: when two note names would touch, drop the second half a line.
+  const rows = new Map();
+  svg.querySelectorAll('.vf-stavenote').forEach((g) => {
+    const texts = g.querySelectorAll('text');
+    if (texts.length !== 1) return;
+    const t = texts[0];
+    const bb = t.getBBox();
+    const key = g.id.slice(3, 5) + Math.floor(bb.y / SYSTEM_H);
+    if (!rows.has(key)) rows.set(key, []);
+    rows.get(key).push({ t, bb });
+  });
+  rows.forEach((items) => {
+    items.sort((a, b) => a.bb.x - b.bb.x);
+    let prev = null;
+    items.forEach((it) => {
+      if (prev && !prev.low && it.bb.x < prev.bb.x + prev.bb.width + 3) {
+        const y = Math.max(Number(it.t.getAttribute('y')), Number(prev.t.getAttribute('y')) + 11);
+        it.t.setAttribute('y', y);
+        it.low = true;
+      }
+      prev = it;
+    });
+  });
+  const noteBoxes = chordLabels.length ? [...svg.querySelectorAll('.vf-stavenote, .vf-beam')].map((g) => g.getBBox()) : [];
+  chordLabels.forEach((c) => {
+    // Sit above the highest point of the note (stem, beam) so nothing overlaps.
+    noteBoxes.forEach((bb) => {
+      if (bb.y >= c.sysY && bb.y < c.sysY + SYSTEM_H && bb.x < c.x + 16 && bb.x + bb.width > c.x - 16) c.y = Math.min(c.y, bb.y - 4);
+    });
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('class', 'chord');
+    t.setAttribute('x', c.x);
+    t.setAttribute('y', c.y - (c.inv ? 14 : 4));
+    t.setAttribute('text-anchor', 'middle');
+    t.dataset.for = c.id;
+    t.textContent = c.name;
+    svg.appendChild(t);
+    if (c.inv) {
+      const inv = document.createElementNS(NS, 'text');
+      inv.setAttribute('class', 'chord inv');
+      inv.setAttribute('x', c.x);
+      inv.setAttribute('y', c.y - 3);
+      inv.setAttribute('text-anchor', 'middle');
+      inv.textContent = c.inv;
+      svg.appendChild(inv);
+    }
+  });
   const cursor = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
   cursor.setAttribute('class', 'cursor');
   cursor.setAttribute('rx', 8);

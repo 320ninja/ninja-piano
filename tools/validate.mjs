@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const dir = join(dirname(fileURLToPath(import.meta.url)), '..', 'songs');
 const DUR = { w: 4, h: 2, q: 1, 8: 0.5, 16: 0.25 };
-const CATS = ['Kids', 'Classical', 'Pop', 'Folk', 'Holiday', 'Hymns', 'Exercises', 'Jazz', 'Blues', 'Rock', 'EDM'];
+const CATS = ['Kids', 'Classical', 'Pop', 'Folk', 'Holiday', 'Hymns', 'Exercises', 'Jazz', 'Blues', 'Rock', 'EDM', 'Fingerstyle'];
 const LEVELS = ['Easy', 'Medium', 'Hard'];
 const KEYS = ['C', 'G', 'D', 'A', 'E', 'F', 'Bb', 'Eb', 'Ab', 'Am', 'Em', 'Bm', 'Dm', 'Gm', 'Cm'];
 const TIMES = { '2/4': 2, '3/4': 3, '4/4': 4, '6/8': 3 };

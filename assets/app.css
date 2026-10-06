@@ -251,3 +251,8 @@ input[type=range]{width:100%;accent-color:var(--p)}
 .pager button{min-width:38px;height:38px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-weight:700}
 .pager button.on{background:var(--p);color:#fff;border-color:transparent}
 .hand{display:flex;gap:6px;margin:10px 0 0}
+.score svg text.chord{fill:#e11d48!important;stroke:none!important;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px}
+.score svg text.chord.inv{font-size:9px;font-weight:700;opacity:.85}
+.chordtag{color:#e11d48;font-weight:800}
+.chordtag small{font-size:11px;font-weight:700;opacity:.8}
+.kb-info .cn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw;vertical-align:middle;display:inline-block}

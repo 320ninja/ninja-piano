@@ -4,7 +4,7 @@
   "private": true,
   "description": "Ninja Piano: learn piano with note names on real sheet music.",
   "scripts": {
-    "dev": "python3 -m http.server 5180",
+    "dev": "python3 tools/serve.py",
     "validate": "node tools/validate.mjs",
     "build": "node tools/build.mjs",
     "ios": "npm run build && npx cap sync ios && npx cap open ios",

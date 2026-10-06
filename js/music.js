@@ -3,8 +3,8 @@ const DUR = { w: 4, h: 2, q: 1, 8: 0.5, 16: 0.25 };
 const STEP = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 const SHARP_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-export const CATEGORIES = ['Kids', 'Classical', 'Pop', 'Folk', 'Holiday', 'Hymns', 'Jazz', 'Blues', 'Rock', 'EDM', 'Exercises'];
-export const SONG_FILES = ['kids', 'classical', 'pop', 'folk', 'holiday', 'hymns', 'jazz', 'blues', 'rock', 'edm', 'exercises'];
+export const CATEGORIES = ['Kids', 'Classical', 'Pop', 'Folk', 'Holiday', 'Hymns', 'Jazz', 'Blues', 'Rock', 'EDM', 'Fingerstyle', 'Exercises'];
+export const SONG_FILES = ['kids', 'classical', 'pop', 'folk', 'holiday', 'hymns', 'jazz', 'blues', 'blues-patterns', 'rock', 'edm', 'fingerstyle', 'exercises'];
 
 // Key signatures: sharps/flats each letter takes by default.
 const KEY_SIG = {
@@ -108,3 +108,38 @@ export const durationSeconds = (parsed) => {
 };
 
 export const fmtTime = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+// Chord recognition: names a set of notes ("C", "Am7", "G/B") and its inversion.
+const CHORD_TYPES = [
+  ['', [0, 4, 7]], ['m', [0, 3, 7]], ['dim', [0, 3, 6]], ['aug', [0, 4, 8]],
+  ['7', [0, 4, 7, 10]], ['maj7', [0, 4, 7, 11]], ['m7', [0, 3, 7, 10]], ['m7b5', [0, 3, 6, 10]], ['dim7', [0, 3, 6, 9]],
+  ['sus4', [0, 5, 7]], ['sus2', [0, 2, 7]], ['6', [0, 4, 7, 9]], ['m6', [0, 3, 7, 9]], ['add9', [0, 2, 4, 7]],
+  ['7', [0, 4, 10]], ['m7', [0, 3, 10]], ['5', [0, 7]],
+];
+const FLAT_NAMES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const INV = ['', '1st inv', '2nd inv', '3rd inv'];
+
+// names: the written pitches ("Bb3"), so spelling follows the song.
+export const chordName = (names) => {
+  const pitches = names.map(parsePitch).filter(Boolean).sort((a, b) => a.midi - b.midi);
+  const pcs = [...new Set(pitches.map((p) => p.midi % 12))];
+  if (pcs.length < 2) return null;
+  const spell = (pc) => {
+    const p = pitches.find((x) => x.midi % 12 === pc);
+    return p ? p.letter + p.acc : FLAT_NAMES[pc];
+  };
+  const bassPc = pitches[0].midi % 12;
+  for (const [suffix, shape] of CHORD_TYPES) {
+    if (shape.length !== pcs.length) continue;
+    for (const root of pcs) {
+      const rel = pcs.map((pc) => (pc - root + 12) % 12).sort((a, b) => a - b);
+      if (rel.join() !== [...shape].sort((a, b) => a - b).join()) continue;
+      // Two-note shapes are only a chord when they are a power chord in root position.
+      if (shape.length === 2 && bassPc !== root) continue;
+      const name = spell(root) + suffix;
+      const degree = shape.indexOf((bassPc - root + 12) % 12);
+      return { name: degree > 0 ? `${name}/${spell(bassPc)}` : name, inv: INV[degree] || '', root: spell(root) };
+    }
+  }
+  return null;
+};

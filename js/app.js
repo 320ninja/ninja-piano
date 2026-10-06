@@ -1,5 +1,5 @@
 import { THEMES, applyTheme } from './themes.js';
-import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime } from './music.js';
+import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
 import { renderScore } from './score.js';
 import { playNote, playClick, unlockAudio, now } from './audio.js';
 import { createKeyboard } from './keyboard.js';
@@ -53,11 +53,17 @@ const CAT_ART = {
   Kids: ['⭐', '#fde68a', '#f59e0b'], Classical: ['🎻', '#fcd9b6', '#b45309'], Pop: ['🎤', '#fbcfe8', '#db2777'],
   Folk: ['🪕', '#d9f99d', '#65a30d'], Holiday: ['🎄', '#bbf7d0', '#dc2626'], Hymns: ['🕊️', '#e0f2fe', '#0284c7'],
   Jazz: ['🎷', '#fde68a', '#7c2d12'], Blues: ['🎸', '#bfdbfe', '#1e3a8a'], Rock: ['🤘', '#fecaca', '#111827'],
-  EDM: ['🎧', '#a5f3fc', '#7c3aed'], Exercises: ['🎯', '#ddd6fe', '#4f46e5'],
+  EDM: ['🎧', '#a5f3fc', '#7c3aed'], Fingerstyle: ['🖐️', '#fde68a', '#0d9488'], Exercises: ['🎯', '#ddd6fe', '#4f46e5'],
 };
 const thumb = (s) => {
   const [e, c1, c2] = CAT_ART[s.cat] || CAT_ART.Kids;
   return `<div class="thumb" style="background:linear-gradient(135deg,${c1},${c2})">${e}</div>`;
+};
+// Note names for an event, plus the red chord name when it is a chord.
+const eventLabel = (names) => {
+  const c = names.length > 1 ? chordName(names) : null;
+  const notes = names.map((n) => labelFor(n, settings.nameSystem)).join(' ');
+  return c ? `<span class="chordtag">${c.name}${c.inv ? ` <small>${c.inv}</small>` : ''}</span> ${notes}` : notes;
 };
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -330,9 +336,9 @@ views.song = (params, id) => {
     if (lead) {
       const y = score.cursorTo(lead.id);
       if (y !== lastSys) { lastSys = y; scrollScoreTo($('#score'), y); }
-      $('#cnote').textContent = lead.names.map((n) => labelFor(n, settings.nameSystem)).join(' ');
+      $('#cnote').innerHTML = active.map((e) => eventLabel(e.names)).join(' + ');
       const nxt = tl.events.find((e) => st.hands.includes(e.hand) && e.start > lead.start && e.hand === lead.hand);
-      $('#nnote').textContent = nxt ? `Next: ${nxt.names.map((n) => labelFor(n, settings.nameSystem)).join(' ')} ›` : '';
+      $('#nnote').innerHTML = nxt ? `Next: ${eventLabel(nxt.names)} ›` : '';
       kb.setTargets(active.flatMap((e) => e.midis));
     }
     updateProg();
@@ -456,7 +462,7 @@ views.practice = (params, id) => {
     score.mark(step.events.map((e) => e.id), 'cur');
     scrollScoreTo($('#score'), score.cursorTo(step.events[0].id));
     kb.setTargets(step.midis);
-    $('#cnote').textContent = step.events.map((e) => e.names.map((n) => labelFor(n, settings.nameSystem)).join(' ')).join(' + ');
+    $('#cnote').innerHTML = step.events.map((e) => eventLabel(e.names)).join(' + ');
     const nx = steps[st.idx + 1];
     $('#nnote').textContent = nx ? `Next: ${names(nx.midis)} ›` : 'Last note!';
     $('#cnt').textContent = `${st.idx}/${steps.length}`;

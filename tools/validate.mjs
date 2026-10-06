@@ -64,6 +64,9 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith('.json'))) {
     const full = s.time === '6/8' ? 3 : TIMES[s.time];
     const rh = checkHand(s.rh || '', midi('A3'), midi('C6'), errs, 'rh');
     const lh = checkHand(s.lh || '', midi('C2'), midi('E4'), errs, 'lh');
+    // Full songs only: every category except Exercises needs a real length.
+    const minBars = s.cat === 'Exercises' ? 8 : 32;
+    if (rh.length < minBars) errs.push(`only ${rh.length} bars; full songs need at least ${minBars}`);
     if (rh.length !== lh.length) errs.push(`rh has ${rh.length} bars, lh has ${lh.length}`);
     rh.forEach((t, i) => {
       const pickup = i === 0 && t < full && lh[0] === t;

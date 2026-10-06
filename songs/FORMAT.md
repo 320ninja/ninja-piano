@@ -30,3 +30,6 @@ Each `songs/<category>.json` file is a JSON array of songs:
 - Only use music in the public domain: traditional, folk, or composers who died before 1955.
 
 Run `node tools/validate.mjs` to check every file.
+
+## Length
+Songs must be the FULL song, not an excerpt: every verse, chorus, bridge and section, with repeats, first/second endings and D.C./D.S. written out in full. The minimum is 32 bars (8 for Exercises); most songs should be 48–128 bars. Classical pieces include the whole piece, or the whole movement section a learner would play (e.g. Für Elise: A–B–A–C–A).

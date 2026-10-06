@@ -1,3 +1,8 @@
+/* Typed colour tokens so theme changes fade smoothly instead of snapping. */
+@property --p{syntax:'<color>';inherits:true;initial-value:#6d5dfc}
+@property --a{syntax:'<color>';inherits:true;initial-value:#22c55e}
+@property --deep{syntax:'<color>';inherits:true;initial-value:#120e2e}
+:root{transition:--p .6s ease,--a .6s ease,--deep .6s ease}
 /* Ninja Piano — theme system shared with the Real Estate / Travel apps:
    glass cards, 22px radius, Plus Jakarta Sans, theme tokens --p / --a. */
 :root{
@@ -252,7 +257,68 @@ input[type=range]{width:100%;accent-color:var(--p)}
 .pager button.on{background:var(--p);color:#fff;border-color:transparent}
 .hand{display:flex;gap:6px;margin:10px 0 0}
 .score svg text.chord{fill:#e11d48!important;stroke:none!important;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14px}
+.score svg text.chord.scale{font-size:12.5px;font-weight:700;text-transform:capitalize;opacity:.9}
 .score svg text.chord.inv{font-size:9px;font-weight:700;opacity:.85}
 .chordtag{color:#e11d48;font-weight:800}
 .chordtag small{font-size:11px;font-weight:700;opacity:.8}
 .kb-info .cn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw;vertical-align:middle;display:inline-block}
+.setup{margin:10px 0 0;padding:4px 16px}
+.setup summary{cursor:pointer;padding:12px 0;font-weight:700;font-size:14px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.setup summary span{font-weight:600;font-size:12px;text-align:right}
+.setup .hand{margin:4px 0 6px}
+.setup select{background:var(--solid);border:1px solid var(--line);border-radius:10px;height:34px;padding:0 6px}
+
+/* ---------- motion & theme switcher ---------- */
+body::before,body::after{content:"";position:fixed;z-index:-1;width:60vmax;height:60vmax;border-radius:50%;filter:blur(80px);opacity:.28;pointer-events:none;
+  animation:drift 22s ease-in-out infinite alternate}
+body::before{background:var(--p);top:-25vmax;left:-20vmax}
+body::after{background:var(--a);bottom:-30vmax;right:-25vmax;animation-duration:28s;animation-direction:alternate-reverse}
+:root[data-mode=dark] body::before,:root[data-mode=dark] body::after{opacity:.22}
+@keyframes drift{to{transform:translate(12vmax,10vmax) scale(1.15)}}
+
+.list>*,.stats>*,.themes>*,.chips>*{animation:rise .55s var(--ease) both}
+.list>*:nth-child(1),.stats>*:nth-child(1),.chips>*:nth-child(1){animation-delay:.02s}
+.list>*:nth-child(2),.stats>*:nth-child(2),.chips>*:nth-child(2){animation-delay:.06s}
+.list>*:nth-child(3),.stats>*:nth-child(3),.chips>*:nth-child(3){animation-delay:.1s}
+.list>*:nth-child(4),.chips>*:nth-child(4){animation-delay:.14s}
+.list>*:nth-child(5),.chips>*:nth-child(5){animation-delay:.18s}
+.list>*:nth-child(6),.chips>*:nth-child(6){animation-delay:.22s}
+.list>*:nth-child(7){animation-delay:.26s}.list>*:nth-child(8){animation-delay:.3s}
+.list>*:nth-child(n+9){animation-delay:.34s}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+
+.hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);
+  transform:translateX(-100%);animation:shine 4.5s ease-in-out infinite}
+@keyframes shine{60%,100%{transform:translateX(100%)}}
+.logo{transition:transform .4s var(--ease)}
+.brand:hover .logo,.logo:hover{transform:rotate(-10deg) scale(1.08)}
+.logo svg{animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-2px) rotate(4deg)}}
+.song:hover .thumb{transform:scale(1.06) rotate(-3deg)}
+.thumb{transition:transform .35s var(--ease)}
+.song:hover .play{background:var(--p);color:#fff}
+.play{transition:background .25s,color .25s,transform .25s var(--ease)}
+.song:active .play{transform:scale(.9)}
+.btn{position:relative;overflow:hidden}
+.btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ripple .6s ease-out forwards;pointer-events:none}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+.stat b{display:block;animation:countPop .8s var(--ease) both .2s}
+@keyframes countPop{from{transform:scale(.6);opacity:0}}
+.nav a svg{transition:transform .3s var(--ease)}
+.nav a.on svg{transform:translateY(-2px) scale(1.12)}
+.chip.on{animation:chipOn .35s var(--ease)}
+@keyframes chipOn{50%{transform:scale(1.07)}}
+
+.theme-fab{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:relative;overflow:hidden}
+.theme-fab i{position:absolute;inset:9px;border-radius:50%;background:conic-gradient(var(--p),var(--a),var(--deep),var(--p));animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sheet-bg{position:fixed;inset:0;z-index:90;background:rgba(5,6,15,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:fade .25s ease both}
+.sheet{position:fixed;left:50%;bottom:0;z-index:91;width:min(560px,100%);transform:translateX(-50%);background:var(--solid);border-radius:28px 28px 0 0;
+  padding:10px 18px calc(22px + var(--safe-b));box-shadow:0 -20px 50px -20px rgba(0,0,0,.5);animation:sheetUp .45s var(--ease) both;max-height:80vh;overflow:auto}
+.sheet .grab{width:42px;height:5px;border-radius:5px;background:var(--line);margin:4px auto 14px}
+.sheet h4{margin:0 0 10px;font-size:17px}
+@keyframes sheetUp{from{transform:translate(-50%,100%)}}
+@keyframes fade{from{opacity:0}}
+.th{position:relative}
+.th.on::after{content:"✓";position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--p);color:#fff;font-size:11px;display:grid;place-items:center}

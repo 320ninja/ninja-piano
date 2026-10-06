@@ -1,6 +1,6 @@
 // Offline cache: app shell first, then every song file.
 const CACHE = 'ninja-piano-v1';
-const SONG_FILES = ['kids', 'classical', 'pop', 'folk', 'holiday', 'hymns', 'jazz', 'blues', 'blues-patterns', 'rock', 'edm', 'fingerstyle', 'exercises'];
+const SONG_FILES = ['kids', 'classical', 'pop', 'folk', 'holiday', 'hymns', 'jazz', 'blues', 'blues-patterns', 'rock', 'edm', 'fingerstyle', 'hard', 'exercises'];
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'assets/app.css', 'vendor/vexflow.js',
   'js/app.js', 'js/music.js', 'js/score.js', 'js/audio.js', 'js/keyboard.js', 'js/themes.js',

@@ -1,5 +1,5 @@
 // Renders a parsed song as a grand staff (treble + bass) with note names under each note.
-import { labelFor, chordName } from './music.js';
+import { labelFor, analyzeHarmony, detectScale } from './music.js';
 
 const VF = () => window.Vex.Flow;
 let TREBLE_Y = 20;
@@ -77,7 +77,9 @@ export const renderScore = (container, parsed, opts) => {
   container.innerHTML = '';
   const extraT = opts.showNames ? (maxChord(parsed.rh) - 1) * LINE_H : 0;
   const extraB = opts.showNames ? (maxChord(parsed.lh) - 1) * LINE_H : 0;
-  const hasChords = opts.showChords !== false && [...parsed.rh, ...parsed.lh].flat().some((n) => n.pitches.length > 1 && chordName(n.pitches.map((p) => p.name)));
+  const hasChords = opts.showChords !== false;
+  const harmony = hasChords ? analyzeHarmony(parsed) : [];
+  const scaleName = hasChords ? detectScale(parsed) : '';
   const top = hasChords ? 44 : 0;
   TREBLE_Y = 20 + top;
   BASS_Y = 128 + extraT + top;
@@ -128,24 +130,15 @@ export const renderScore = (container, parsed, opts) => {
       bv.draw(ctx, bass);
       beams.forEach((bm) => bm.setContext(ctx).draw());
       if (hasChords) {
-        // Bass-clef chords name the harmony, so they win over a right-hand chord at the same spot.
-        const seen = [];
-        let lastName = '';
-        const collect = (notes, bar) => notes.forEach((note, i) => {
-          const n = bar[i];
-          if (n.rest || n.pitches.length < 2) return;
-          const c = chordName(n.pitches.map((p) => p.name));
-          if (!c) return;
-          const cx = note.getAbsoluteX() + 6;
-          if (seen.some((sx) => Math.abs(sx - cx) < 14)) return;
-          seen.push(cx);
-          // Like a lead sheet: name a chord when it changes, not on every repeat in the bar.
-          if (c.name === lastName) return;
-          lastName = c.name;
-          chordLabels.push({ x: cx, y: y + TREBLE_Y + 6, sysY: y, ...c, id: note.getAttribute('id') });
+        // Chord for each harmony change in this bar, placed over the note that starts it.
+        const starts = (bar, notes) => { let t = 0; return bar.map((n, i) => { const r = { t, note: notes[i] }; t += n.beats; return r; }); };
+        const all = [...starts(parsed.rh[m.b], tNotes), ...starts(parsed.lh[m.b], bNotes)];
+        harmony.filter((h) => h.bar === m.b).forEach((h) => {
+          const at = all.filter((a) => a.t >= h.beat - 1e-6).sort((p, q) => p.t - q.t || p.note.getAbsoluteX() - q.note.getAbsoluteX())[0];
+          if (!at) return;
+          chordLabels.push({ x: at.note.getAbsoluteX() + 6, y: y + TREBLE_Y + 6, sysY: y, name: h.name, inv: h.inv, id: at.note.getAttribute('id') });
         });
-        collect(bNotes, parsed.lh[m.b]);
-        collect(tNotes, parsed.rh[m.b]);
+        if (idx === 0) chordLabels.push({ x: x + 2, y: y + 14, sysY: y, name: `${scaleName} scale`, inv: '', scale: true });
       }
       barX[m.b] = { x, w, y };
       x += w;
@@ -181,6 +174,15 @@ export const renderScore = (container, parsed, opts) => {
   });
   const noteBoxes = chordLabels.length ? [...svg.querySelectorAll('.vf-stavenote, .vf-beam')].map((g) => g.getBBox()) : [];
   chordLabels.forEach((c) => {
+    if (c.scale) {
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('class', 'chord scale');
+      t.setAttribute('x', c.x);
+      t.setAttribute('y', c.y);
+      t.textContent = c.name;
+      svg.appendChild(t);
+      return;
+    }
     // Sit above the highest point of the note (stem, beam) so nothing overlaps.
     noteBoxes.forEach((bb) => {
       if (bb.y >= c.sysY && bb.y < c.sysY + SYSTEM_H && bb.x < c.x + 16 && bb.x + bb.width > c.x - 16) c.y = Math.min(c.y, bb.y - 4);

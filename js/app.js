@@ -167,7 +167,7 @@ views.home = () => {
 
   app.innerHTML = `<section class="view">
     <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Ninja Piano</div>
-      <a class="iconbtn" href="#/library?focus=1" aria-label="Search">${icon('search')}</a></div>
+      <button class="theme-fab" aria-label="Change theme"><i></i></button><a class="iconbtn" href="#/library?focus=1" aria-label="Search">${icon('search')}</a></div>
     <h2>${hi}${settings.name ? ', ' + esc(settings.name) : ''}! 👋</h2>
     <div class="muted">Choose a song to start learning</div>
     ${lastSong ? `<h3>Continue learning</h3>
@@ -198,7 +198,7 @@ views.library = (params) => {
   const st = { q: '', cat: params.get('cat') || 'All', level: 'All', fav: params.get('fav') === '1', page: 1 };
   if (st.cat !== 'All' && !CATEGORIES.includes(st.cat)) st.cat = 'All';
   app.innerHTML = `<section class="view">
-    <div class="top"><a class="iconbtn" href="#/home">${icon('back')}</a><h1>All Songs</h1><button class="iconbtn" id="fav" aria-label="Favourites">${icon('heart')}</button></div>
+    <div class="top"><a class="iconbtn" href="#/home">${icon('back')}</a><h1>All Songs</h1><button class="theme-fab" aria-label="Change theme"><i></i></button><button class="iconbtn" id="fav" aria-label="Favourites">${icon('heart')}</button></div>
     <label class="search">${icon('search')}<input id="q" type="search" placeholder="Search ${SONGS.length} songs, composers…" autocomplete="off"></label>
     <div class="chips" id="cats">${['All', ...CATEGORIES].map((c) => `<button class="chip" data-c="${c}">${c}</button>`).join('')}</div>
     <div class="chips" id="lv" style="padding-top:0">${['All', 'Easy', 'Medium', 'Hard'].map((c) => `<button class="chip" data-l="${c}">${c === 'All' ? 'All levels' : c}</button>`).join('')}</div>
@@ -236,11 +236,25 @@ views.practiceHub = () => {
   const easy = SONGS.filter((s) => s.level === 'Easy' && !progress[s.id]?.done).slice(0, 8);
   const ex = SONGS.filter((s) => s.cat === 'Exercises').slice(0, 6);
   app.innerHTML = `<section class="view">
-    <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Practice</div></div>
+    <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Practice</div><button class="theme-fab" aria-label="Change theme"><i></i></button></div>
     <div class="card pad" style="display:flex;gap:14px;align-items:center">
       <div style="font-size:40px">🥷</div>
       <div><b>How practice works</b><div class="muted" style="font-size:13.5px;margin-top:4px">The next note glows on the keyboard and its name shows on the sheet. Play it to move on. Use the on-screen keys, your computer keyboard (A S D F…) or a MIDI piano.</div></div>
     </div>
+    <h3>Practice styles</h3>
+    <div class="list grid2">
+      <div class="card pad"><b>🎓 Learn</b><div class="muted" style="font-size:13px;margin-top:4px">Step by step. The app waits for the right key.</div></div>
+      <div class="card pad"><b>🥁 Rhythm</b><div class="muted" style="font-size:13px;margin-top:4px">Play in time and get scored Perfect, Good or Miss.</div></div>
+      <div class="card pad"><b>🧠 Memory</b><div class="muted" style="font-size:13px;margin-top:4px">No names or glowing keys. Read the real notes.</div></div>
+      <div class="card pad"><b>🚀 Speed Builder</b><div class="muted" style="font-size:13px;margin-top:4px">Loop a section from 60% up to full speed.</div></div>
+    </div>
+    <div class="muted" style="font-size:12.5px;margin:6px 2px">Open any song, tap Practice, then choose a style. You can also pick hands, bars and speed.</div>
+    <h3>Skill games</h3>
+    <div class="list grid2">
+      <a class="song" href="#/quiz/read"><div class="thumb" style="background:linear-gradient(135deg,#ddd6fe,#6d5dfc)">🎼</div><div class="meta"><div class="t">Note Reading</div><div class="s">See a note on the staff, play it</div><div class="tags"><span class="tag cat">Best ${load('np.quiz.read', 0)}🔥</span></div></div><span class="play">${icon('play')}</span></a>
+      <a class="song" href="#/quiz/ear"><div class="thumb" style="background:linear-gradient(135deg,#a7f3d0,#059669)">👂</div><div class="meta"><div class="t">Ear Training</div><div class="s">Hear a note, find it on the keys</div><div class="tags"><span class="tag cat">Best ${load('np.quiz.ear', 0)}🔥</span></div></div><span class="play">${icon('play')}</span></a>
+    </div>
+    <h3>Hard challenges</h3><div class="list grid2">${SONGS.filter((s) => s.level === 'Hard').slice(0, 6).map((s) => songRow(s)).join('')}</div>
     ${inProgress.length ? `<h3>Keep going</h3><div class="list grid2">${inProgress.map((s) => songRow(s)).join('')}</div>` : ''}
     <h3>Warm-up exercises</h3><div class="list grid2">${ex.map((s) => songRow(s)).join('') || '<div class="empty">Loading…</div>'}</div>
     <h3>Easy songs to learn next</h3><div class="list grid2">${easy.map((s) => songRow(s)).join('')}</div>
@@ -421,53 +435,65 @@ views.song = (params, id) => {
   cleanup = () => { stop(); kb.destroy(); removeEventListener('resize', onResize); };
 };
 
+const PRACTICE_STYLES = {
+  learn: ['Learn', 'Waits for the right key. Names and glowing keys guide you.'],
+  rhythm: ['Rhythm', 'Plays in time. Hit each note on the beat: Perfect, Good or Miss.'],
+  memory: ['Memory', 'No names, no glowing keys. Read the real notes. A hint appears after 2 mistakes.'],
+  speed: ['Speed Builder', 'Loops the section in time, starting slow and getting 10% faster after each clean pass.'],
+};
+
 views.practice = (params, id) => {
   const song = songById(id);
   if (!song) return notFound();
   setNav('practice-run');
   const parsed = parseSong(song);
   const tl = buildTimeline(parsed);
-  const handPref = sessionStorage.getItem('np.hands') || 'rh';
-  const st = { hands: handPref === 'both' ? ['rh', 'lh'] : [handPref], idx: 0, wrong: 0, firstTry: 0, missedStep: false, pressed: new Set(), t0: Date.now() };
-  let steps = buildSteps(tl, st.hands);
-  if (!steps.length) { st.hands = ['rh', 'lh']; steps = buildSteps(tl, st.hands); }
+  const bars = parsed.rh.length;
+  const cfg = { hands: 'rh', style: 'learn', from: 1, to: bars, loop: false, speed: 1, ...load(`np.pcfg.${id}`, {}), ...load('np.pstyle', {}) };
+  cfg.from = Math.min(Math.max(1, cfg.from), bars);
+  cfg.to = Math.min(Math.max(cfg.from, cfg.to), bars);
+  const style = cfg.style;
+  const timed = style === 'rhythm' || style === 'speed';
+  const hidden = style === 'memory';
+  const st = { hands: cfg.hands === 'both' ? ['rh', 'lh'] : [cfg.hands], idx: 0, wrong: 0, score: 0, missedStep: false, pressed: new Set(), t0: Date.now(), loops: 0, speed: style === 'speed' ? Math.min(cfg.speed, 0.6) : cfg.speed, stepWrong: 0 };
+  const inRange = (e) => e.bar >= cfg.from - 1 && e.bar <= cfg.to - 1;
+  let steps = buildSteps({ events: tl.events.filter(inRange) }, st.hands);
+  if (!steps.length) { st.hands = ['rh', 'lh']; steps = buildSteps({ events: tl.events.filter(inRange) }, st.hands); }
+  const barOpts = (sel) => Array.from({ length: bars }, (_, i) => `<option value="${i + 1}" ${i + 1 === sel ? 'selected' : ''}>${i + 1}</option>`).join('');
 
   app.innerHTML = `<section class="view">
-    <div class="top"><a class="iconbtn" href="#/song/${id}">${icon('back')}</a><h1>Practice Mode</h1><button class="iconbtn" id="listen" aria-label="Listen">${icon('ear')}</button></div>
+    <div class="top"><a class="iconbtn" href="#/song/${id}">${icon('back')}</a><h1>${PRACTICE_STYLES[style][0]} · ${esc(song.title)}</h1><button class="iconbtn" id="listen" aria-label="Listen">${icon('ear')}</button></div>
+    <div class="chips" id="styles" style="padding-top:0">${Object.entries(PRACTICE_STYLES).map(([k, v]) => `<button class="chip ${k === style ? 'on' : ''}" data-s="${k}">${v[0]}</button>`).join('')}</div>
+    <div class="muted" style="font-size:12.5px;margin:-4px 0 8px">${PRACTICE_STYLES[style][1]}</div>
     <div class="card prac-top">
       <div class="ring"><svg viewBox="0 0 84 84" width="84" height="84"><circle cx="42" cy="42" r="36" stroke="var(--line)" stroke-width="8" fill="none"/>
         <circle id="arc" cx="42" cy="42" r="36" stroke="var(--a)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="226" style="transition:stroke-dashoffset .4s var(--ease)"/></svg>
         <b><span id="cnt">0/${steps.length}</span><small>Notes</small></b></div>
-      <div class="feedback wait" id="fb"><span class="fi">${icon('practice')}</span><div><span id="fbt">Play the glowing key</span><small id="fbs">${esc(song.title)}</small></div></div>
+      <div class="feedback wait" id="fb"><span class="fi">${icon('practice')}</span><div><span id="fbt">${timed ? 'Press Start' : 'Play the glowing key'}</span><small id="fbs">${timed ? 'One bar count-in, then play along' : esc(song.title)}</small></div></div>
     </div>
-    <div class="seg hand" id="hands"><button data-h="rh">Right hand</button><button data-h="lh">Left hand</button><button data-h="both">Both</button></div>
+    <details class="card setup" ${params.get('setup') ? 'open' : ''}><summary>Hands · section · speed <span class="muted">${cfg.hands === 'both' ? 'Both hands' : cfg.hands === 'rh' ? 'Right hand' : 'Left hand'} · bars ${cfg.from}–${cfg.to}${cfg.loop || style === 'speed' ? ' · loop' : ''} · ${Math.round(st.speed * 100)}%</span></summary>
+      <div class="seg hand" id="hands"><button data-h="rh">Right hand</button><button data-h="lh">Left hand</button><button data-h="both">Both</button></div>
+      <div class="row"><span>Bars</span><span><select id="from">${barOpts(cfg.from)}</select> to <select id="to">${barOpts(cfg.to)}</select></span></div>
+      <label class="row"><span>Loop this section</span><span class="sw"><input type="checkbox" id="loop" ${cfg.loop ? 'checked' : ''}><span></span></span></label>
+      <div class="row"><span>Speed</span><select id="spd">${[0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.25].map((v) => `<option value="${v}" ${v === cfg.speed ? 'selected' : ''}>${Math.round(v * 100)}%</option>`).join('')}</select></div>
+      <div class="row"><span></span><button class="btn sm" id="apply">Apply</button></div>
+    </details>
     <div class="card score-wrap"><div class="score" id="score"></div></div>
     <div class="kb-dock">
-      <div class="card kb-info"><div class="cn">Play this note<b id="cnote">—</b></div><div class="next" id="nnote"></div></div>
+      <div class="card kb-info"><div class="cn">${hidden ? 'Read the note' : 'Play this note'}<b id="cnote">—</b></div><div class="next" id="nnote"></div></div>
       <div class="kb" id="kb"></div>
-      <div class="prac-nav"><button class="btn soft" id="prev">${icon('arrowL')} Previous</button><button class="btn ok" id="next">Next ${icon('arrowR')}</button></div>
+      <div class="prac-nav">${timed
+        ? `<button class="btn soft" id="restart">${icon('restart')} Restart</button><button class="btn ok" id="go">${icon('play')} Start</button>`
+        : `<button class="btn soft" id="prev">${icon('arrowL')} Previous</button><button class="btn ok" id="next">Next ${icon('arrowR')}</button>`}</div>
     </div>
   </section>`;
   const $ = (s) => app.querySelector(s);
-  $('#hands').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.h === (st.hands.length === 2 ? 'both' : st.hands[0])));
-  const score = renderScore($('#score'), parsed, scoreOpts());
+  $('#hands').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.h === cfg.hands));
+  const score = renderScore($('#score'), parsed, { ...scoreOpts(), showNames: settings.showNames && !hidden, showChords: !hidden });
   const { low, high } = keyRange(parsed);
   const names = (midis) => midis.map((m) => labelFor(midiName(m), settings.nameSystem)).join(' ');
+  const PRAISE = ['Good!', 'Great!', 'Nice!', 'Perfect!', 'Awesome!', 'Well done!'];
 
-  const show = () => {
-    const step = steps[st.idx];
-    if (!step) return finish();
-    st.pressed = new Set();
-    st.missedStep = false;
-    score.mark(step.events.map((e) => e.id), 'cur');
-    scrollScoreTo($('#score'), score.cursorTo(step.events[0].id));
-    kb.setTargets(step.midis);
-    $('#cnote').innerHTML = step.events.map((e) => eventLabel(e.names)).join(' + ');
-    const nx = steps[st.idx + 1];
-    $('#nnote').textContent = nx ? `Next: ${names(nx.midis)} ›` : 'Last note!';
-    $('#cnt').textContent = `${st.idx}/${steps.length}`;
-    $('#arc').style.strokeDashoffset = 226 - (226 * st.idx) / steps.length;
-  };
   const feedback = (kind, title, sub) => {
     const fb = $('#fb');
     fb.className = `feedback ${kind}`;
@@ -477,17 +503,76 @@ views.practice = (params, id) => {
     $('#fbt').textContent = title;
     $('#fbs').textContent = sub;
   };
-  const PRAISE = ['Good!', 'Great!', 'Nice!', 'Perfect!', 'Awesome!', 'Well done!'];
+  const progressUi = () => {
+    $('#cnt').textContent = `${st.idx}/${steps.length}`;
+    $('#arc').style.strokeDashoffset = 226 - (226 * st.idx) / steps.length;
+  };
+  const show = () => {
+    const step = steps[st.idx];
+    if (!step) return sectionDone();
+    st.pressed = new Set();
+    st.missedStep = false;
+    st.stepWrong = 0;
+    score.mark(step.events.map((e) => e.id), 'cur');
+    scrollScoreTo($('#score'), score.cursorTo(step.events[0].id));
+    kb.setTargets(hidden ? [] : step.midis);
+    $('#cnote').innerHTML = hidden ? '?' : step.events.map((e) => eventLabel(e.names)).join(' + ');
+    const nx = steps[st.idx + 1];
+    $('#nnote').innerHTML = hidden ? '' : nx ? `Next: ${nx.events.map((e) => eventLabel(e.names)).join(' + ')} ›` : 'Last note!';
+    progressUi();
+  };
+
+  // Result of one step: 1 = perfect, 0.7 = good/late, 0 = missed.
+  const judge = (step, value, label) => {
+    step.events.forEach((e) => score.add(e.id, value >= 0.7 ? 'hit' : 'miss'));
+    st.score += value;
+    if (label) feedback(value > 0 ? '' : 'bad', label, value === 1 ? 'Right on time' : value > 0 ? 'Close — keep going' : `It was ${names(step.midis)}`);
+  };
+
+  const finish = () => {
+    stopTimed();
+    const total = steps.length * Math.max(1, st.loops);
+    const acc = Math.round((st.score / Math.max(1, total)) * 100);
+    const secs = Math.round((Date.now() - st.t0) / 1000);
+    const p = progress[id] || { best: 0, plays: 0, done: false };
+    const whole = cfg.from === 1 && cfg.to === bars;
+    progress[id] = { best: whole ? Math.max(p.best, acc) : p.best, plays: p.plays + 1, done: p.done || (whole && acc >= 60), last: Date.now() };
+    saveProgress();
+    bumpStreak();
+    sessionStorage.setItem('np.result', JSON.stringify({ id, notes: total, secs, acc, style: PRACTICE_STYLES[style][0] }));
+    location.hash = `#/done/${id}`;
+  };
+
+  // End of the chosen bars: loop, speed up, or finish.
+  const sectionDone = () => {
+    st.loops++;
+    const passAcc = st.score / (steps.length * st.loops);
+    if (style === 'speed') {
+      if (passAcc >= 0.9 && st.speed >= 1) return finish();
+      if (passAcc >= 0.9) { st.speed = Math.min(1, +(st.speed + 0.1).toFixed(2)); toast(`Clean pass! Speed up to ${Math.round(st.speed * 100)}%`); }
+      else toast(`Pass ${st.loops}: ${Math.round(passAcc * 100)}% — again at ${Math.round(st.speed * 100)}%`);
+      return restartSection(true);
+    }
+    if (cfg.loop) { toast(`Loop ${st.loops} done — ${Math.round(passAcc * 100)}%`); return restartSection(timed); }
+    finish();
+  };
+  const restartSection = (autoStart) => {
+    stopTimed();
+    st.idx = 0;
+    score.clear();
+    show();
+    if (autoStart) setTimeout(startTimed, 600);
+  };
+
+  /* ----- Learn / Memory: wait for the right key ----- */
   const advance = () => {
     const step = steps[st.idx];
     step.events.forEach((e) => score.add(e.id, st.missedStep ? 'miss' : 'hit'));
-    if (!st.missedStep) st.firstTry++;
+    if (!st.missedStep) st.score++;
     st.idx++;
     show();
   };
-  const onPress = (m) => {
-    unlockAudio();
-    playNote(m, { voice: settings.voice, volume: settings.volume / 100 });
+  const onWaitPress = (m) => {
     const step = steps[st.idx];
     if (!step) return;
     if (step.midis.includes(m)) {
@@ -497,45 +582,190 @@ views.practice = (params, id) => {
         feedback('', PRAISE[Math.floor(Math.random() * PRAISE.length)], st.missedStep ? 'Got it — keep going!' : 'Keep going!');
         setTimeout(advance, 120);
       }
-    } else {
-      st.wrong++;
-      st.missedStep = true;
-      kb.flash(m, 'wrong');
-      navigator.vibrate?.(40);
+      return;
+    }
+    st.wrong++;
+    st.stepWrong++;
+    st.missedStep = true;
+    kb.flash(m, 'wrong');
+    navigator.vibrate?.(40);
+    if (hidden && st.stepWrong < 2) feedback('bad', 'Not that one', `That was ${labelFor(midiName(m), settings.nameSystem)}. Read the note again.`);
+    else {
       feedback('bad', 'Try again', `That was ${labelFor(midiName(m), settings.nameSystem)} — play ${names(step.midis)}`);
-      if (!settings.waitMode) { setTimeout(advance, 300); }
+      if (hidden) { kb.setTargets(step.midis); $('#cnote').innerHTML = step.events.map((e) => eventLabel(e.names)).join(' + '); }
+    }
+    if (!settings.waitMode && !hidden) setTimeout(advance, 300);
+  };
+
+  /* ----- Rhythm / Speed Builder: play in time ----- */
+  const PERFECT = 0.12, GOOD = 0.28; // seconds
+  let t = { running: false, raf: 0, timer: 0, start: 0, next: 0 };
+  const sectionStart = steps[0]?.start ?? 0;
+  const secPerBeat = () => 60 / (parsed.bpm * st.speed);
+  const stepTime = (i) => t.start + (steps[i].start - sectionStart) * secPerBeat();
+  const accomp = tl.events.filter((e) => inRange(e) && !st.hands.includes(e.hand));
+  const startTimed = () => {
+    if (t.running) return;
+    unlockAudio();
+    st.idx = 0; st.pressed = new Set();
+    const countIn = parsed.barBeats * secPerBeat();
+    t = { running: true, raf: 0, timer: 0, start: now() + countIn + 0.1, next: 0 };
+    for (let b = 0; b < parsed.barBeats; b++) playClick(b === 0, 0.1 + b * secPerBeat());
+    feedback('wait', 'Get ready…', `${parsed.barBeats} beat count-in`);
+    // Other hand plays along so the music stays complete.
+    t.timer = setInterval(() => {
+      while (t.next < accomp.length && t.start + (accomp[t.next].start - sectionStart) * secPerBeat() < now() + 0.5) {
+        const e = accomp[t.next++];
+        const when = t.start + (e.start - sectionStart) * secPerBeat() - now();
+        e.midis.forEach((m) => playNote(m, { when, duration: e.beats * secPerBeat(), voice: settings.voice, volume: settings.volume / 100, velocity: 0.5 }));
+      }
+      if (settings.metronome) { /* the count-in click is enough by default */ }
+    }, 30);
+    $('#go').innerHTML = `${icon('pause')} Stop`;
+    show();
+    const frame = () => {
+      if (!t.running) return;
+      const nowT = now();
+      // Missed: the window for the current step has passed.
+      while (steps[st.idx] && nowT > stepTime(st.idx) + GOOD) {
+        judge(steps[st.idx], 0, 'Miss');
+        st.idx++;
+        if (!steps[st.idx]) { t.running = false; return sectionDone(); }
+        show();
+      }
+      t.raf = requestAnimationFrame(frame);
+    };
+    t.raf = requestAnimationFrame(frame);
+  };
+  const stopTimed = () => {
+    t.running = false;
+    cancelAnimationFrame(t.raf);
+    clearInterval(t.timer);
+    if ($('#go')) $('#go').innerHTML = `${icon('play')} Start`;
+  };
+  const onTimedPress = (m) => {
+    const step = steps[st.idx];
+    if (!t.running || !step) return;
+    const diff = now() - stepTime(st.idx);
+    if (!step.midis.includes(m) || diff < -GOOD) {
+      st.wrong++;
+      kb.flash(m, 'wrong');
+      return;
+    }
+    if (!st.pressed.size) st.firstDiff = Math.abs(diff);
+    st.pressed.add(m);
+    kb.flash(m, 'good');
+    if (step.midis.every((x) => st.pressed.has(x))) {
+      const perfect = st.firstDiff <= PERFECT;
+      judge(step, perfect ? 1 : 0.7, perfect ? 'Perfect!' : diff < 0 ? 'Good (early)' : 'Good (late)');
+      st.idx++;
+      if (!steps[st.idx]) { t.running = false; return sectionDone(); }
+      show();
     }
   };
-  const kb = createKeyboard($('#kb'), { low, high, labels: settings.keyLabels, nameSystem: settings.nameSystem, onPress });
 
-  const finish = () => {
-    const total = steps.length;
-    const acc = Math.round((st.firstTry / Math.max(1, total)) * 100);
-    const secs = Math.round((Date.now() - st.t0) / 1000);
-    const p = progress[id] || { best: 0, plays: 0, done: false };
-    progress[id] = { best: Math.max(p.best, acc), plays: p.plays + 1, done: p.done || acc >= 60, last: Date.now() };
-    saveProgress();
-    bumpStreak();
-    sessionStorage.setItem('np.result', JSON.stringify({ id, notes: total, secs, acc }));
-    location.hash = `#/done/${id}`;
+  const onPress = (m) => {
+    unlockAudio();
+    playNote(m, { voice: settings.voice, volume: settings.volume / 100 });
+    (timed ? onTimedPress : onWaitPress)(m);
   };
+  const kb = createKeyboard($('#kb'), { low, high, labels: settings.keyLabels && !hidden, nameSystem: settings.nameSystem, onPress });
 
-  $('#prev').onclick = () => { if (st.idx > 0) { st.idx--; score.mark([], 'hit'); show(); feedback('wait', 'Back one note', ''); } };
-  $('#next').onclick = () => { st.missedStep = true; advance(); feedback('wait', 'Skipped', 'Skipped notes don’t count toward accuracy'); };
+  if (timed) {
+    $('#go').onclick = () => (t.running ? stopTimed() : startTimed());
+    $('#restart').onclick = () => { st.score = 0; st.loops = 0; restartSection(false); };
+  } else {
+    $('#prev').onclick = () => { if (st.idx > 0) { st.idx--; show(); feedback('wait', 'Back one note', ''); } };
+    $('#next').onclick = () => { st.missedStep = true; advance(); feedback('wait', 'Skipped', 'Skipped notes don’t count toward accuracy'); };
+  }
   $('#listen').onclick = () => {
     const step = steps[st.idx]; if (!step) return;
     unlockAudio();
     step.midis.forEach((m) => playNote(m, { voice: settings.voice, volume: settings.volume / 100 }));
     kb.showPlaying(step.midis, 400);
   };
-  $('#hands').onclick = (e) => {
-    const h = e.target.dataset.h; if (!h) return;
-    sessionStorage.setItem('np.hands', h);
+  const saveCfg = (patch) => save(`np.pcfg.${id}`, { ...load(`np.pcfg.${id}`, {}), ...patch });
+  $('#styles').onclick = (e) => {
+    const s2 = e.target.closest('.chip')?.dataset.s; if (!s2) return;
+    save('np.pstyle', { style: s2 });
     views.practice(params, id);
+  };
+  $('#hands').onclick = (e) => { const h = e.target.dataset.h; if (!h) return; cfg.hands = h; $('#hands').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.h === h)); };
+  $('#apply').onclick = () => {
+    const from = Number($('#from').value), to = Math.max(from, Number($('#to').value));
+    saveCfg({ hands: cfg.hands, from, to, loop: $('#loop').checked, speed: Number($('#spd').value) });
+    views.practice(new URLSearchParams('setup=1'), id);
   };
   progress[id] = { ...(progress[id] || { best: 0, plays: 0, done: false }), last: Date.now() };
   saveProgress();
   show();
+  cleanup = () => { stopTimed(); kb.destroy(); };
+};
+
+/* ---------- quizzes ---------- */
+views.quiz = (params, kind) => {
+  setNav('practice-run');
+  const ear = kind === 'ear';
+  const level = params.get('level') || 'easy';
+  const POOLS = {
+    easy: [60, 62, 64, 65, 67, 69, 71, 72],
+    medium: [48, 50, 52, 53, 55, 57, 59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79],
+    hard: Array.from({ length: 37 }, (_, i) => 43 + i),
+  };
+  const pool = POOLS[level];
+  const st = { n: 0, right: 0, streak: 0, best: load(`np.quiz.${kind}`, 0), target: 0, tries: 0, t0: 0 };
+  app.innerHTML = `<section class="view">
+    <div class="top"><a class="iconbtn" href="#/practice">${icon('back')}</a><h1>${ear ? 'Ear Training' : 'Note Reading'}</h1><span style="width:42px"></span></div>
+    <div class="chips" id="lv" style="padding-top:0">${['easy', 'medium', 'hard'].map((l) => `<a class="chip ${l === level ? 'on' : ''}" href="#/quiz/${kind}?level=${l}">${l[0].toUpperCase() + l.slice(1)}</a>`).join('')}</div>
+    <div class="stats"><div class="card stat"><b id="sc">0/0</b><span>Correct</span></div><div class="card stat"><b id="sk">0🔥</b><span>Streak</span></div><div class="card stat"><b>${st.best}</b><span>Best streak</span></div></div>
+    <div class="card score-wrap" style="margin-top:12px;text-align:center">
+      ${ear ? `<button class="btn" id="hear" style="margin:26px auto">${icon('ear')} Play the note again</button>` : '<div class="score" id="score" style="max-width:340px;margin:0 auto"></div>'}
+      <div class="muted" id="qmsg" style="padding-bottom:10px">${ear ? 'Listen, then find the note on the keyboard' : 'Which note is this? Play it on the keyboard'}</div>
+    </div>
+    <div class="kb-dock"><div class="kb" id="kb"></div></div>
+  </section>`;
+  const $ = (s) => app.querySelector(s);
+  const qSong = (m) => {
+    const name = midiName(m);
+    const pitch = name.replace('#', '#');
+    const clef = m < 60 ? 'lh' : 'rh';
+    return { id: 'q', title: '', key: 'C', time: '4/4', bpm: 80, rh: clef === 'rh' ? `${pitch}/w` : 'r/w', lh: clef === 'lh' ? `${pitch}/w` : 'r/w' };
+  };
+  const next = () => {
+    let m;
+    do { m = pool[Math.floor(Math.random() * pool.length)]; } while (m === st.target && pool.length > 1);
+    st.target = m; st.tries = 0;
+    if (ear) { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); }
+    else renderScore($('#score'), parseSong(qSong(m)), { showNames: false, showChords: false });
+    $('#qmsg').textContent = ear ? 'Which note did you hear?' : 'Which note is this?';
+  };
+  const onPress = (m) => {
+    unlockAudio();
+    playNote(m, { voice: settings.voice, volume: settings.volume / 100 });
+    if (!st.target) return;
+    if (m === st.target) {
+      if (st.tries === 0) { st.right++; st.streak++; } else st.streak = 0;
+      st.n++;
+      if (st.streak > st.best) { st.best = st.streak; save(`np.quiz.${kind}`, st.best); }
+      kb.flash(m, 'good', 500);
+      $('#qmsg').innerHTML = `<b style="color:var(--ok)">✓ ${labelFor(midiName(m), settings.nameSystem)}</b>`;
+      $('#sc').textContent = `${st.right}/${st.n}`;
+      $('#sk').textContent = `${st.streak}🔥`;
+      setTimeout(next, 700);
+    } else {
+      st.tries++;
+      kb.flash(m, 'wrong');
+      $('#qmsg').innerHTML = `<b style="color:var(--bad)">✗ That was ${labelFor(midiName(m), settings.nameSystem)}</b>${st.tries >= 2 ? ` — it’s ${labelFor(midiName(st.target), settings.nameSystem)}` : ''}`;
+      if (st.tries >= 2) kb.setTargets([st.target]);
+    }
+  };
+  const kb = createKeyboard($('#kb'), { low: Math.min(...pool), high: Math.max(...pool), labels: false, nameSystem: settings.nameSystem, onPress });
+  const _set = kb.setTargets.bind(kb);
+  kb.setTargets = (ms) => { _set(ms); if (ms.length) setTimeout(() => _set([]), 900); };
+  if (ear) $('#hear').onclick = () => { unlockAudio(); playNote(st.target, { voice: settings.voice, volume: settings.volume / 100 }); };
+  // Ear training needs a tap first so the browser allows sound.
+  if (ear) { $('#qmsg').textContent = 'Tap “Play the note” to start'; $('#hear').onclick = () => { if (!st.target) next(); else playNote(st.target, { voice: settings.voice, volume: settings.volume / 100 }); }; }
+  else next();
   cleanup = () => kb.destroy();
 };
 
@@ -559,7 +789,7 @@ views.done = (params, id) => {
   const colors = ['#facc15', '#f472b6', '#60a5fa', '#34d399', '#a78bfa', '#fb923c'];
   const conf = Array.from({ length: 40 }, (_, i) => `<i class="confetti" style="left:${Math.random() * 100}%;background:${colors[i % 6]};animation-delay:${Math.random() * 1.5}s;animation-duration:${2.5 + Math.random() * 2}s"></i>`).join('');
   app.innerHTML = `<section class="view done-screen">${conf}
-    <div><div class="trophy">🏆</div><h2>${title}</h2><div style="opacity:.75">You completed the song!</div>
+    <div><div class="trophy">🏆</div><h2>${title}</h2><div style="opacity:.75">You completed the song${r.style ? ` in ${r.style} mode` : ''}!</div>
     <div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div></div>
     <div class="card pad"><div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">${thumb(song)}<div><b>${esc(song.title)}</b><div><span class="tag done" style="background:rgba(34,197,94,.2);color:#4ade80">Completed ✓</span></div></div></div>
       <div class="stats"><div class="stat"><b>${r.notes}</b><span>Notes</span></div><div class="stat"><b>${fmtTime(r.secs)}</b><span>Duration</span></div><div class="stat"><b style="color:#4ade80">${r.acc}%</b><span>Accuracy</span></div></div></div>
@@ -575,7 +805,7 @@ views.settings = () => {
   setNav('settings');
   const sw = (k, label) => `<label class="row"><span>${label}</span><span class="sw"><input type="checkbox" data-k="${k}" ${settings[k] ? 'checked' : ''}><span></span></span></label>`;
   app.innerHTML = `<section class="view">
-    <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Settings</div></div>
+    <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Settings</div><button class="theme-fab" aria-label="Change theme"><i></i></button></div>
     <div class="card group"><h4>You</h4>
       <label class="row"><span>Your name</span><input id="name" value="${esc(settings.name)}" placeholder="Optional" style="border:1px solid var(--line);background:var(--solid);border-radius:12px;height:38px;padding:0 12px;width:150px"></label></div>
     <div class="card group"><h4>Music display</h4>
@@ -620,6 +850,41 @@ views.settings = () => {
   };
 };
 
+const openThemeSheet = () => {
+  document.querySelector('.sheet-bg')?.remove(); document.querySelector('.sheet')?.remove();
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  const sh = document.createElement('div'); sh.className = 'sheet';
+  const draw = () => {
+    sh.innerHTML = `<div class="grab"></div><h4>Theme</h4>
+      <div class="seg" id="tmode">${['light', 'auto', 'dark'].map((m) => `<button data-m="${m}" class="${settings.mode === m ? 'on' : ''}">${m === 'light' ? icon('sun') + ' Light' : m === 'dark' ? icon('moon') + ' Dark' : 'Auto'}</button>`).join('')}</div>
+      <div class="themes">${Object.entries(THEMES).map(([k, t]) => `<button class="th ${k === settings.theme ? 'on' : ''}" data-t="${k}"><i><s style="background:${t[1]}"></s><s style="background:${t[2]}"></s><s style="background:${t[5]}"></s></i>${t[0]}</button>`).join('')}</div>`;
+  };
+  draw();
+  const close = () => { bg.remove(); sh.remove(); };
+  bg.onclick = close;
+  sh.onclick = (e) => {
+    const t = e.target.closest('.th')?.dataset.t;
+    const m = e.target.closest('[data-m]')?.dataset.m;
+    if (t) setSetting('theme', t);
+    if (m) setSetting('mode', m);
+    if (t || m) { applyTheme(settings.theme, settings.mode); draw(); }
+  };
+  document.body.append(bg, sh);
+};
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.theme-fab')) openThemeSheet();
+  // Touch ripple on every button.
+  const b = e.target.closest('.btn');
+  if (!b) return;
+  const r = b.getBoundingClientRect();
+  const d = Math.max(r.width, r.height);
+  const sp = document.createElement('span');
+  sp.className = 'ripple';
+  sp.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`;
+  b.appendChild(sp);
+  setTimeout(() => sp.remove(), 650);
+});
+
 const notFound = () => { app.innerHTML = '<div class="empty view">Song not found. <a href="#/library" style="color:var(--p)">Browse songs</a></div>'; };
 
 /* ---------- router ---------- */
@@ -631,7 +896,7 @@ const route = async () => {
   if (!SONGS.length) { app.innerHTML = '<div class="loading">Loading songs…</div>'; await songsReady; }
   scrollTo(0, 0);
   if (!name) return settings.seenWelcome ? views.home() : views.welcome();
-  const map = { home: views.home, library: views.library, practice: id ? views.practice : views.practiceHub, song: views.song, done: views.done, settings: views.settings, welcome: views.welcome };
+  const map = { quiz: views.quiz, home: views.home, library: views.library, practice: id ? views.practice : views.practiceHub, song: views.song, done: views.done, settings: views.settings, welcome: views.welcome };
   (map[name] || views.home)(params, id && decodeURIComponent(id));
 };
 addEventListener('hashchange', route);

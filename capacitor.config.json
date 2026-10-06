@@ -1,0 +1,8 @@
+{
+  "appId": "com.techagent247.ninjapiano",
+  "appName": "Ninja Piano",
+  "webDir": "www",
+  "backgroundColor": "#120e2e",
+  "ios": { "contentInset": "never" },
+  "android": { "allowMixedContent": false }
+}

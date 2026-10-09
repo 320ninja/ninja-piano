@@ -838,12 +838,27 @@ views.scan = () => {
         style="width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--solid);border-radius:12px;height:42px;padding:0 14px;font-size:14px;margin-top:6px">
       <div class="muted" style="font-size:12px;margin-top:6px">Saved automatically. Leave blank if running locally on port 8000.</div>
     </div>
-    <div class="card group" id="dropzone" style="cursor:pointer;border:2px dashed var(--line);text-align:center;padding:32px 16px;transition:border-color .2s">
-      ${icon('upload')}
-      <div style="font-size:16px;font-weight:700;margin:10px 0 4px">Drop image or PDF here</div>
-      <div class="muted" style="font-size:13px">or tap to choose file</div>
-      <div class="muted" style="font-size:12px;margin-top:6px">JPG · PNG · PDF</div>
-      <input id="file" type="file" accept="image/*,.pdf" style="display:none">
+    <div class="seg" id="importTabs" style="margin:0 0 10px">
+      <button data-tab="xml" class="on">MusicXML</button>
+      <button data-tab="scan">Scan / Photo</button>
+    </div>
+    <div id="xmlPane">
+      <div class="card group" id="dropzoneXml" style="cursor:pointer;border:2px dashed var(--line);text-align:center;padding:32px 16px;transition:border-color .2s">
+        ${icon('upload')}
+        <div style="font-size:16px;font-weight:700;margin:10px 0 4px">Drop MusicXML file here</div>
+        <div class="muted" style="font-size:13px">or tap to choose file</div>
+        <div class="muted" style="font-size:12px;margin-top:6px">.xml · exported from MuseScore, Finale, Sibelius</div>
+        <input id="fileXml" type="file" accept=".xml,application/xml,text/xml" style="display:none">
+      </div>
+    </div>
+    <div id="scanPane" style="display:none">
+      <div class="card group" id="dropzone" style="cursor:pointer;border:2px dashed var(--line);text-align:center;padding:32px 16px;transition:border-color .2s">
+        ${icon('upload')}
+        <div style="font-size:16px;font-weight:700;margin:10px 0 4px">Drop image or PDF here</div>
+        <div class="muted" style="font-size:13px">or tap to choose file</div>
+        <div class="muted" style="font-size:12px;margin-top:6px">JPG · PNG · PDF · requires OMR server</div>
+        <input id="file" type="file" accept="image/*,.pdf" style="display:none">
+      </div>
     </div>
     <div id="status" style="display:none" class="card group">
       <div id="stmsg" class="muted" style="text-align:center;padding:8px 0;font-size:14px"></div>
@@ -857,13 +872,41 @@ views.scan = () => {
   </section>`;
 
   const $ = (s) => app.querySelector(s);
-  const dz = $('#dropzone');
-  const fileInput = $('#file');
   const status = $('#status');
   const stmsg = $('#stmsg');
   const result = $('#result');
 
+  // Tab switching
+  $('#importTabs').onclick = (e) => {
+    const tab = e.target.dataset.tab; if (!tab) return;
+    $('#importTabs').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
+    $('#xmlPane').style.display = tab === 'xml' ? '' : 'none';
+    $('#scanPane').style.display = tab === 'scan' ? '' : 'none';
+  };
+
   $('#srv').onchange = (e) => { save('np.omrServer', e.target.value.trim()); };
+
+  // MusicXML direct import
+  const loadXML = (xmlText) => {
+    try {
+      setStatus('Parsing MusicXML…');
+      scannedSong = parseMusicXML(xmlText);
+      renderScore($('#preview'), parseSong(scannedSong), scoreOpts());
+      result.style.display = '';
+      setStatus(`✓ "${scannedSong.title}" · ${scannedSong.rh.split('|').length} bars · ${scannedSong.key} ${scannedSong.time}`);
+      $('#dropzoneXml').style.borderColor = 'var(--ok)';
+    } catch (e) {
+      setStatus('Parse error: ' + e.message);
+      $('#dropzoneXml').style.borderColor = 'var(--bad)';
+    }
+  };
+  const dzXml = $('#dropzoneXml');
+  const fileXml = $('#fileXml');
+  dzXml.onclick = () => fileXml.click();
+  fileXml.onchange = (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(loadXML); };
+  dzXml.ondragover = (e) => { e.preventDefault(); dzXml.style.borderColor = 'var(--p)'; };
+  dzXml.ondragleave = () => { dzXml.style.borderColor = 'var(--line)'; };
+  dzXml.ondrop = (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) f.text().then(loadXML); };
 
   const setStatus = (msg, show = true) => {
     status.style.display = show ? '' : 'none';

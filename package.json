@@ -15,5 +15,10 @@
     "@capacitor/cli": "^7.0.0",
     "@capacitor/core": "^7.0.0",
     "@capacitor/ios": "^7.0.0"
+  },
+  "dependencies": {
+    "expo": "^57.0.26",
+    "react": "19.2.3",
+    "react-native": "0.86.3"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "b85efcd8-e0dd-4fd7-aca9-79e65db62d43"
+      }
+    },
+    "android": {
+      "package": "com.gamingsepal.ninjapiano"
+    }
+  }
+}

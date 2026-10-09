@@ -6,10 +6,10 @@
     "cat": "Folk",
     "level": "Medium",
     "bpm": 90,
-    "time": "3/4",
+    "time": "6/8",
     "key": "Am",
-    "rh": "A4/q | C5/h D5/q | E5/qd F5/8 E5/q | D5/h B4/q | G4/qd A4/8 B4/q | C5/h A4/q | A4/qd G#4/8 A4/q | B4/h G#4/q | E4/h A4/q | C5/h D5/q | E5/qd F5/8 E5/q | D5/h B4/q | G4/qd A4/8 B4/q | C5/qd B4/8 A4/q | G#4/qd F#4/8 G#4/q | A4/hd",
-    "lh": "r/q | (A3 C4 E4)/hd | (A3 C4 E4)/hd | (G3 B3 D4)/hd | (G3 B3 D4)/hd | (A3 C4 E4)/hd | (A3 C4 E4)/hd | (E3 G#3 B3)/hd | (E3 G#3 B3)/hd | (A3 C4 E4)/hd | (A3 C4 E4)/hd | (G3 B3 D4)/hd | (G3 B3 D4)/hd | (A3 C4 E4)/hd | (E3 G#3 B3)/hd | (A3 C4 E4)/hd"
+    "rh": "A4/8 | C5/q D5/8 E5/8d F5/16 E5/8 | D5/q B4/8 G4/8d A4/16 B4/8 | C5/q A4/8 A4/8d G#4/16 A4/8 | B4/q G#4/8 E4/q A4/8 | C5/q D5/8 E5/8d F5/16 E5/8 | D5/q B4/8 G4/8d A4/16 B4/8 | C5/8d B4/16 A4/8 G#4/8d F#4/16 G#4/8 | A4/qd A4/q r/8 | G5/qd G5/8d F5/16 E5/8 | D5/q B4/8 G4/8d A4/16 B4/8 | C5/q A4/8 A4/8d G#4/16 A4/8 | B4/q G#4/8 E4/qd | G5/qd G5/8d F5/16 E5/8 | D5/q B4/8 G4/8d A4/16 B4/8 | C5/8d B4/16 A4/8 G#4/8d F#4/16 G#4/8 | A4/qd A4/q A4/8 | C5/q D5/8 E5/8d F5/16 E5/8 | D5/q B4/8 G4/8d A4/16 B4/8 | C5/q A4/8 A4/8d G#4/16 A4/8 | B4/q G#4/8 E4/q A4/8 | C5/q D5/8 E5/8d F5/16 E5/8 | D5/q B4/8 G4/8d A4/16 B4/8 | C5/8d B4/16 A4/8 G#4/8d F#4/16 G#4/8 | A4/qd A4/q r/8 | G5/qd G5/8d F5/16 E5/8 | D5/q B4/8 G4/8d A4/16 B4/8 | C5/q A4/8 A4/8d G#4/16 A4/8 | B4/q G#4/8 E4/qd | G5/qd G5/8d F5/16 E5/8 | D5/q B4/8 G4/8d A4/16 B4/8 | C5/8d B4/16 A4/8 G#4/8d F#4/16 G#4/8 | A4/qd A4/q r/8",
+    "lh": "r/8 | A2/qd (A2 C3 E3)/qd | G2/qd E3/qd | A2/qd F2/qd | E3/qd (E3 G#3 B3)/qd | A2/qd (A2 C3 E3)/qd | G2/qd E3/qd | A2/qd E3/qd | A2/qd (A2 C3 E3)/qd | C3/qd (C3 E3 G3)/qd | G2/qd E3/qd | A2/qd F2/qd | E3/qd (E3 G#3 B3)/qd | C3/qd (C3 E3 G3)/qd | G2/qd E3/qd | A2/qd E3/qd | A2/qd (A2 C3 E3)/qd | A2/qd (A2 C3 E3)/qd | G2/qd E3/qd | A2/qd F2/qd | E3/qd (E3 G#3 B3)/qd | A2/qd (A2 C3 E3)/qd | G2/qd E3/qd | A2/qd E3/qd | A2/qd (A2 C3 E3)/qd | C3/qd (C3 E3 G3)/qd | G2/qd E3/qd | A2/qd F2/qd | E3/qd (E3 G#3 B3)/qd | C3/qd (C3 E3 G3)/qd | G2/qd E3/qd | A2/qd E3/qd | A2/qd (A2 C3 E3)/qd"
   },
   {
     "id": "scarborough-fair",
@@ -20,8 +20,8 @@
     "bpm": 90,
     "time": "3/4",
     "key": "Dm",
-    "rh": "D4/h D4/q | A4/h A4/q | E4/qd F4/8 E4/q | D4/hd | r/q A4/q C5/q | D5/h C5/q | A4/q B4/q G4/q | A4/hd | r/q D5/h | D5/h C5/q | A4/q A4/q G4/q | F4/q E4/h | D4/h A4/q | G4/h F4/q | E4/q D4/q C4/q | D4/hd",
-    "lh": "(D3 F3 A3)/hd | (D3 F3 A3)/hd | (C3 E3 G3)/hd | (D3 F3 A3)/hd | (D3 F3 A3)/hd | (D3 F3 A3)/hd | (C3 E3 G3)/hd | (D3 F3 A3)/hd | (D3 F3 A3)/hd | (F3 A3 C4)/hd | (C3 E3 G3)/qd (D3 F3 A3)/qd | (C3 E3 G3)/hd | (D3 F3 A3)/hd | (C3 E3 G3)/qd (D3 F3 A3)/qd | (C3 E3 G3)/hd | (D3 F3 A3)/hd"
+    "rh": "D4/h D4/q | A4/h A4/q | E4/qd F4/8 E4/q | D4/hd | D4/q A4/q C5/q | D5/h C5/q | A4/q B4/q G4/q | A4/hd | A4/h D5/q | D5/h D5/q | C5/h A4/q | A4/q G4/q F4/q | E4/q C4/h | C4/hd | D4/h A4/q | G4/h F4/q | E4/q D4/q C4/q | D4/hd | D4/hd | D4/h D4/q | A4/h A4/q | E4/qd F4/8 E4/q | D4/hd | D4/q A4/q C5/q | D5/h C5/q | A4/q B4/q G4/q | A4/hd | A4/h D5/q | D5/h D5/q | C5/h A4/q | A4/q G4/q F4/q | E4/q C4/h | C4/hd | D4/h A4/q | G4/h F4/q | E4/q D4/q C4/q | D4/hd | D4/hd",
+    "lh": "D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q F2/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q F2/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q (D3 F3 A3)/q"
   },
   {
     "id": "danny-boy",
@@ -32,8 +32,8 @@
     "bpm": 70,
     "time": "4/4",
     "key": "C",
-    "rh": "C4/8 D4/8 | E4/hd D4/8 E4/8 | A4/q G4/q E4/q D4/8 C4/8 | A3/hd C4/8 E4/8 | F4/hd E4/8 F4/8 | A4/q G4/q E4/q C4/8 D4/8 | E4/hd D4/8 C4/8 | D4/h C4/q A3/q | C4/w",
-    "lh": "r/q | (C3 E3 G3)/w | (F3 A3 C4)/h (C3 E3 G3)/h | (A3 C4 E4)/w | (F3 A3 C4)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (G3 B3 D4)/w | (C3 E3 G3)/w"
+    "rh": "B3/8 C4/8 D4/8 | E4/qd D4/8 E4/8 A4/8 G4/8 E4/8 | D4/8 C4/8 A3/q r/8 C4/8 E4/8 F4/8 | G4/qd A4/8 G4/8 E4/8 C4/8 E4/8 | D4/h r/8 B3/8 C4/8 D4/8 | E4/qd D4/8 E4/8 A4/8 G4/8 E4/8 | D4/8 C4/8 A3/q r/8 B3/8 C4/8 D4/8 | E4/qd F4/8 E4/8 D4/8 C4/8 D4/8 | C4/h r/8 G4/8 A4/8 B4/8 | C5/qd B4/8 B4/8 A4/8 G4/8 A4/8 | G4/8 E4/8 C4/q r/8 G4/8 A4/8 B4/8 | C5/qd B4/8 B4/8 A4/8 G4/8 E4/8 | D4/h r/8 G4/8 G4/8 G4/8 | E5/qd D5/8 D5/8 C5/8 A4/8 C5/8 | G4/8 E4/8 C4/q r/8 B3/8 C4/8 D4/8 | E4/8 A4/8 G4/8 E4/8 D4/8 C4/8 A3/8 B3/8 | C4/h C4/8 B3/8 C4/8 D4/8 | E4/qd D4/8 E4/8 A4/8 G4/8 E4/8 | D4/8 C4/8 A3/q r/8 C4/8 E4/8 F4/8 | G4/qd A4/8 G4/8 E4/8 C4/8 E4/8 | D4/h r/8 B3/8 C4/8 D4/8 | E4/qd D4/8 E4/8 A4/8 G4/8 E4/8 | D4/8 C4/8 A3/q r/8 B3/8 C4/8 D4/8 | E4/qd F4/8 E4/8 D4/8 C4/8 D4/8 | C4/h r/8 G4/8 A4/8 B4/8 | C5/qd B4/8 B4/8 A4/8 G4/8 A4/8 | G4/8 E4/8 C4/q r/8 G4/8 A4/8 B4/8 | C5/qd B4/8 B4/8 A4/8 G4/8 E4/8 | D4/h r/8 G4/8 G4/8 G4/8 | E5/qd D5/8 D5/8 C5/8 A4/8 C5/8 | G4/8 E4/8 C4/q r/8 B3/8 C4/8 D4/8 | E4/8 A4/8 G4/8 E4/8 D4/8 C4/8 A3/8 B3/8 | C4/w",
+    "lh": "r/qd | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q A2/q | D3/q (D3 F#3 A3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q C3/q | F2/q (F2 A2 C3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q F2/q G2/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q F2/q A2/q | D3/q (D3 F#3 A3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q F2/q (F2 A2 C3)/q | C3/q A2/q F2/q G2/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q A2/q | D3/q (D3 F#3 A3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q C3/q | F2/q (F2 A2 C3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q F2/q G2/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q F2/q A2/q | D3/q (D3 F#3 A3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q F2/q (F2 A2 C3)/q | C3/q A2/q F2/q G2/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q"
   },
   {
     "id": "auld-lang-syne",
@@ -44,8 +44,8 @@
     "bpm": 80,
     "time": "4/4",
     "key": "F",
-    "rh": "C4/q | F4/qd F4/8 F4/q A4/q | G4/qd F4/8 G4/q A4/8 G4/8 | F4/qd F4/8 A4/q C5/q | D5/hd D5/q | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/q A4/8 G4/8 | F4/qd D4/8 D4/q C4/q | F4/hd D5/q | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/q D5/q | C5/qd A4/8 A4/q C5/q | D5/hd F5/q | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/q A4/8 G4/8 | F4/qd D4/8 D4/q C4/q | F4/hd r/q",
-    "lh": "r/q | (F3 A3 C4)/w | (C3 E3 G3)/w | (F3 A3 C4)/w | (Bb2 D3 F3)/w | (F3 A3 C4)/w | (C3 E3 G3)/w | (D3 F3 A3)/h (C3 E3 G3)/h | (F3 A3 C4)/w | (F3 A3 C4)/w | (C3 E3 G3)/w | (F3 A3 C4)/w | (Bb2 D3 F3)/w | (F3 A3 C4)/w | (C3 E3 G3)/w | (D3 F3 A3)/h (C3 E3 G3)/h | (F3 A3 C4)/w"
+    "rh": "C5/q | F5/qd F5/8 G5/q A5/q | C5/qd D5/8 C5/qd C5/8 | F5/q A5/q G5/q F5/q | D5/hd F5/8 D5/8 | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/qd A4/8 | C5/h D5/qd C5/8 | A4/8 C5/h r/8 C5/q | F5/qd F5/8 G5/q A5/q | C5/qd D5/8 C5/qd C5/8 | F5/q A5/q G5/q F5/q | D5/hd F5/8 D5/8 | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/qd A4/8 | C5/h D5/qd C5/8 | A4/8 C5/h r/8 C5/q | F5/qd F5/8 G5/q A5/q | C5/qd D5/8 C5/qd C5/8 | F5/q A5/q G5/q F5/q | D5/hd F5/8 D5/8 | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/qd A4/8 | C5/h D5/qd C5/8 | F5/hd C5/q | F5/qd F5/8 G5/q A5/q | C5/qd D5/8 C5/qd C5/8 | F5/q A5/q G5/q F5/q | D5/hd F5/8 D5/8 | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/qd A4/8 | C5/h D5/qd C5/8 | A4/8 C5/h r/8 C5/q | F5/qd F5/8 G5/q A5/q | C5/qd D5/8 C5/qd C5/8 | F5/q A5/q G5/q F5/q | D5/hd F5/8 D5/8 | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/qd A4/8 | C5/h D5/qd C5/8 | A4/8 C5/h r/8 C5/q | F5/qd F5/8 G5/q A5/q | C5/qd D5/8 C5/qd C5/8 | F5/q A5/q G5/q F5/q | D5/hd F5/8 D5/8 | C5/qd A4/8 A4/q F4/q | G4/qd F4/8 G4/qd A4/8 | C5/h D5/qd C5/8 | F5/hd r/q",
+    "lh": "r/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q F3/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q Bb2/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q F3/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q Bb2/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q F3/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q Bb2/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q F3/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q Bb2/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q F3/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q Bb2/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q F3/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q Bb2/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q"
   },
   {
     "id": "oh-susanna",
@@ -54,10 +54,10 @@
     "cat": "Folk",
     "level": "Medium",
     "bpm": 110,
-    "time": "4/4",
+    "time": "2/4",
     "key": "C",
-    "rh": "C4/8 D4/8 | E4/q G4/q G4/qd A4/8 | G4/q E4/q C4/qd D4/8 | E4/q E4/q D4/q C4/q | D4/hd C4/8 D4/8 | E4/q G4/q G4/qd A4/8 | G4/q E4/q C4/qd D4/8 | E4/q E4/q D4/q D4/q | C4/hd r/q | F4/h F4/h | A4/q A4/h A4/q | G4/q G4/q E4/q C4/q | D4/hd C4/8 D4/8 | E4/q G4/q G4/qd A4/8 | G4/q E4/q C4/qd D4/8 | E4/q E4/q D4/q D4/q | C4/w",
-    "lh": "r/q | (C3 E3 G3)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (G3 B3 D4)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (G3 B3 D4)/w | (C3 E3 G3)/w | (F3 A3 C4)/w | (F3 A3 C4)/w | (C3 E3 G3)/w | (G3 B3 D4)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (G3 B3 D4)/w | (C3 E3 G3)/w"
+    "rh": "C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 C4/8 | D4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 D4/8 | C4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 C4/8 | D4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 D4/8 | C4/qd r/8 | F4/q F4/q | A4/8 A4/q A4/8 | G4/8 G4/8 E4/8 C4/8 | D4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 D4/8 | C4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 C4/8 | D4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 D4/8 | C4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 C4/8 | D4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 D4/8 | C4/qd r/8 | F4/q F4/q | A4/8 A4/q A4/8 | G4/8 G4/8 E4/8 C4/8 | D4/qd C4/16 D4/16 | E4/8 G4/8 G4/8d A4/16 | G4/8 E4/8 C4/8d D4/16 | E4/8 E4/8 D4/8 D4/8 | C4/h",
+    "lh": "r/8 | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q G2/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q G2/q | C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q G2/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q G2/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q G2/q | C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q | C3/q G2/q | C3/q (C3 E3 G3)/q"
   },
   {
     "id": "home-on-the-range",
@@ -68,8 +68,8 @@
     "bpm": 100,
     "time": "3/4",
     "key": "F",
-    "rh": "C4/q C4/q | F4/h G4/q | A4/h F4/8 E4/8 | D4/q Bb4/q Bb4/q | Bb4/hd | A4/q Bb4/q C5/q | F4/h F4/8 F4/8 | F4/q E4/q F4/q | G4/hd | C4/h C4/q | F4/h G4/q | A4/h F4/8 E4/8 | D4/q Bb4/q Bb4/q | Bb4/hd | A4/q G4/q F4/q | E4/q D4/q E4/q | F4/hd",
-    "lh": "r/h | F2/hd | F2/hd | Bb2/hd | Bb2/hd | F2/hd | F2/hd | C3/hd | C3/hd | C3/hd | F2/hd | F2/hd | Bb2/hd | Bb2/hd | F2/hd | C3/hd | F2/hd"
+    "rh": "C4/q | C4/q F4/q G4/q | A4/h F4/8 E4/8 | D4/q Bb4/q Bb4/q | Bb4/h A4/8 Bb4/8 | C5/qd F4/8 F4/q | F4/q E4/q F4/q | G4/hd | G4/q r/q C4/8 C4/8 | C4/q F4/q G4/q | A4/h F4/8 E4/8 | D4/q Bb4/q Bb4/q | Bb4/h Bb4/8 Bb4/8 | A4/qd G4/8 F4/q | E4/q F4/q G4/q | F4/hd | F4/q r/h | C5/hd | Bb4/q A4/qd G4/8 | A4/hd | A4/q r/q C4/8 C4/8 | F4/qd F4/8 F4/q | F4/q E4/q F4/q | G4/hd | G4/q r/q C4/8 C4/8 | C4/q F4/q G4/q | A4/h F4/8 E4/8 | D4/q Bb4/q Bb4/q | Bb4/h Bb4/8 Bb4/8 | A4/qd G4/8 F4/q | E4/q F4/q G4/q | F4/hd | F4/q r/q r/q",
+    "lh": "r/q | F2/hd | F2/hd | Bb2/hd | Bb2/hd | F2/hd | F2/hd | C3/hd | C3/hd | F2/hd | F2/hd | Bb2/hd | Bb2/hd | F2/hd | C3/hd | F2/hd | F2/hd | F2/hd | C3/hd | F2/hd | F2/hd | F2/hd | F2/hd | C3/hd | C3/hd | F2/hd | F2/hd | Bb2/hd | Bb2/hd | F2/hd | C3/hd | F2/hd | F2/hd"
   },
   {
     "id": "red-river-valley",
@@ -80,8 +80,8 @@
     "bpm": 100,
     "time": "4/4",
     "key": "F",
-    "rh": "C4/8 F4/8 | A4/q A4/q A4/q G4/8 A4/8 | G4/q F4/h C4/8 F4/8 | A4/q F4/q A4/q C5/q | Bb4/hd A4/8 G4/8 | F4/q F4/q E4/q F4/q | G4/hd C4/8 F4/8 | C5/q Bb4/q A4/q G4/q | F4/hd r/q",
-    "lh": "r/q | F2/w | F2/w | F2/w | C3/w | C3/w | C3/w | C3/w | F2/w"
+    "rh": "C4/q F4/q | A4/h A4/h | A4/h G4/qd A4/8 | G4/q F4/hd | F4/h C4/q F4/q | A4/h F4/q A4/q | C5/h Bb4/q A4/q | G4/w | G4/h C5/q Bb4/q | A4/h A4/q G4/q | F4/h G4/q A4/q | C5/q Bb4/hd | Bb4/h D4/q D4/q | C4/h E4/q F4/q | G4/h A4/q G4/q | F4/w | F4/h C4/q F4/q | A4/h A4/h | A4/h G4/qd A4/8 | G4/q F4/hd | F4/h C4/q F4/q | A4/h F4/q A4/q | C5/h Bb4/q A4/q | G4/w | G4/h C5/q Bb4/q | A4/h A4/q G4/q | F4/h G4/q A4/q | C5/q Bb4/hd | Bb4/h D4/q D4/q | C4/h E4/q F4/q | G4/h A4/q G4/q | F4/w | F4/w",
+    "lh": "r/h | F2/h F2/h | F2/h C3/h | F2/h F2/h | F2/h F2/h | F2/h F2/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | F2/h F2/h | Bb2/h Bb2/h | Bb2/h Bb2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | F2/h F2/h | F2/h F2/h | F2/h C3/h | F2/h F2/h | F2/h F2/h | F2/h F2/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | F2/h F2/h | Bb2/h Bb2/h | Bb2/h Bb2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | F2/h F2/h"
   },
   {
     "id": "shenandoah",
@@ -92,8 +92,8 @@
     "bpm": 70,
     "time": "4/4",
     "key": "F",
-    "rh": "C4/q | F4/8 F4/8 F4/h G4/8 A4/8 | Bb4/8 D5/8 C5/hd | F5/q E5/q D5/h | C5/q D5/8 C5/8 A4/q C5/q | C5/q D5/q D5/h | A4/q C5/8 A4/8 G4/h | A4/q F4/q A4/q D5/q | C5/q A4/q F4/q G4/q | F4/w",
-    "lh": "r/q | (F3 A3 C4)/w | (Bb2 D3 F3)/h (F3 A3 C4)/h | (Bb2 D3 F3)/w | (F3 A3 C4)/w | (Bb2 D3 F3)/w | (D3 F3 A3)/h (C3 E3 G3)/h | (F3 A3 C4)/w | (Bb2 D3 F3)/h (C3 E3 G3)/h | (F3 A3 C4)/w"
+    "rh": "C4/q | F4/8 F4/8 F4/qd G4/8 A4/8 Bb4/8 | D5/qd C5/qd F5/8 E5/8 | D5/qd C5/8 D5/8 C5/8 A4/8 C5/8 | C5/hd r/8 C5/8 | D5/8 D5/8 D5/qd A4/8 C5/8 A4/8 | G4/q F4/qd r/8 F4/8 G4/8 | A4/qd F4/8 A4/8 D5/8 C5/q | C5/q F4/8 G4/8 A4/qd F4/8 | G4/q F4/h C4/q | F4/8 F4/8 F4/qd G4/8 A4/8 Bb4/8 | D5/qd C5/qd F5/8 E5/8 | D5/qd C5/8 D5/8 C5/8 A4/8 C5/8 | C5/hd r/8 C5/8 | D5/8 D5/8 D5/qd A4/8 C5/8 A4/8 | G4/q F4/qd r/8 F4/8 G4/8 | A4/qd F4/8 A4/8 D5/8 C5/q | C5/q F4/8 G4/8 A4/qd F4/8 | G4/q F4/h C4/q | F4/8 F4/8 F4/qd G4/8 A4/8 Bb4/8 | D5/qd C5/qd F5/8 E5/8 | D5/qd C5/8 D5/8 C5/8 A4/8 C5/8 | C5/hd r/8 C5/8 | D5/8 D5/8 D5/qd A4/8 C5/8 A4/8 | G4/q F4/qd r/8 F4/8 G4/8 | A4/qd F4/8 A4/8 D5/8 C5/q | C5/q F4/8 G4/8 A4/qd F4/8 | G4/q F4/h C4/q | F4/8 F4/8 F4/qd G4/8 A4/8 Bb4/8 | D5/qd C5/qd F5/8 E5/8 | D5/qd C5/8 D5/8 C5/8 A4/8 C5/8 | C5/hd r/8 C5/8 | D5/8 D5/8 D5/qd A4/8 C5/8 A4/8 | G4/q F4/qd r/8 F4/8 G4/8 | A4/qd F4/8 A4/8 D5/8 C5/q | C5/q F4/8 G4/8 A4/qd F4/8 | G4/q F4/hd",
+    "lh": "r/q | F2/h F2/8 G2/qd | Bb2/qd F2/h F2/8 | Bb2/q (Bb2 D3 F3)/q F2/q C3/q | C3/hd C3/8 C3/8 | D3/q (D3 F3 A3)/q (D3 F3 A3)/q A2/q | C3/q D3/q (D3 F3 A3)/q C3/q | F2/q (F2 A2 C3)/q C3/q A2/q | A2/q F2/q Bb2/q (Bb2 D3 F3)/q | C3/q F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/h F2/8 G2/qd | Bb2/qd F2/h F2/8 | Bb2/q (Bb2 D3 F3)/q F2/q C3/q | C3/hd C3/8 C3/8 | D3/q (D3 F3 A3)/q (D3 F3 A3)/q A2/q | C3/q D3/q (D3 F3 A3)/q C3/q | F2/q (F2 A2 C3)/q C3/q A2/q | A2/q F2/q Bb2/q (Bb2 D3 F3)/q | C3/q F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/h F2/8 G2/qd | Bb2/qd F2/h F2/8 | Bb2/q (Bb2 D3 F3)/q F2/q C3/q | C3/hd C3/8 C3/8 | D3/q (D3 F3 A3)/q (D3 F3 A3)/q A2/q | C3/q D3/q (D3 F3 A3)/q C3/q | F2/q (F2 A2 C3)/q C3/q A2/q | A2/q F2/q Bb2/q (Bb2 D3 F3)/q | C3/q F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/h F2/8 G2/qd | Bb2/qd F2/h F2/8 | Bb2/q (Bb2 D3 F3)/q F2/q C3/q | C3/hd C3/8 C3/8 | D3/q (D3 F3 A3)/q (D3 F3 A3)/q A2/q | C3/q D3/q (D3 F3 A3)/q C3/q | F2/q (F2 A2 C3)/q C3/q A2/q | A2/q F2/q Bb2/q (Bb2 D3 F3)/q | C3/q F2/q (F2 A2 C3)/q (F2 A2 C3)/q"
   },
   {
     "id": "when-the-saints-go-marching-in",
@@ -104,8 +104,8 @@
     "bpm": 120,
     "time": "4/4",
     "key": "C",
-    "rh": "r/q C4/q E4/q F4/q | G4/w | r/q C4/q E4/q F4/q | G4/w | r/q C4/q E4/q F4/q | G4/h E4/h | C4/h E4/h | D4/w | r/q E4/q E4/q D4/q | C4/hd C4/q | E4/h G4/h | G4/q F4/hd | r/q E4/q F4/q G4/q | E4/h C4/h | D4/h D4/h | C4/w",
-    "lh": "C3/w | C3/w | C3/w | C3/w | C3/w | C3/w | C3/w | G2/w | G2/w | C3/w | C3/w | F2/w | F2/w | C3/w | G2/w | C3/w"
+    "rh": "C4/q E4/q F4/q | G4/w | r/q C4/q E4/q F4/q | G4/w | r/q C4/q E4/q F4/q | G4/h E4/h | C4/h E4/h | D4/w | r/q E4/q E4/q D4/q | C4/w | E4/h G4/h | G4/q F4/hd | r/h E4/q F4/q | G4/h E4/h | C4/h D4/h | C4/w | C4/q C4/q E4/q F4/q | G4/w | r/q C4/q E4/q F4/q | G4/w | r/q C4/q E4/q F4/q | G4/h E4/h | C4/h E4/h | D4/w | r/q E4/q E4/q D4/q | C4/w | E4/h G4/h | G4/q F4/hd | r/h E4/q F4/q | G4/h E4/h | C4/h D4/h | C4/w",
+    "lh": "r/hd | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | G2/h G2/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | F2/h F2/h | C3/h C3/h | F2/h G2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | G2/h G2/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | F2/h F2/h | C3/h C3/h | F2/h G2/h | C3/h C3/h"
   },
   {
     "id": "camptown-races",
@@ -116,8 +116,8 @@
     "bpm": 120,
     "time": "4/4",
     "key": "C",
-    "rh": "G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | E4/h D4/h | E4/h D4/h | G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | D4/h E4/q D4/q | C4/w",
-    "lh": "C3/w | F2/h C3/h | C3/w | G2/w | C3/w | F2/h C3/h | G2/w | C3/w"
+    "rh": "G4/q | G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | E4/q D4/hd | E4/q D4/q r/q G4/q | G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | D4/h E4/q D4/q | C4/hd G4/q | G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | E4/q D4/hd | E4/q D4/q r/q G4/q | G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | D4/h E4/q D4/q | C4/hd r/q | C4/qd C4/8 E4/q G4/q | C5/w | A4/qd A4/8 C5/q A4/q | G4/hd E4/q | G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | D4/q E4/8 F4/8 E4/q D4/8 D4/8 | C4/hd G4/q | G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | E4/q D4/hd | E4/q D4/q r/q G4/q | G4/q G4/q E4/q G4/q | A4/q G4/q E4/h | D4/h E4/q D4/q | C4/hd r/q",
+    "lh": "r/q | C3/h C3/h | C3/h C3/h | G2/h G2/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | G2/h G2/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | G2/h G2/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | G2/h G2/h | C3/h C3/h"
   },
   {
     "id": "sakura-sakura",
@@ -128,8 +128,8 @@
     "bpm": 70,
     "time": "4/4",
     "key": "Am",
-    "rh": "A4/q A4/q B4/h | A4/q A4/q B4/h | A4/q B4/q C5/q B4/q | A4/q B4/8 A4/8 F4/h | E4/q C4/q E4/q F4/q | E4/q E4/8 C4/8 B3/h | A4/q B4/q C5/q B4/q | A4/q B4/8 A4/8 F4/h | E4/q C4/q E4/q F4/q | E4/q E4/8 C4/8 B3/h | A4/q A4/q B4/h | A4/q A4/q B4/h | E4/q F4/q B4/8 A4/8 F4/q | E4/w",
-    "lh": "(A3 C4 E4)/w | (A3 C4 E4)/w | (A3 C4 E4)/w | (D3 F3 A3)/w | (A3 C4 E4)/w | (E3 G#3 B3)/w | (A3 C4 E4)/w | (D3 F3 A3)/w | (A3 C4 E4)/w | (E3 G#3 B3)/w | (A3 C4 E4)/w | (A3 C4 E4)/w | (D3 F3 A3)/w | (E3 G#3 B3)/w"
+    "rh": "A4/q A4/q B4/h | A4/q A4/q B4/h | A4/q B4/q C5/q B4/q | A4/q B4/8 A4/8 F4/h | E4/q C4/q E4/q F4/q | E4/q E4/8 C4/8 B3/h | A4/q B4/q C5/q B4/q | A4/q B4/8 A4/8 F4/h | E4/q C4/q E4/q F4/q | E4/q E4/8 C4/8 B3/h | A4/q A4/q B4/h | A4/q A4/q B4/h | E4/q F4/q B4/8 A4/8 F4/q | E4/w | A4/q A4/q B4/h | A4/q A4/q B4/h | A4/q B4/q C5/q B4/q | A4/q B4/8 A4/8 F4/h | E4/q C4/q E4/q F4/q | E4/q E4/8 C4/8 B3/h | A4/q B4/q C5/q B4/q | A4/q B4/8 A4/8 F4/h | E4/q C4/q E4/q F4/q | E4/q E4/8 C4/8 B3/h | A4/q A4/q B4/h | A4/q A4/q B4/h | E4/q F4/q B4/8 A4/8 F4/q | E4/w | A4/q A4/q B4/h | A4/q A4/q B4/h | A4/q B4/q C5/q B4/q | A4/q B4/8 A4/8 F4/h | E4/q C4/q E4/q F4/q | E4/q E4/8 C4/8 B3/h | A4/q B4/q C5/q B4/q | A4/q B4/8 A4/8 F4/h | E4/q C4/q E4/q F4/q | E4/q E4/8 C4/8 B3/h | A4/q A4/q B4/h | A4/q A4/q B4/h | E4/q F4/q B4/8 A4/8 F4/q | E4/w",
+    "lh": "A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q B3/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q B3/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q B3/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q B3/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q B3/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q B3/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q"
   },
   {
     "id": "korobeiniki",
@@ -140,8 +140,8 @@
     "bpm": 140,
     "time": "4/4",
     "key": "Am",
-    "rh": "E5/q B4/8 C5/8 D5/q C5/8 B4/8 | A4/q A4/8 C5/8 E5/q D5/8 C5/8 | B4/qd C5/8 D5/q E5/q | C5/q A4/q A4/h | r/8 D5/q F5/8 A5/q G5/8 F5/8 | E5/qd C5/8 E5/q D5/8 C5/8 | B4/q B4/8 C5/8 D5/q E5/q | C5/q A4/q A4/h",
-    "lh": "A2/8 E3/8 C4/8 E3/8 A2/8 E3/8 C4/8 E3/8 | A2/8 E3/8 C4/8 E3/8 A2/8 E3/8 C4/8 E3/8 | E2/8 B2/8 G#3/8 B2/8 E2/8 B2/8 G#3/8 B2/8 | A2/8 E3/8 C4/8 E3/8 A2/8 E3/8 C4/8 E3/8 | D2/8 A2/8 F3/8 A2/8 D2/8 A2/8 F3/8 A2/8 | C2/8 G2/8 E3/8 G2/8 C2/8 G2/8 E3/8 G2/8 | E2/8 B2/8 G#3/8 B2/8 E2/8 B2/8 G#3/8 B2/8 | A2/8 E3/8 C4/8 E3/8 A2/8 E3/8 C4/8 E3/8"
+    "rh": "E5/q B4/8 C5/8 D5/q C5/8 B4/8 | A4/q A4/8 C5/8 E5/q D5/8 C5/8 | B4/qd C5/8 D5/q E5/q | C5/q A4/q A4/h | r/8 D5/q F5/8 A5/q G5/8 F5/8 | E5/qd C5/8 E5/q D5/8 C5/8 | B4/q B4/8 C5/8 D5/q E5/q | C5/q A4/q A4/h | E5/q B4/8 C5/8 D5/q C5/8 B4/8 | A4/q A4/8 C5/8 E5/q D5/8 C5/8 | B4/qd C5/8 D5/q E5/q | C5/q A4/q A4/h | r/8 D5/q F5/8 A5/q G5/8 F5/8 | E5/qd C5/8 E5/q D5/8 C5/8 | B4/q B4/8 C5/8 D5/q E5/q | C5/q A4/q A4/h | E5/h C5/h | D5/h B4/h | C5/h A4/h | G#4/h B4/h | E5/h C5/h | D5/h B4/h | C5/q E5/q A5/h | G#5/w | E5/q B4/8 C5/8 D5/q C5/8 B4/8 | A4/q A4/8 C5/8 E5/q D5/8 C5/8 | B4/qd C5/8 D5/q E5/q | C5/q A4/q A4/h | r/8 D5/q F5/8 A5/q G5/8 F5/8 | E5/qd C5/8 E5/q D5/8 C5/8 | B4/q B4/8 C5/8 D5/q E5/q | C5/q A4/q A4/h",
+    "lh": "A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | E3/8 B3/8 G#3/8 B3/8 E3/8 B3/8 G#3/8 B3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | D3/8 A3/8 F3/8 A3/8 D3/8 A3/8 F3/8 A3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | E3/8 B3/8 G#3/8 B3/8 E3/8 B3/8 G#3/8 B3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | E3/8 B3/8 G#3/8 B3/8 E3/8 B3/8 G#3/8 B3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | D3/8 A3/8 F3/8 A3/8 D3/8 A3/8 F3/8 A3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | E3/8 B3/8 G#3/8 B3/8 E3/8 B3/8 G#3/8 B3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | G2/8 D3/8 B2/8 D3/8 G2/8 D3/8 B2/8 D3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | E3/8 B3/8 G#3/8 B3/8 E3/8 B3/8 G#3/8 B3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | G2/8 D3/8 B2/8 D3/8 G2/8 D3/8 B2/8 D3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | E3/8 B3/8 G#3/8 B3/8 E3/8 B3/8 G#3/8 B3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | E3/8 B3/8 G#3/8 B3/8 E3/8 B3/8 G#3/8 B3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | D3/8 A3/8 F3/8 A3/8 D3/8 A3/8 F3/8 A3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8 | E3/8 B3/8 G#3/8 B3/8 E3/8 B3/8 G#3/8 B3/8 | A2/8 E3/8 C3/8 E3/8 A2/8 E3/8 C3/8 E3/8"
   },
   {
     "id": "la-cucaracha",
@@ -152,8 +152,8 @@
     "bpm": 140,
     "time": "4/4",
     "key": "C",
-    "rh": "G4/8 G4/8 G4/8 | C5/q E5/q r/8 G4/8 G4/8 G4/8 | C5/q E5/h r/q | C5/q C5/8 B4/8 B4/8 A4/8 A4/8 G4/8 | G4/hd r/8 G4/8 | G4/8 G4/8 B4/q D5/q r/8 G4/8 | G4/8 G4/8 B4/q D5/h | D5/8 E5/8 D5/8 C5/8 B4/8 A4/8 B4/8 G4/8 | C5/hd r/q",
-    "lh": "r/qd | (C3 E3 G3)/w | (C3 E3 G3)/w | (G3 B3 D4)/w | (G3 B3 D4)/w | (G3 B3 D4)/w | (G3 B3 D4)/w | (G3 B3 D4)/w | (C3 E3 G3)/w"
+    "rh": "r/8 G4/q G4/8 C5/8 C5/8 E5/8 E5/8 | G5/qd E5/qd r/q | r/8 G5/q A5/8 G5/8 F5/8 E5/8 G5/8 | F5/qd D5/qd r/q | r/8 G4/q G4/8 B4/8 B4/8 D5/8 D5/8 | F5/qd D5/qd r/q | r/8 G5/q A5/8 G5/8 F5/8 E5/8 D5/8 | C5/h r/8 G4/8 G4/8 G4/8 | C5/qd E5/8 r/8 G4/8 G4/8 G4/8 | C5/qd E5/qd r/q | r/8 C5/q C5/8 B4/8 B4/8 A4/8 A4/8 | G4/h r/8 G4/8 G4/8 G4/8 | B4/qd D5/8 r/8 G4/8 G4/8 G4/8 | B4/qd D5/qd r/q | r/8 G5/q A5/8 G5/8 F5/8 E5/8 D5/8 | C5/h r/8 G4/8 G4/8 G4/8 | C5/qd E5/8 r/8 G4/8 G4/8 G4/8 | C5/qd E5/qd r/q | r/8 C5/q C5/8 B4/8 B4/8 A4/8 A4/8 | G4/h r/8 G4/8 G4/8 G4/8 | B4/qd D5/8 r/8 G4/8 G4/8 G4/8 | B4/qd D5/qd r/q | r/8 G5/q A5/8 G5/8 F5/8 E5/8 D5/8 | C5/h r/h | r/8 G4/q G4/8 C5/8 C5/8 E5/8 E5/8 | G5/qd E5/qd r/q | r/8 G5/q A5/8 G5/8 F5/8 E5/8 G5/8 | F5/qd D5/qd r/q | r/8 G4/q G4/8 B4/8 B4/8 D5/8 D5/8 | F5/qd D5/qd r/q | r/8 G5/q A5/8 G5/8 F5/8 E5/8 D5/8 | C5/h r/8 G4/8 G4/8 G4/8 | C5/qd E5/8 r/8 G4/8 G4/8 G4/8 | C5/qd E5/qd r/q | r/8 C5/q C5/8 B4/8 B4/8 A4/8 A4/8 | G4/h r/8 G4/8 G4/8 G4/8 | B4/qd D5/8 r/8 G4/8 G4/8 G4/8 | B4/qd D5/qd r/q | r/8 G5/q A5/8 G5/8 F5/8 E5/8 D5/8 | C5/h r/8 G4/8 G4/8 G4/8 | C5/qd E5/8 r/8 G4/8 G4/8 G4/8 | C5/qd E5/qd r/q | r/8 C5/q C5/8 B4/8 B4/8 A4/8 A4/8 | G4/h r/8 G4/8 G4/8 G4/8 | B4/qd D5/8 r/8 G4/8 G4/8 G4/8 | B4/qd D5/qd r/q | r/8 G5/q A5/8 G5/8 F5/8 E5/8 D5/8 | C5/h r/h",
+    "lh": "C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q"
   },
   {
     "id": "clementine",
@@ -164,8 +164,8 @@
     "bpm": 100,
     "time": "3/4",
     "key": "F",
-    "rh": "F4/8 F4/8 | F4/q C4/q A4/8 A4/8 | A4/q F4/q F4/8 A4/8 | C5/qd Bb4/8 A4/q | G4/h G4/8 A4/8 | Bb4/q Bb4/q A4/q | G4/q A4/q F4/8 F4/8 | A4/q G4/qd C4/8 | E4/q G4/q F4/q | F4/hd",
-    "lh": "r/q | F2/hd | F2/hd | F2/hd | C3/hd | C3/hd | F2/hd | C3/hd | C3/hd | F2/hd"
+    "rh": "F4/8d F4/16 | F4/q C4/q A4/8d A4/16 | A4/q F4/q F4/8 A4/8 | C5/qd C5/8 Bb4/8 A4/8 | G4/h G4/8 A4/8 | Bb4/q Bb4/q A4/8 G4/8 | A4/q F4/q F4/8 A4/8 | G4/q C4/q E4/8 G4/8 | F4/h F4/8d F4/16 | F4/q C4/q A4/8d A4/16 | A4/q F4/q F4/8 A4/8 | C5/qd C5/8 Bb4/8 A4/8 | G4/h G4/8 A4/8 | Bb4/q Bb4/q A4/8d G4/16 | A4/q F4/q F4/8 A4/8 | G4/q C4/q E4/8 G4/8 | F4/h F4/8d F4/16 | F4/q C4/q A4/8d A4/16 | A4/q F4/q F4/8 A4/8 | C5/qd C5/8 Bb4/8 A4/8 | G4/h G4/8 A4/8 | Bb4/q Bb4/q A4/8 G4/8 | A4/q F4/q F4/8 A4/8 | G4/q C4/q E4/8 G4/8 | F4/h F4/8d F4/16 | F4/q C4/q A4/8d A4/16 | A4/q F4/q F4/8 A4/8 | C5/qd C5/8 Bb4/8 A4/8 | G4/h G4/8 A4/8 | Bb4/q Bb4/q A4/8d G4/16 | A4/q F4/q F4/8 A4/8 | G4/q C4/q E4/8 G4/8 | F4/hd",
+    "lh": "r/q | F2/hd | F2/hd | F2/hd | C3/hd | C3/hd | F2/hd | C3/hd | F2/hd | F2/hd | F2/hd | F2/hd | C3/hd | C3/hd | F2/hd | C3/hd | F2/hd | F2/hd | F2/hd | F2/hd | C3/hd | C3/hd | F2/hd | C3/hd | F2/hd | F2/hd | F2/hd | F2/hd | C3/hd | C3/hd | F2/hd | C3/hd | F2/hd"
   },
   {
     "id": "my-bonnie",
@@ -176,8 +176,8 @@
     "bpm": 100,
     "time": "3/4",
     "key": "C",
-    "rh": "G4/q | E5/qd D5/8 C5/q | D5/q C5/q A4/q | G4/q E4/h | r/h G4/q | E5/qd D5/8 C5/q | C5/q B4/q C5/q | D5/hd | r/h G4/q | E5/qd D5/8 C5/q | D5/q C5/q A4/q | G4/q E4/h | r/h G4/q | A4/q D5/q C5/q | B4/q A4/q B4/q | C5/hd | C5/hd",
-    "lh": "r/q | C3/hd | F2/hd | C3/hd | C3/hd | C3/hd | G2/hd | G2/hd | G2/hd | C3/hd | F2/hd | C3/hd | C3/hd | F2/hd | G2/hd | C3/hd | C3/hd"
+    "rh": "G4/q | E5/q D5/q C5/q | D5/q C5/q A4/q | G4/q E4/h | E4/q r/q G4/q | E5/q D5/q C5/q | C5/q B4/q C5/q | D5/hd | D5/q r/q G4/q | E5/q D5/q C5/q | D5/q C5/q A4/q | G4/q E4/h | E4/q r/q G4/q | A4/q D5/q C5/q | B4/q A4/q B4/q | C5/hd | C5/h r/q | G4/hd | C5/hd | A4/hd | D5/h C5/q | B4/q B4/q B4/q | B4/q A4/q B4/q | C5/h D5/q | E5/hd | G4/hd | C5/hd | A4/hd | D5/h C5/q | B4/q B4/q B4/q | B4/q A4/q B4/q | C5/hd | C5/hd",
+    "lh": "r/q | C3/hd | F2/hd | C3/hd | C3/hd | C3/hd | D3/hd | G2/hd | G2/hd | C3/hd | F2/hd | C3/hd | C3/hd | D3/hd | G2/hd | C3/hd | C3/hd | C3/hd | C3/hd | F2/hd | F2/hd | G2/hd | G2/hd | C3/hd | C3/hd | C3/hd | C3/hd | F2/hd | F2/hd | G2/hd | G2/hd | C3/hd | C3/hd"
   },
   {
     "id": "shell-be-coming-round-the-mountain",
@@ -186,10 +186,10 @@
     "cat": "Folk",
     "level": "Easy",
     "bpm": 120,
-    "time": "4/4",
+    "time": "2/4",
     "key": "G",
-    "rh": "D4/8 E4/8 | G4/q G4/q G4/q E4/8 D4/8 | E4/q G4/h G4/8 A4/8 | B4/q B4/q B4/q A4/8 G4/8 | A4/hd G4/8 A4/8 | B4/q B4/q D5/q B4/8 G4/8 | E4/q E4/q G4/q G4/8 A4/8 | C5/q C5/q B4/q A4/8 G4/8 | A4/q A4/q G4/h",
-    "lh": "r/q | G2/w | G2/w | G2/w | D3/w | G2/w | C3/w | C3/w | D3/h G2/h"
+    "rh": "D4/8 E4/8 | G4/q G4/q | E4/8 D4/8 B3/8 D4/8 | G4/h | r/q G4/8 A4/8 | B4/q B4/q | D5/8 B4/8 A4/8 G4/8 | A4/h | r/q D5/8 C5/8 | B4/q B4/q | A4/8 G4/8 G4/8 G4/8 | E4/q E4/q | A4/8 G4/8 F#4/8 E4/8 | D4/q D4/q | B4/8 A4/8 F#4/8 D4/8 | G4/h | r/q D4/8 E4/8 | G4/q G4/q | E4/8 D4/8 B3/8 D4/8 | G4/h | r/q G4/8 A4/8 | B4/q B4/q | D5/8 B4/8 A4/8 G4/8 | A4/h | r/q D5/8 C5/8 | B4/q B4/q | A4/8 G4/8 G4/8 G4/8 | E4/q E4/q | A4/8 G4/8 F#4/8 E4/8 | D4/q D4/q | B4/8 A4/8 F#4/8 D4/8 | G4/h | r/q r/q",
+    "lh": "r/q | G2/h | G2/h | G2/h | G2/h | G2/h | G2/h | D3/h | D3/h | G2/h | G2/h | C3/h | C3/h | G2/h | D3/h | G2/h | G2/h | G2/h | G2/h | G2/h | G2/h | G2/h | G2/h | D3/h | D3/h | G2/h | G2/h | C3/h | C3/h | G2/h | D3/h | G2/h | G2/h"
   },
   {
     "id": "swing-low-sweet-chariot",
@@ -200,8 +200,8 @@
     "bpm": 80,
     "time": "4/4",
     "key": "F",
-    "rh": "A4/h F4/h | A4/qd F4/8 D4/h | r/q F4/q F4/q F4/q | F4/q D4/q C4/h | A4/h F4/h | A4/qd C5/8 D5/h | C5/q A4/q F4/q G4/q | F4/w",
-    "lh": "F2/w | F2/w | Bb2/h F2/h | C3/w | F2/w | Bb2/w | F2/h C3/h | F2/w"
+    "rh": "A4/q F4/h A4/q | F4/qd F4/8 D4/8 C4/qd | F4/8 F4/8 F4/8 F4/8 A4/8 A4/8 C5/q | C5/w | D5/8 C5/8 A4/h C5/q | F4/qd F4/8 D4/8 C4/qd | F4/8 F4/8 F4/8 F4/8 A4/8 A4/8 G4/q | F4/hd A4/q | C5/q F4/8 C4/8 F4/q F4/8 F4/8 | F4/8 F4/8 F4/q D4/8 C4/qd | F4/8 F4/8 F4/8 F4/8 A4/8 A4/8 C5/q | C5/hd C5/q | D5/8 C5/8 A4/q A4/q F4/q | F4/8 F4/8 F4/8 F4/8 D4/8 C4/qd | F4/8 F4/8 F4/8 F4/8 A4/8 A4/8 G4/q | F4/w | A4/q F4/h A4/q | F4/qd F4/8 D4/8 C4/qd | F4/8 F4/8 F4/8 F4/8 A4/8 A4/8 C5/q | C5/w | D5/8 C5/8 A4/h C5/q | F4/qd F4/8 D4/8 C4/qd | F4/8 F4/8 F4/8 F4/8 A4/8 A4/8 G4/q | F4/hd A4/q | C5/q F4/8 C4/8 F4/q F4/8 F4/8 | F4/8 F4/8 F4/q D4/8 C4/qd | F4/8 F4/8 F4/8 F4/8 A4/8 A4/8 C5/q | C5/hd C5/q | D5/8 C5/8 A4/q A4/q F4/q | F4/8 F4/8 F4/8 F4/8 D4/8 C4/qd | F4/8 F4/8 F4/8 F4/8 A4/8 A4/8 G4/q | F4/w",
+    "lh": "F2/h F2/h | Bb2/h F2/h | F2/h F2/h | C3/h C3/h | C3/q F2/hd | Bb2/h F2/h | F2/h C3/h | F2/hd F2/q | F2/h F2/h | Bb2/h C3/h | F2/h F2/h | C3/h C3/h | F2/h F2/h | Bb2/h F2/h | F2/h C3/h | F2/h F2/h | F2/h F2/h | Bb2/h F2/h | F2/h F2/h | C3/h C3/h | C3/q F2/hd | Bb2/h F2/h | F2/h C3/h | F2/hd F2/q | F2/h F2/h | Bb2/h C3/h | F2/h F2/h | C3/h C3/h | F2/h F2/h | Bb2/h F2/h | F2/h C3/h | F2/h F2/h"
   },
   {
     "id": "simple-gifts",
@@ -212,8 +212,8 @@
     "bpm": 100,
     "time": "4/4",
     "key": "F",
-    "rh": "C4/8 C4/8 | F4/q F4/8 G4/8 A4/8 F4/8 A4/8 Bb4/8 | C5/q C5/8 Bb4/8 A4/q G4/8 F4/8 | G4/q G4/q G4/8 A4/8 G4/8 E4/8 | C4/h r/q C4/8 C4/8 | F4/q F4/8 G4/8 A4/q A4/8 Bb4/8 | C5/q Bb4/8 A4/8 G4/8 F4/8 G4/8 A4/8 | F4/8 E4/8 D4/8 E4/8 F4/q F4/q | F4/hd r/q",
-    "lh": "r/q | (F3 A3 C4)/w | (F3 A3 C4)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (F3 A3 C4)/w | (F3 A3 C4)/w | (C3 E3 G3)/h (F3 A3 C4)/h | (F3 A3 C4)/w"
+    "rh": "C4/q | F4/q F4/8 F4/8 A4/8 G4/8 A4/8 Bb4/8 | C5/q C5/8 C5/8 A4/q A4/8 A4/8 | G4/q G4/q G4/q G4/8 A4/8 | Bb4/8 A4/8 G4/8 F4/8 E4/q C4/8 C4/8 | F4/q F4/8 F4/8 A4/8 G4/8 A4/8 Bb4/8 | C5/q C5/8 C5/8 A4/q A4/8 A4/8 | G4/q G4/q A4/q A4/8 G4/8 | F4/q F4/q F4/h | C5/h A4/qd G4/8 | A4/8 Bb4/8 A4/8 G4/8 F4/h | A4/q A4/8 Bb4/8 C5/q Bb4/8 A4/8 | G4/q G4/q G4/q C4/8 C4/8 | F4/q F4/q F4/qd G4/8 | A4/8 G4/8 A4/8 Bb4/8 C5/q Bb4/8 A4/8 | G4/q G4/q A4/q A4/8 G4/8 | F4/q F4/q F4/q C4/q | F4/q F4/8 F4/8 A4/8 G4/8 A4/8 Bb4/8 | C5/q C5/8 C5/8 A4/q A4/8 A4/8 | G4/q G4/q G4/q G4/8 A4/8 | Bb4/8 A4/8 G4/8 F4/8 E4/q C4/8 C4/8 | F4/q F4/8 F4/8 A4/8 G4/8 A4/8 Bb4/8 | C5/q C5/8 C5/8 A4/q A4/8 A4/8 | G4/q G4/q A4/q A4/8 G4/8 | F4/q F4/q F4/h | C5/h A4/qd G4/8 | A4/8 Bb4/8 A4/8 G4/8 F4/h | A4/q A4/8 Bb4/8 C5/q Bb4/8 A4/8 | G4/q G4/q G4/q C4/8 C4/8 | F4/q F4/q F4/qd G4/8 | A4/8 G4/8 A4/8 Bb4/8 C5/q Bb4/8 A4/8 | G4/q G4/q A4/q A4/8 G4/8 | F4/q F4/q F4/h",
+    "lh": "r/q | F2/q (F2 A2 C3)/q D3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q D3/q (D3 F3 A3)/q | G2/q (G2 Bb2 D3)/q D3/q (G2 Bb2 D3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q D3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q D3/q (D3 F3 A3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q Bb2/q F2/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q D3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q D3/q (D3 F3 A3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q Bb2/q (Bb2 D3 F3)/q | F2/q C3/q F2/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q Bb2/q F2/q C3/q | F2/q (F2 A2 C3)/q D3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q D3/q (D3 F3 A3)/q | G2/q (G2 Bb2 D3)/q D3/q (G2 Bb2 D3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q D3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q D3/q (D3 F3 A3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q Bb2/q F2/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q D3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q D3/q (D3 F3 A3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q Bb2/q (Bb2 D3 F3)/q | F2/q C3/q F2/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q C3/q (C3 E3 G3)/q | F2/q Bb2/q F2/q (F2 A2 C3)/q"
   },
   {
     "id": "aura-lee",
@@ -224,8 +224,8 @@
     "bpm": 90,
     "time": "4/4",
     "key": "C",
-    "rh": "G4/q C5/q B4/q C5/q | D5/q A4/q D5/h | C5/q B4/q A4/q B4/q | C5/w | G4/q C5/q B4/q C5/q | D5/q A4/q D5/h | C5/q B4/q A4/q B4/q | C5/w | E5/q E5/q E5/q E5/q | E5/q E5/q E5/h | E5/q D5/q C5/q D5/q | E5/w | E5/q E5/q F5/q E5/q | D5/q A4/q D5/h | C5/q B4/q E5/q D5/q | C5/w",
-    "lh": "C3/w | D3/w | G2/w | C3/w | C3/w | D3/w | G2/w | C3/w | E3/w | E3/w | A2/w | A2/w | F2/w | D3/w | G2/w | C3/w"
+    "rh": "G4/q C5/q B4/q C5/q | D5/q A4/q D5/h | C5/q B4/q A4/q B4/q | C5/w | G4/q C5/q B4/q C5/q | D5/q A4/q D5/h | C5/q B4/q A4/q B4/q | C5/w | E5/qd E5/8 E5/h | E5/qd E5/8 E5/h | E5/q D5/q C5/q D5/q | E5/w | E5/q E5/q F5/q E5/q | D5/q A4/q D5/qd C5/8 | C5/q B4/q E5/qd D5/8 | C5/w | G4/q C5/q B4/q C5/q | D5/q A4/q D5/h | C5/q B4/q A4/q B4/q | C5/w | G4/q C5/q B4/q C5/q | D5/q A4/q D5/h | C5/q B4/q A4/q B4/q | C5/w | E5/qd E5/8 E5/h | E5/qd E5/8 E5/h | E5/q D5/q C5/q D5/q | E5/w | E5/q E5/q F5/q E5/q | D5/q A4/q D5/qd C5/8 | C5/q B4/q E5/qd D5/8 | C5/w",
+    "lh": "C3/h C3/h | D3/h D3/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | D3/h D3/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | D3/h D3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | D3/h D3/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | D3/h D3/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | D3/h D3/h | C3/h C3/h | C3/h C3/h"
   },
   {
     "id": "house-of-the-rising-sun",
@@ -236,8 +236,8 @@
     "bpm": 90,
     "time": "3/4",
     "key": "Am",
-    "rh": "E4/q | A4/h B4/q | C5/h D5/q | E5/h E5/q | D5/h C5/q | A4/h C5/q | E5/h E5/q | E5/h D5/q | B4/h E4/q | A4/h B4/q | C5/h D5/q | E5/h E5/q | D5/h C5/q | A4/h A4/q | B4/h B4/q | A4/hd",
-    "lh": "r/q | (A3 C4 E4)/hd | (C3 E3 G3)/hd | (D3 F#3 A3)/hd | (F3 A3 C4)/hd | (A3 C4 E4)/hd | (C3 E3 G3)/hd | (E3 G#3 B3)/hd | (E3 G#3 B3)/hd | (A3 C4 E4)/hd | (C3 E3 G3)/hd | (D3 F#3 A3)/hd | (F3 A3 C4)/hd | (A3 C4 E4)/hd | (E3 G#3 B3)/hd | (A3 C4 E4)/hd"
+    "rh": "E5/q | A4/h B4/8 A4/8 | C5/h D5/8 D#5/8 | E5/h C5/8 B4/8 | A4/h E5/q | A5/h E5/q | G5/h E5/8 D5/8 | E5/hd | E5/q r/q E5/8 E5/8 | A5/h A4/q | C5/h D5/q | E5/8 E5/qd C5/8 B4/8 | A4/h E5/q | E5/h E5/q | E5/8 E4/qd C5/8 B4/8 | A4/hd | A4/h E5/q | A4/h B4/8 A4/8 | C5/h D5/8 D#5/8 | E5/h C5/8 B4/8 | A4/h E5/q | A5/h E5/q | G5/h E5/8 D5/8 | E5/hd | E5/q r/q E5/8 E5/8 | A5/h A4/q | C5/h D5/q | E5/8 E5/qd C5/8 B4/8 | A4/h E5/q | E5/h E5/q | E5/8 E4/qd C5/8 B4/8 | A4/hd | A4/hd",
+    "lh": "r/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | E3/q (E3 G#3 B3)/q (E3 G#3 B3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q"
   },
   {
     "id": "drunken-sailor",
@@ -248,8 +248,8 @@
     "bpm": 120,
     "time": "4/4",
     "key": "Dm",
-    "rh": "A4/q A4/8 A4/8 A4/q A4/8 A4/8 | A4/q D4/q F4/q A4/q | G4/q G4/8 G4/8 G4/q G4/8 G4/8 | G4/q C4/q E4/q G4/q | A4/q A4/8 A4/8 A4/q A4/8 A4/8 | A4/q B4/q C5/q D5/q | C5/q A4/q G4/q E4/q | D4/h D4/h | A4/h A4/h | A4/q D4/q F4/q A4/q | G4/h G4/h | G4/q C4/q E4/q G4/q | A4/h A4/h | A4/q B4/q C5/q D5/q | C5/q A4/q G4/q E4/q | D4/h D4/h",
-    "lh": "(D3 F3 A3)/w | (D3 F3 A3)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (D3 F3 A3)/w | (D3 F3 A3)/w | (C3 E3 G3)/w | (D3 F3 A3)/w | (D3 F3 A3)/w | (D3 F3 A3)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (D3 F3 A3)/w | (D3 F3 A3)/w | (C3 E3 G3)/w | (D3 F3 A3)/w"
+    "rh": "A4/q A4/8 A4/8 A4/q A4/8 A4/8 | A4/q D4/q F4/q A4/q | G4/q G4/8 G4/8 G4/q G4/8 G4/8 | G4/q C4/q E4/q G4/q | A4/q A4/8 A4/8 A4/q A4/8 A4/8 | A4/q B4/q C5/q D5/q | C5/q A4/q G4/q E4/q | D4/h D4/q r/q | A4/h A4/qd A4/8 | A4/q D4/q F4/q A4/q | G4/h G4/qd G4/8 | G4/q C4/q E4/q G4/q | A4/h A4/qd A4/8 | A4/q B4/q C5/q D5/q | C5/q A4/q G4/q E4/q | D4/h D4/q r/q | A4/q A4/8 A4/8 A4/q A4/8 A4/8 | A4/q D4/q F4/q A4/q | G4/q G4/8 G4/8 G4/q G4/8 G4/8 | G4/q C4/q E4/q G4/q | A4/q A4/8 A4/8 A4/q A4/8 A4/8 | A4/q B4/q C5/q D5/q | C5/q A4/q G4/q E4/q | D4/h D4/q r/q | A4/h A4/qd A4/8 | A4/q D4/q F4/q A4/q | G4/h G4/qd G4/8 | G4/q C4/q E4/q G4/q | A4/h A4/qd A4/8 | A4/q B4/q C5/q D5/q | C5/q A4/q G4/q E4/q | D4/h D4/q r/q",
+    "lh": "D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q"
   },
   {
     "id": "michael-row-the-boat-ashore",
@@ -260,8 +260,8 @@
     "bpm": 100,
     "time": "4/4",
     "key": "C",
-    "rh": "C4/q E4/q G4/qd E4/8 | G4/q A4/q G4/h | E4/q G4/q A4/h | G4/w | E4/q G4/q G4/qd E4/8 | F4/q E4/q D4/h | C4/q D4/q E4/h | D4/h C4/h",
-    "lh": "C3/w | C3/w | F2/w | C3/w | C3/w | G2/w | C3/w | G2/h C3/h"
+    "rh": "C4/q E4/q | G4/qd E4/8 G4/8 A4/qd | G4/h E4/q G4/q | A4/w | G4/q r/q E4/q G4/q | G4/qd E4/8 F4/8 E4/qd | D4/h C4/q D4/q | E4/h D4/h | C4/h C4/q E4/q | G4/qd E4/8 G4/8 A4/qd | G4/h E4/q G4/q | A4/w | G4/q r/q E4/q G4/q | G4/qd E4/8 F4/8 E4/qd | D4/h C4/q D4/q | E4/h D4/h | C4/h C4/q E4/q | G4/qd E4/8 G4/8 A4/qd | G4/h E4/q G4/q | A4/w | G4/q r/q E4/q G4/q | G4/qd E4/8 F4/8 E4/qd | D4/h C4/q D4/q | E4/h D4/h | C4/h C4/q E4/q | G4/qd E4/8 G4/8 A4/qd | G4/h E4/q G4/q | A4/w | G4/q r/q E4/q G4/q | G4/qd E4/8 F4/8 E4/qd | D4/h C4/q D4/q | E4/h D4/h | C4/h r/q r/q",
+    "lh": "r/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | E3/h E3/h | D3/h D3/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | E3/h E3/h | D3/h D3/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | E3/h E3/h | D3/h D3/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | E3/h E3/h | D3/h D3/h | G2/h G2/h | C3/h C3/h"
   },
   {
     "id": "kumbaya",
@@ -270,10 +270,10 @@
     "cat": "Folk",
     "level": "Easy",
     "bpm": 80,
-    "time": "4/4",
+    "time": "3/4",
     "key": "C",
-    "rh": "C4/q E4/q G4/h | G4/q A4/q G4/h | C4/q E4/q G4/h | G4/q F4/q E4/q D4/q | C4/q E4/q G4/h | G4/q A4/q G4/h | F4/q E4/q C4/q D4/q | C4/w",
-    "lh": "C3/w | F2/h C3/h | C3/w | G2/w | C3/w | F2/h C3/h | F2/h G2/h | C3/w"
+    "rh": "C4/8 E4/8 | G4/8d G4/16 G4/q A4/8 A4/8 | G4/h C4/8 E4/8 | G4/8d G4/16 G4/q F4/8 E4/8 | D4/h C4/8 E4/8 | G4/8d G4/16 G4/q A4/8 A4/8 | G4/h F4/q | E4/8 C4/8 D4/8 D4/8 C4/q | C4/h C4/8 E4/8 | G4/8d G4/16 G4/q A4/8 A4/8 | G4/h C4/8 E4/8 | G4/8d G4/16 G4/q F4/8 E4/8 | D4/h C4/8 E4/8 | G4/8d G4/16 G4/q A4/8 A4/8 | G4/h F4/q | E4/8 C4/8 D4/8 D4/8 C4/q | C4/h C4/8 E4/8 | G4/8d G4/16 G4/q A4/8 A4/8 | G4/h C4/8 E4/8 | G4/8d G4/16 G4/q F4/8 E4/8 | D4/h C4/8 E4/8 | G4/8d G4/16 G4/q A4/8 A4/8 | G4/h F4/q | E4/8 C4/8 D4/8 D4/8 C4/q | C4/h C4/8 E4/8 | G4/8d G4/16 G4/q A4/8 A4/8 | G4/h C4/8 E4/8 | G4/8d G4/16 G4/q F4/8 E4/8 | D4/h C4/8 E4/8 | G4/8d G4/16 G4/q A4/8 A4/8 | G4/h F4/q | E4/8 C4/8 D4/8 D4/8 C4/q | C4/hd",
+    "lh": "r/q | C3/h F2/q | C3/hd | C3/h F2/q | G2/h C3/q | C3/h F2/q | C3/h F2/q | C3/q G2/q C3/q | C3/hd | C3/h F2/q | C3/hd | C3/h F2/q | G2/h C3/q | C3/h F2/q | C3/h F2/q | C3/q G2/q C3/q | C3/hd | C3/h F2/q | C3/hd | C3/h F2/q | G2/h C3/q | C3/h F2/q | C3/h F2/q | C3/q G2/q C3/q | C3/hd | C3/h F2/q | C3/hd | C3/h F2/q | G2/h C3/q | C3/h F2/q | C3/h F2/q | C3/q G2/q C3/q | C3/hd"
   },
   {
     "id": "irish-washerwoman",
@@ -284,8 +284,8 @@
     "bpm": 120,
     "time": "6/8",
     "key": "G",
-    "rh": "B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 A4/8 A4/8 E4/8 A4/8 A4/8 | C5/8 A4/8 C5/8 E5/8 D5/8 C5/8 | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/q r/8",
-    "lh": "G2/8 D3/8 B3/8 D3/8 G2/8 D3/8 | G2/8 D3/8 B3/8 D3/8 G2/8 D3/8 | A2/8 E3/8 C4/8 E3/8 A2/8 E3/8 | D2/8 A2/8 F#3/8 A2/8 D2/8 A2/8 | G2/8 D3/8 B3/8 D3/8 G2/8 D3/8 | G2/8 D3/8 B3/8 D3/8 G2/8 D3/8 | C2/8 G2/8 E3/8 D2/8 A2/8 F#3/8 | G2/8 D3/8 B3/8 D3/8 G2/8 D3/8"
+    "rh": "B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 A4/8 A4/8 E4/8 A4/8 A4/8 | C5/8 A4/8 C5/8 E5/8 D5/8 C5/8 | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/qd | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 A4/8 A4/8 E4/8 A4/8 A4/8 | C5/8 A4/8 C5/8 E5/8 D5/8 C5/8 | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/qd | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 B4/8 A4/8 G4/8 | A4/8 F#4/8 F#4/8 D4/8 F#4/8 F#4/8 | A4/8 F#4/8 A4/8 A4/8 G4/8 F#4/8 | E4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | C4/8 G4/8 G4/8 B3/8 G4/8 G4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/qd | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 B4/8 A4/8 G4/8 | A4/8 F#4/8 F#4/8 D4/8 F#4/8 F#4/8 | A4/8 F#4/8 A4/8 A4/8 G4/8 F#4/8 | E4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | C4/8 G4/8 G4/8 B3/8 G4/8 G4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/qd | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 A4/8 A4/8 E4/8 A4/8 A4/8 | C5/8 A4/8 C5/8 E5/8 D5/8 C5/8 | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/qd | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 A4/8 A4/8 E4/8 A4/8 A4/8 | C5/8 A4/8 C5/8 E5/8 D5/8 C5/8 | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 D5/8 C5/8 B4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/qd | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 B4/8 A4/8 G4/8 | A4/8 F#4/8 F#4/8 D4/8 F#4/8 F#4/8 | A4/8 F#4/8 A4/8 A4/8 G4/8 F#4/8 | E4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | C4/8 G4/8 G4/8 B3/8 G4/8 G4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/qd | B4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | B4/8 G4/8 B4/8 B4/8 A4/8 G4/8 | A4/8 F#4/8 F#4/8 D4/8 F#4/8 F#4/8 | A4/8 F#4/8 A4/8 A4/8 G4/8 F#4/8 | E4/8 G4/8 G4/8 D4/8 G4/8 G4/8 | C4/8 G4/8 G4/8 B3/8 G4/8 G4/8 | C5/8 B4/8 C5/8 A4/8 D5/8 C5/8 | B4/8 G4/8 G4/8 G4/qd",
+    "lh": "G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | D3/8 F#3/8 A3/8 F#3/8 A3/8 F#3/8 | D3/8 F#3/8 A3/8 F#3/8 A3/8 F#3/8 | C3/8 E3/8 G3/8 E3/8 G3/8 E3/8 | C3/8 E3/8 G3/8 E3/8 G3/8 E3/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | D3/8 F#3/8 A3/8 F#3/8 A3/8 F#3/8 | D3/8 F#3/8 A3/8 F#3/8 A3/8 F#3/8 | C3/8 E3/8 G3/8 E3/8 G3/8 E3/8 | C3/8 E3/8 G3/8 E3/8 G3/8 E3/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | D3/8 F#3/8 A3/8 F#3/8 A3/8 F#3/8 | D3/8 F#3/8 A3/8 F#3/8 A3/8 F#3/8 | C3/8 E3/8 G3/8 E3/8 G3/8 E3/8 | C3/8 E3/8 G3/8 E3/8 G3/8 E3/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8 | D3/8 F#3/8 A3/8 F#3/8 A3/8 F#3/8 | D3/8 F#3/8 A3/8 F#3/8 A3/8 F#3/8 | C3/8 E3/8 G3/8 E3/8 G3/8 E3/8 | C3/8 E3/8 G3/8 E3/8 G3/8 E3/8 | A2/8 C3/8 E3/8 C3/8 E3/8 C3/8 | G2/8 B2/8 D3/8 B2/8 D3/8 B2/8"
   },
   {
     "id": "all-through-the-night",
@@ -296,8 +296,8 @@
     "bpm": 80,
     "time": "4/4",
     "key": "G",
-    "rh": "G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/qd F#4/8 G4/q E4/q | F#4/qd E4/8 D4/h | G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/qd F#4/8 G4/q E4/q | F#4/qd E4/8 D4/h | D5/qd C5/8 B4/q D5/q | C5/qd B4/8 A4/q C5/q | B4/qd A4/8 G4/q B4/q | A4/h D4/h | G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/qd F#4/8 G4/q A4/q | G4/w",
-    "lh": "(G3 B3 D4)/w | (D3 F#3 A3)/w | (C3 E3 G3)/w | (D3 F#3 A3)/w | (G3 B3 D4)/w | (D3 F#3 A3)/w | (C3 E3 G3)/w | (D3 F#3 A3)/w | (G3 B3 D4)/w | (A3 C4 E4)/w | (G3 B3 D4)/w | (D3 F#3 A3)/w | (G3 B3 D4)/w | (D3 F#3 A3)/w | (C3 E3 G3)/h (D3 F#3 A3)/h | (G3 B3 D4)/w"
+    "rh": "G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/h F#4/qd G4/8 | G4/w | G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/h F#4/qd G4/8 | G4/w | C5/q B4/q C5/q D5/q | E5/q D5/q C5/q B4/q | C5/q B4/q A4/q G4/q | B4/qd A4/8 G4/q F#4/q | G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/h F#4/qd G4/8 | G4/w | G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/h F#4/qd G4/8 | G4/w | G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/h F#4/qd G4/8 | G4/w | C5/q B4/q C5/q D5/q | E5/q D5/q C5/q B4/q | C5/q B4/q A4/q G4/q | B4/qd A4/8 G4/q F#4/q | G4/qd F#4/8 E4/q G4/q | A4/qd G4/8 F#4/q D4/q | E4/h F#4/qd G4/8 | G4/w",
+    "lh": "G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | A2/q (A2 C#3 E3)/q D3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q D3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | A2/q (A2 C#3 E3)/q D3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q D3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | A2/q (A2 C#3 E3)/q D3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q D3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | A2/q (A2 C#3 E3)/q D3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q D3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | A2/q (A2 C#3 E3)/q D3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q D3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | A2/q (A2 C#3 E3)/q D3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q D3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q"
   },
   {
     "id": "jasmine-flower",
@@ -308,8 +308,8 @@
     "bpm": 80,
     "time": "4/4",
     "key": "C",
-    "rh": "E4/q E4/8 G4/8 A4/8 C5/8 C5/8 A4/8 | G4/q G4/8 A4/8 G4/h | E4/q E4/8 G4/8 A4/8 C5/8 C5/8 A4/8 | G4/q G4/8 A4/8 G4/h | G4/q G4/q G4/q E4/8 G4/8 | A4/q A4/q G4/h | E4/q D4/8 E4/8 G4/q E4/8 D4/8 | C4/q C4/8 D4/8 C4/h",
-    "lh": "(C3 E3 G3)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (C3 E3 G3)/w | (F3 A3 C4)/w | (C3 E3 G3)/w | (C3 E3 G3)/w"
+    "rh": "E5/q E5/8 G5/8 A5/8 C6/8 A5/8 C6/8 | G5/q G5/8 A5/8 G5/h | E5/q E5/8 G5/8 A5/8 C6/8 A5/8 C6/8 | G5/q G5/8 A5/8 G5/h | G5/q G5/q G5/q E5/8 G5/8 | A5/q A5/q G5/h | E5/q D5/8 E5/8 G5/q E5/8 D5/8 | C5/q C5/8 D5/8 C5/h | E5/8 D5/8 C5/8 E5/8 D5/qd E5/8 | G5/q A5/8 C6/8 G5/h | D5/q E5/8 G5/8 D5/8 E5/8 C5/8 A4/8 | G5/w | A4/q A4/8 C5/8 D5/qd E5/8 | C5/8 D5/8 C5/8 A4/8 G4/h | A4/q A4/8 C5/8 D5/qd E5/8 | C5/8 D5/8 C5/8 A4/8 C5/h | E5/q E5/8 G5/8 A5/8 C6/8 A5/8 C6/8 | G5/q G5/8 A5/8 G5/h | E5/q E5/8 G5/8 A5/8 C6/8 A5/8 C6/8 | G5/q G5/8 A5/8 G5/h | G5/q G5/q G5/q E5/8 G5/8 | A5/q A5/q G5/h | E5/q D5/8 E5/8 G5/q E5/8 D5/8 | C5/q C5/8 D5/8 C5/h | E5/8 D5/8 C5/8 E5/8 D5/qd E5/8 | G5/q A5/8 C6/8 G5/h | D5/q E5/8 G5/8 D5/8 E5/8 C5/8 A4/8 | G5/w | A4/q A4/8 C5/8 D5/qd E5/8 | C5/8 D5/8 C5/8 A4/8 G4/h | A4/q A4/8 C5/8 D5/qd E5/8 | C5/8 D5/8 C5/8 A4/8 C5/h",
+    "lh": "C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | A2/q (A2 C3 E3)/q E3/q (A2 C3 E3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q C3/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | D3/q (D3 F3 A3)/q A3/q (D3 F3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q"
   },
   {
     "id": "arirang",
@@ -320,8 +320,8 @@
     "bpm": 80,
     "time": "3/4",
     "key": "C",
-    "rh": "G4/qd A4/8 G4/q | C5/qd D5/8 C5/8 D5/8 | E5/8 D5/8 C5/8 A4/8 G4/8 A4/8 | C5/qd D5/8 C5/8 A4/8 | G4/qd A4/8 G4/8 E4/8 | D4/8 E4/8 G4/8 A4/8 G4/8 E4/8 | D4/qd E4/8 D4/8 C4/8 | C4/hd",
-    "lh": "(C3 E3 G3)/hd | (C3 E3 G3)/hd | (A3 C4 E4)/hd | (C3 E3 G3)/hd | (C3 E3 G3)/hd | (G3 B3 D4)/hd | (G3 B3 D4)/hd | (C3 E3 G3)/hd"
+    "rh": "G4/qd A4/8 G4/8 A4/8 | C5/qd D5/8 C5/8 D5/8 | E5/q D5/8 E5/16 D5/16 C5/8 A4/8 | G4/qd A4/8 G4/8 A4/8 | C5/qd D5/8 C5/8 D5/8 | E5/8 D5/8 C5/8 A4/8 G4/8 A4/8 | C5/qd D5/8 C5/q | C5/hd | G5/h G5/q | G5/q E5/q D5/q | E5/q D5/8 E5/16 D5/16 C5/8 A4/8 | G4/qd A4/8 G4/8 A4/8 | C5/qd D5/8 C5/8 D5/8 | E5/8 D5/8 C5/8 A4/8 G4/8 A4/8 | C5/qd D5/8 C5/q | C5/hd | G4/qd A4/8 G4/8 A4/8 | C5/qd D5/8 C5/8 D5/8 | E5/q D5/8 E5/16 D5/16 C5/8 A4/8 | G4/qd A4/8 G4/8 A4/8 | C5/qd D5/8 C5/8 D5/8 | E5/8 D5/8 C5/8 A4/8 G4/8 A4/8 | C5/qd D5/8 C5/q | C5/hd | G5/h G5/q | G5/q E5/q D5/q | E5/q D5/8 E5/16 D5/16 C5/8 A4/8 | G4/qd A4/8 G4/8 A4/8 | C5/qd D5/8 C5/8 D5/8 | E5/8 D5/8 C5/8 A4/8 G4/8 A4/8 | C5/qd D5/8 C5/q | C5/hd",
+    "lh": "C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | E3/q (E3 G3 B3)/q (E3 G3 B3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | E3/q (E3 G3 B3)/q (E3 G3 B3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | A2/q (A2 C3 E3)/q (A2 C3 E3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q"
   },
   {
     "id": "resham-firiri",
@@ -331,9 +331,9 @@
     "level": "Medium",
     "bpm": 100,
     "time": "4/4",
-    "key": "C",
-    "rh": "G4/8 G4/8 A4/8 C5/8 C5/q A4/q | G4/8 G4/8 A4/8 C5/8 C5/q A4/q | G4/8 A4/8 G4/8 E4/8 D4/q E4/8 G4/8 | E4/8 D4/8 C4/8 D4/8 E4/h | G4/8 G4/8 A4/8 C5/8 C5/q A4/q | G4/8 G4/8 A4/8 C5/8 C5/q A4/q | G4/8 A4/8 G4/8 E4/8 D4/q E4/8 D4/8 | C4/w",
-    "lh": "(C3 E3 G3)/w | (A3 C4 E4)/w | (C3 E3 G3)/w | (G3 B3 D4)/w | (C3 E3 G3)/w | (A3 C4 E4)/w | (G3 B3 D4)/w | (C3 E3 G3)/w"
+    "key": "G",
+    "rh": "G4/q G4/8 A4/8 B4/q E5/q | D5/hd E5/q | D5/q B4/8 A4/8 G4/q B4/q | A4/w | G4/q G4/8 A4/8 B4/q E5/q | D5/q D5/8 C#5/8 B4/8 A4/8 B4/q | A4/q A4/8 G4/8 E4/q G4/q | G4/w | B4/q B4/8 B4/8 A4/q B4/q | G4/q G4/8 F#4/8 E4/q E4/q | B4/h A4/q G4/8 E4/8 | G4/q G4/q G4/q r/q | B4/q B4/8 B4/8 A4/q B4/q | G4/q G4/8 F#4/8 E4/q E4/q | B4/h A4/q G4/8 E4/8 | G4/q G4/q G4/q r/q | G4/q G4/8 A4/8 B4/q E5/q | D5/hd E5/q | D5/q B4/8 A4/8 G4/q B4/q | A4/w | G4/q G4/8 A4/8 B4/q E5/q | D5/q D5/8 C#5/8 B4/8 A4/8 B4/q | A4/q A4/8 G4/8 E4/q G4/q | G4/w | B4/q B4/8 B4/8 A4/q B4/q | G4/q G4/8 F#4/8 E4/q E4/q | B4/h A4/q G4/8 E4/8 | G4/q G4/q G4/q r/q | B4/q B4/8 B4/8 A4/q B4/q | G4/q G4/8 F#4/8 E4/q E4/q | B4/h A4/q G4/8 E4/8 | G4/q G4/q G4/q r/q | G4/q G4/8 A4/8 B4/q E5/q | D5/hd E5/q | D5/q B4/8 A4/8 G4/q B4/q | A4/w | G4/q G4/8 A4/8 B4/q E5/q | D5/q D5/8 C#5/8 B4/8 A4/8 B4/q | A4/q A4/8 G4/8 E4/q G4/q | G4/w",
+    "lh": "G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q"
   },
   {
     "id": "old-folks-at-home",
@@ -344,8 +344,8 @@
     "bpm": 80,
     "time": "4/4",
     "key": "C",
-    "rh": "E4/hd D4/8 C4/8 | E4/q D4/q C4/q C5/q | A4/q C5/hd | G4/hd E4/q | C4/h D4/h | E4/hd D4/8 C4/8 | E4/q D4/q C4/q C5/q | A4/q C5/hd | G4/h E4/q C4/q | D4/h D4/h | C4/w",
-    "lh": "C3/w | C3/w | F2/w | C3/w | G2/w | C3/w | C3/w | F2/w | C3/w | G2/w | C3/w"
+    "rh": "E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/h E4/q C4/q | D4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/q E4/8d C4/16 D4/q D4/8d D4/16 | C4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/h E4/q C4/q | D4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/q E4/8d C4/16 D4/q D4/8d D4/16 | C4/hd r/q | B4/qd C5/8 D5/q G4/q | G4/qd A4/8 G4/q C5/q | C5/q A4/q F4/q A4/q | G4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/q E4/8d C4/16 D4/q D4/8d D4/16 | C4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/h E4/q C4/q | D4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/q E4/8d C4/16 D4/q D4/8d D4/16 | C4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/h E4/q C4/q | D4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/q E4/8d C4/16 D4/q D4/8d D4/16 | C4/hd r/q | B4/qd C5/8 D5/q G4/q | G4/qd A4/8 G4/q C5/q | C5/q A4/q F4/q A4/q | G4/hd r/q | E4/h D4/8 C4/8 E4/8 D4/8 | C4/q C5/q A4/8 C5/qd | G4/q E4/8d C4/16 D4/q D4/8d D4/16 | C4/hd r/q",
+    "lh": "C3/h C3/h | F2/h F2/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | F2/h F2/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | F2/h F2/h | G2/h G2/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | F2/h F2/h | G2/h G2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | F2/h F2/h | G2/h G2/h | C3/h C3/h | G2/h G2/h | C3/h C3/h | F2/h F2/h | C3/h C3/h | C3/h C3/h | F2/h F2/h | G2/h G2/h | C3/h C3/h"
   },
   {
     "id": "santa-lucia",
@@ -356,7 +356,55 @@
     "bpm": 90,
     "time": "3/4",
     "key": "C",
-    "rh": "G4/qd G4/8 C5/q | C5/qd B4/8 B4/q | A4/qd A4/8 F4/q | G4/hd | F4/qd F4/8 A4/q | A4/qd G4/8 G4/q | G4/qd E4/8 D4/q | C4/hd",
-    "lh": "C3/hd | G2/hd | F2/hd | C3/hd | F2/hd | C3/hd | G2/hd | C3/hd"
+    "rh": "G4/q G4/qd C5/8 | C5/8 B4/8 B4/h | F4/q F4/qd A4/8 | A4/8 G4/8 G4/h | E4/q A4/q G4/q | G4/8 F#4/8 F4/h | F4/q E4/q D4/q | A4/q G4/h | G4/q G4/qd C5/8 | C5/8 B4/8 B4/h | F4/q F4/qd A4/8 | A4/8 G4/8 G4/h | E4/q A4/q G4/q | G4/8 F#4/8 F4/h | F4/q E4/q D4/q | A4/q G4/h | E5/q D5/q C5/q | B4/8 A4/8 D5/h | D5/q C5/q A4/q | F#4/8 G4/8 C5/h | E5/8 C5/8 C5/8 G4/8 G4/8 E4/8 | F4/8 D5/8 D5/h | D5/q A4/qd B4/8 | D5/q C5/h | E5/q D5/q C5/q | B4/8 A4/8 D5/h | D5/q C5/q A4/q | F#4/8 G4/8 C5/h | E5/8 C5/8 C5/8 G4/8 G4/8 E4/8 | F4/8 D5/8 D5/h | D5/q E5/qd D5/8 | D5/q C5/h",
+    "lh": "C3/hd | G2/hd | F2/hd | C3/hd | A2/hd | D3/hd | G2/hd | C3/hd | C3/hd | G2/hd | F2/hd | C3/hd | A2/hd | D3/hd | G2/hd | C3/hd | C3/hd | D3/hd | F2/hd | C3/hd | C3/hd | D3/hd | G2/hd | G2/q C3/h | C3/hd | D3/hd | F2/hd | C3/hd | C3/hd | D3/hd | G2/hd | G2/q C3/h"
+  },
+  {
+    "id": "kalinka",
+    "title": "Kalinka",
+    "composer": "Traditional Russian (Ivan Larionov)",
+    "cat": "Folk",
+    "level": "Medium",
+    "bpm": 130,
+    "time": "2/4",
+    "key": "Dm",
+    "rh": "A4/q | G4/q E4/8 F4/8 | G4/q E4/8 F4/8 | G4/q F4/8 E4/8 | D4/q A4/8 A4/8 | G4/8d F4/16 E4/8 F4/8 | G4/q E4/8 F4/8 | G4/q F4/8 E4/8 | D4/q A4/q | G4/q E4/8 F4/8 | G4/q E4/8 F4/8 | G4/q F4/8 E4/8 | D4/q A4/8 A4/8 | G4/8d F4/16 E4/8 F4/8 | G4/q E4/8 F4/8 | G4/q F4/8 E4/8 | D4/q D5/q | D5/q C5/q | C5/q A4/8 C5/8 | Bb4/8 A4/16 G4/16 F4/q | C4/q A4/8 C5/8 | Bb4/8 A4/16 G4/16 F4/q | C4/q D4/q | D4/8 E4/8 G4/8 F4/8 | E4/8 D4/8 C4/q | C4/q C4/q | C5/q A4/8 C5/8 | G4/8 A4/8 F4/q | C4/q A4/8 C5/8 | G4/8 A4/8 F4/q | C4/q D4/q | D4/8 E4/8 G4/8 F4/8 | E4/8 D4/8 C5/q | Bb4/q A4/q | A4/h",
+    "lh": "r/q | A2/q (A2 C#3 E3)/q | A2/q (A2 C#3 E3)/q | A2/q (A2 C#3 E3)/q | D3/q (D3 F3 A3)/q | A2/q (A2 C#3 E3)/q | A2/q (A2 C#3 E3)/q | A2/q (A2 C#3 E3)/q | D3/q D3/q | A2/q (A2 C#3 E3)/q | A2/q (A2 C#3 E3)/q | A2/q (A2 C#3 E3)/q | D3/q (D3 F3 A3)/q | A2/q (A2 C#3 E3)/q | A2/q (A2 C#3 E3)/q | A2/q (A2 C#3 E3)/q | D3/q (D3 F3 A3)/q | D3/q C3/q | C3/q F2/q | C3/q F2/q | F2/q (F2 A2 C3)/q | C3/q F2/q | F2/q Bb2/q | Bb2/q G2/q | G2/q C3/q | C3/q C3/q | C3/q F2/q | C3/q F2/q | F2/q (F2 A2 C3)/q | C3/q F2/q | F2/q Bb2/q | Bb2/q G2/q | G2/q C3/q | G2/q A2/q | A2/q (A2 C#3 E3)/q"
+  },
+  {
+    "id": "waltzing-matilda",
+    "title": "Waltzing Matilda",
+    "composer": "Traditional Australian",
+    "cat": "Folk",
+    "level": "Medium",
+    "bpm": 110,
+    "time": "4/4",
+    "key": "G",
+    "rh": "G4/8d A4/16 | B4/q B4/q A4/q B4/8d A4/16 | G4/8d A4/16 B4/8d G4/16 E4/8d F#4/16 G4/8 F#4/16 E4/16 | D4/q G4/8d B4/16 D5/q D5/8d E5/16 | D5/q C5/8d B4/16 A4/q G4/8d A4/16 | B4/q B4/q A4/q B4/8d A4/16 | G4/8d A4/16 B4/8d G4/16 E4/8d F#4/16 G4/8 F#4/16 E4/16 | D4/q G4/8d B4/16 D5/q C5/8d B4/16 | A4/q A4/8d A4/16 G4/q r/q | D5/q D5/8d E5/16 D5/q B4/q | G5/q G5/8d G5/16 F#5/q E5/q | D5/q D5/8d D5/16 E5/q D5/8d B4/16 | D5/q C5/8d B4/16 A4/q G4/8d A4/16 | B4/q B4/q A4/q B4/8d A4/16 | G4/8d A4/16 B4/8d G4/16 E4/8d F#4/16 G4/8 F#4/16 E4/16 | D4/q G4/8d B4/16 D5/q C5/8d B4/16 | A4/q G4/8d F#4/16 G4/q G4/8d A4/16 | B4/q B4/q A4/q B4/8d A4/16 | G4/8d A4/16 B4/8d G4/16 E4/8d F#4/16 G4/8 F#4/16 E4/16 | D4/q G4/8d B4/16 D5/q D5/8d E5/16 | D5/q C5/8d B4/16 A4/q G4/8d A4/16 | B4/q B4/q A4/q B4/8d A4/16 | G4/8d A4/16 B4/8d G4/16 E4/8d F#4/16 G4/8 F#4/16 E4/16 | D4/q G4/8d B4/16 D5/q C5/8d B4/16 | A4/q A4/8d A4/16 G4/q r/q | D5/q D5/8d E5/16 D5/q B4/q | G5/q G5/8d G5/16 F#5/q E5/q | D5/q D5/8d D5/16 E5/q D5/8d B4/16 | D5/q C5/8d B4/16 A4/q G4/8d A4/16 | B4/q B4/q A4/q B4/8d A4/16 | G4/8d A4/16 B4/8d G4/16 E4/8d F#4/16 G4/8 F#4/16 E4/16 | D4/q G4/8d B4/16 D5/q C5/8d B4/16 | A4/q G4/8d F#4/16 G4/h",
+    "lh": "r/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q A3/q (D3 F#3 A3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | E3/q (E3 G3 B3)/q B3/q (E3 G3 B3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q"
+  },
+  {
+    "id": "loch-lomond",
+    "title": "The Bonnie Banks o' Loch Lomond",
+    "composer": "Traditional Scottish",
+    "cat": "Folk",
+    "level": "Medium",
+    "bpm": 80,
+    "time": "4/4",
+    "key": "G",
+    "rh": "D4/8 F#4/8 | G4/q G4/8d A4/16 B4/q A4/8 G4/8 | A4/q A4/8d G4/16 E4/q D4/8 F#4/8 | G4/q G4/q G4/q B4/8 D5/8 | E5/h D5/qd D5/8 | E5/q E5/8 D5/8 B4/q B4/8 D5/8 | C5/8 B4/8 A4/8 G4/8 E4/q D4/8 F#4/8 | G4/16 G4/8d B4/16 D5/8d E5/q D5/8 B4/8 | A4/h G4/q D4/q | G4/q G4/8d A4/16 B4/q B4/8d A4/16 | G4/q G4/8d E4/16 D4/q D4/8d F#4/16 | G4/q G4/8 G4/8 G4/q B4/8 D5/8 | E5/h D5/qd D5/8 | E5/q E5/8 D5/8 B4/q B4/8 D5/8 | C5/8 B4/8 A4/8 G4/8 E4/q D4/8 F#4/8 | G4/16 G4/8d B4/16 D5/8d E5/q D5/8 B4/8 | A4/h G4/q D4/8 F#4/8 | G4/q G4/8d A4/16 B4/q A4/8 G4/8 | A4/q A4/8d G4/16 E4/q D4/8 F#4/8 | G4/q G4/q G4/q B4/8 D5/8 | E5/h D5/qd D5/8 | E5/q E5/8 D5/8 B4/q B4/8 D5/8 | C5/8 B4/8 A4/8 G4/8 E4/q D4/8 F#4/8 | G4/16 G4/8d B4/16 D5/8d E5/q D5/8 B4/8 | A4/h G4/q D4/q | G4/q G4/8d A4/16 B4/q B4/8d A4/16 | G4/q G4/8d E4/16 D4/q D4/8d F#4/16 | G4/q G4/8 G4/8 G4/q B4/8 D5/8 | E5/h D5/qd D5/8 | E5/q E5/8 D5/8 B4/q B4/8 D5/8 | C5/8 B4/8 A4/8 G4/8 E4/q D4/8 F#4/8 | G4/16 G4/8d B4/16 D5/8d E5/q D5/8 B4/8 | A4/h G4/h",
+    "lh": "r/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | A2/q (A2 C3 E3)/q C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | D3/q (D3 F#3 A3)/q G2/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q D3/q | G2/q (G2 B2 D3)/q E3/q (E3 G3 B3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | A2/q (A2 C3 E3)/q C3/q D3/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | D3/q (D3 F#3 A3)/q G2/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | D3/q (D3 F#3 A3)/q C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | A2/q (A2 C3 E3)/q C3/q (C3 E3 G3)/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | D3/q (D3 F#3 A3)/q G2/q (G2 B2 D3)/q | G2/q (G2 B2 D3)/q D3/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q D3/q | G2/q (G2 B2 D3)/q E3/q (E3 G3 B3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | C3/q (C3 E3 G3)/q G2/q (G2 B2 D3)/q | A2/q (A2 C3 E3)/q C3/q D3/q | G2/q (G2 B2 D3)/q C3/q (C3 E3 G3)/q | D3/q (D3 F#3 A3)/q G2/q (G2 B2 D3)/q"
+  },
+  {
+    "id": "the-water-is-wide",
+    "title": "The Water Is Wide (O Waly Waly)",
+    "composer": "Traditional English",
+    "cat": "Folk",
+    "level": "Medium",
+    "bpm": 76,
+    "time": "3/4",
+    "key": "F",
+    "rh": "F4/8 | A4/8d Bb4/16 C5/q F5/q | G5/8d A5/16 G5/qd G4/8 | A4/8d Bb4/16 C5/q G5/q | A5/8d G5/16 F5/qd F4/8 | A4/8d Bb4/16 C5/q F5/q | G5/8d A5/16 G5/qd G4/8 | A4/8d Bb4/16 C5/q G5/q | A5/8d G5/16 F5/q r/8 Eb5/8 | D5/8d C5/16 Bb4/qd C5/8 | D5/8 C5/8 Eb5/qd D5/16 C5/16 | D5/8 F5/8 C5/q A5/8 G5/8 | G5/16 F5/16 F5/q r/8 F5/8 D5/8 | D5/16 C5/16 A4/qd F5/8 C5/8 | A4/8 G4/qd Eb5/8 D5/8 | C5/8 F5/qd A4/8 G4/8 | G4/16 F4/16 F4/q r/q F4/8 | A4/8d Bb4/16 C5/q F5/q | G5/8d A5/16 G5/qd G4/8 | A4/8d Bb4/16 C5/q G5/q | A5/8d G5/16 F5/qd F4/8 | A4/8d Bb4/16 C5/q F5/q | G5/8d A5/16 G5/qd G4/8 | A4/8d Bb4/16 C5/q G5/q | A5/8d G5/16 F5/q r/8 Eb5/8 | D5/8d C5/16 Bb4/qd C5/8 | D5/8 C5/8 Eb5/qd D5/16 C5/16 | D5/8 F5/8 C5/q A5/8 G5/8 | G5/16 F5/16 F5/q r/8 F5/8 D5/8 | D5/16 C5/16 A4/qd F5/8 C5/8 | A4/8 G4/qd Eb5/8 D5/8 | C5/8 F5/qd A4/8 G4/8 | G4/16 F4/16 F4/q r/8 r/q",
+    "lh": "r/8 | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q (Bb2 D3 F3)/q | Bb2/q (Bb2 D3 F3)/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q (G2 Bb2 D3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | C3/q (C3 E3 G3)/q (C3 E3 G3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q (Bb2 D3 F3)/q | Bb2/q (Bb2 D3 F3)/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | Bb2/q (Bb2 D3 F3)/q (Bb2 D3 F3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | G2/q (G2 Bb2 D3)/q (G2 Bb2 D3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q | F2/q (F2 A2 C3)/q (F2 A2 C3)/q"
   }
 ]

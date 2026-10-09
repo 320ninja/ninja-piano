@@ -3,6 +3,7 @@ import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor,
 import { renderScore } from './score.js';
 import { playNote, playClick, unlockAudio, now } from './audio.js';
 import { createKeyboard } from './keyboard.js';
+import { parseMusicXML } from './musicxml.js';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -45,6 +46,8 @@ const P = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
   moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
   restart: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  scan: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
 };
 const icon = (n, extra = '') => `<svg class="i" viewBox="0 0 24 24" ${extra}>${P[n]}</svg>`;
 const LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3" fill="currentColor"/><circle cx="18" cy="16" r="3" fill="currentColor"/></svg>';
@@ -293,6 +296,14 @@ views.practiceHub = () => {
     ${inProgress.length ? `${heading('💪', 'Keep going')}<div class="list grid2">${inProgress.map((s) => songRow(s)).join('')}</div>` : ''}
     ${heading('🔥', 'Warm-up exercises')}<div class="list grid2">${ex.map((s) => songRow(s)).join('') || '<div class="empty">Loading…</div>'}</div>
     ${heading('🌱', 'Easy songs to learn next')}<div class="list grid2">${easy.map((s) => songRow(s)).join('')}</div>
+    ${heading('📷', 'Scan sheet music')}
+    <a class="song" href="#/scan">
+      <div class="thumb" style="background:linear-gradient(135deg,#e0f2fe,#0284c7)">${icon('scan')}</div>
+      <div class="meta"><div class="t">Import from photo or PDF</div>
+        <div class="s">Scan printed sheet music and play it instantly</div>
+        <div class="tags"><span class="tag cat">OMR</span><span class="tag cat">Free</span></div>
+      </div><span class="play">${icon('arrowR')}</span>
+    </a>
   </section>`;
 };
 
@@ -804,6 +815,105 @@ views.quiz = (params, kind) => {
   cleanup = () => kb.destroy();
 };
 
+/* ---------- scan view ---------- */
+views.scan = () => {
+  setNav('practice-run');
+  const serverUrl = load('np.omrServer', '');
+  let scannedSong = null;
+
+  app.innerHTML = `<section class="view">
+    <div class="top"><a class="iconbtn" href="javascript:history.back()">${icon('back')}</a><h1>Scan Sheet Music</h1></div>
+    <div class="card group" style="margin-top:12px">
+      <h4>${icon('scan')} How it works</h4>
+      <div class="muted" style="font-size:13px;line-height:1.6">
+        Take a photo or upload a PDF of printed sheet music. It gets sent to your OMR server, recognised, and loaded as a playable song.
+        <br><br>
+        <b>Need a server?</b> Deploy the <code>server/</code> folder to <a href="https://render.com" target="_blank" style="color:var(--p)">Render.com</a> for free, then paste the URL below.
+      </div>
+    </div>
+    <div class="card group">
+      <h4>Server URL</h4>
+      <input id="srv" type="url" placeholder="https://your-app.onrender.com"
+        value="${esc(serverUrl)}"
+        style="width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--solid);border-radius:12px;height:42px;padding:0 14px;font-size:14px;margin-top:6px">
+      <div class="muted" style="font-size:12px;margin-top:6px">Saved automatically. Leave blank if running locally on port 8000.</div>
+    </div>
+    <div class="card group" id="dropzone" style="cursor:pointer;border:2px dashed var(--line);text-align:center;padding:32px 16px;transition:border-color .2s">
+      ${icon('upload')}
+      <div style="font-size:16px;font-weight:700;margin:10px 0 4px">Drop image or PDF here</div>
+      <div class="muted" style="font-size:13px">or tap to choose file</div>
+      <div class="muted" style="font-size:12px;margin-top:6px">JPG · PNG · PDF</div>
+      <input id="file" type="file" accept="image/*,.pdf" style="display:none">
+    </div>
+    <div id="status" style="display:none" class="card group">
+      <div id="stmsg" class="muted" style="text-align:center;padding:8px 0;font-size:14px"></div>
+    </div>
+    <div id="result" style="display:none">
+      <div class="card score-wrap" style="margin-top:12px"><div class="score" id="preview"></div></div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <a class="btn block ok" id="loadBtn" href="#">${icon('play')} Load &amp; Play</a>
+      </div>
+    </div>
+  </section>`;
+
+  const $ = (s) => app.querySelector(s);
+  const dz = $('#dropzone');
+  const fileInput = $('#file');
+  const status = $('#status');
+  const stmsg = $('#stmsg');
+  const result = $('#result');
+
+  $('#srv').onchange = (e) => { save('np.omrServer', e.target.value.trim()); };
+
+  const setStatus = (msg, show = true) => {
+    status.style.display = show ? '' : 'none';
+    stmsg.textContent = msg;
+  };
+
+  const processFile = async (file) => {
+    const url = ($('#srv').value.trim() || 'http://localhost:8000').replace(/\/$/, '');
+    setStatus('Uploading…');
+    result.style.display = 'none';
+    dz.style.borderColor = 'var(--p)';
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(`${url}/scan`, { method: 'POST', body: fd });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || 'Server error');
+      }
+      const { musicxml } = await res.json();
+      setStatus('Recognised! Parsing notes…');
+      scannedSong = parseMusicXML(musicxml);
+      renderScore($('#preview'), parseSong(scannedSong), scoreOpts());
+      result.style.display = '';
+      setStatus(`✓ "${scannedSong.title}" · ${scannedSong.rh.split('|').length} bars · ${scannedSong.key} ${scannedSong.time}`);
+      dz.style.borderColor = 'var(--ok)';
+    } catch (e) {
+      setStatus('Error: ' + e.message);
+      dz.style.borderColor = 'var(--bad)';
+    }
+  };
+
+  dz.onclick = () => fileInput.click();
+  fileInput.onchange = (e) => { if (e.target.files[0]) processFile(e.target.files[0]); };
+  dz.ondragover = (e) => { e.preventDefault(); dz.style.borderColor = 'var(--p)'; };
+  dz.ondragleave = () => { dz.style.borderColor = 'var(--line)'; };
+  dz.ondrop = (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) processFile(f); };
+
+  $('#loadBtn').onclick = (e) => {
+    e.preventDefault();
+    if (!scannedSong) return;
+    // Inject into SONGS array temporarily and navigate
+    const existing = SONGS.findIndex((s) => s.id === scannedSong.id);
+    if (existing >= 0) SONGS.splice(existing, 1);
+    SONGS.unshift(scannedSong);
+    location.hash = `#/song/${scannedSong.id}`;
+  };
+};
+
 const bumpStreak = () => {
   const today = new Date().toDateString();
   const s = load('np.streak', { days: 0, last: '' });
@@ -931,7 +1041,7 @@ const route = async () => {
   if (!SONGS.length) { app.innerHTML = '<div class="loading">Loading songs…</div>'; await songsReady; }
   scrollTo(0, 0);
   if (!name) return settings.seenWelcome ? views.home() : views.welcome();
-  const map = { quiz: views.quiz, home: views.home, library: views.library, practice: id ? views.practice : views.practiceHub, song: views.song, done: views.done, settings: views.settings, welcome: views.welcome };
+  const map = { quiz: views.quiz, home: views.home, library: views.library, practice: id ? views.practice : views.practiceHub, song: views.song, done: views.done, settings: views.settings, welcome: views.welcome, scan: views.scan };
   (map[name] || views.home)(params, id && decodeURIComponent(id));
 };
 addEventListener('hashchange', route);

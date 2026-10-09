@@ -852,13 +852,17 @@ views.scan = () => {
       </div>
     </div>
     <div id="scanPane" style="display:none">
-      <div class="card group" id="dropzone" style="cursor:pointer;border:2px dashed var(--line);text-align:center;padding:32px 16px;transition:border-color .2s">
-        ${icon('upload')}
-        <div style="font-size:16px;font-weight:700;margin:10px 0 4px">Drop image or PDF here</div>
-        <div class="muted" style="font-size:13px">or tap to choose file</div>
-        <div class="muted" style="font-size:12px;margin-top:6px">JPG · PNG · PDF · requires OMR server</div>
-        <input id="file" type="file" accept="image/*,.pdf" style="display:none">
+      <div style="display:flex;gap:10px;margin-bottom:10px">
+        <button id="btnCamera" class="btn block" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px">${icon('scan')} Camera</button>
+        <button id="btnFile" class="btn block" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px">${icon('upload')} File / PDF</button>
       </div>
+      <div class="card group" id="dropzone" style="cursor:pointer;border:2px dashed var(--line);text-align:center;padding:24px 16px;transition:border-color .2s">
+        ${icon('upload')}
+        <div style="font-size:15px;font-weight:700;margin:8px 0 3px">Drop image or PDF here</div>
+        <div class="muted" style="font-size:12px">JPG · PNG · PDF · requires OMR server URL above</div>
+      </div>
+      <input id="fileCamera" type="file" accept="image/*" capture="environment" style="display:none">
+      <input id="file" type="file" accept="image/*,.pdf" style="display:none">
     </div>
     <div id="status" style="display:none" class="card group">
       <div id="stmsg" class="muted" style="text-align:center;padding:8px 0;font-size:14px"></div>
@@ -913,8 +917,16 @@ views.scan = () => {
     stmsg.textContent = msg;
   };
 
+  const dz = $('#dropzone');
+  const fileInput = $('#file');
+  const cameraInput = $('#fileCamera');
+
   const processFile = async (file) => {
-    const url = ($('#srv').value.trim() || 'http://localhost:8000').replace(/\/$/, '');
+    const url = ($('#srv').value.trim()).replace(/\/$/, '');
+    if (!url) {
+      setStatus('Enter your OMR server URL above first. Deploy the server/ folder to Render.com for free.');
+      return;
+    }
     setStatus('Uploading…');
     result.style.display = 'none';
     dz.style.borderColor = 'var(--p)';
@@ -940,6 +952,9 @@ views.scan = () => {
     }
   };
 
+  $('#btnCamera').onclick = () => cameraInput.click();
+  $('#btnFile').onclick = () => fileInput.click();
+  cameraInput.onchange = (e) => { if (e.target.files[0]) processFile(e.target.files[0]); };
   dz.onclick = () => fileInput.click();
   fileInput.onchange = (e) => { if (e.target.files[0]) processFile(e.target.files[0]); };
   dz.ondragover = (e) => { e.preventDefault(); dz.style.borderColor = 'var(--p)'; };

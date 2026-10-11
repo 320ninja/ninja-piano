@@ -894,17 +894,21 @@ views.practice = (params, id) => {
       const kbHost = $('#kb');
       if (!kbHost) return;
       kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+      // Build a map: midi → lowest order (nearest upcoming note on that key)
+      const midiOrder = new Map();
       falling.getUpcomingSteps(5).forEach(({ order, midis }) => {
-        const row = order % 2 === 1 ? '16px' : '32px'; // alternate rows
         midis.forEach(midi => {
-          const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
-          if (!el) return;
-          const lbl = document.createElement('span');
-          lbl.className = 'degree-label';
-          lbl.style.bottom = row;
-          lbl.textContent = order;
-          el.appendChild(lbl);
+          if (!midiOrder.has(midi)) midiOrder.set(midi, order);
         });
+      });
+      midiOrder.forEach((order, midi) => {
+        const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
+        if (!el) return;
+        const lbl = document.createElement('span');
+        lbl.className = 'degree-label';
+        lbl.style.bottom = '16px';
+        lbl.textContent = order;
+        el.appendChild(lbl);
       });
       requestAnimationFrame(updateDegrees);
     };

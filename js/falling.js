@@ -154,12 +154,8 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
             ctx.fillStyle = st.result === 'miss' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.95)';
             ctx.fillText(name.replace(/\d+$/, ''), x + w / 2, y + Math.min(fontSize + 2, h * 0.65));
           }
-          // order number (1=next, 2=after, …) synced to wall time like autoPlay
-          let displayIdx = currentIdx;
-          if (startTime !== null) {
-            while (displayIdx < steps.length && now >= startTime / 1000 + steps[displayIdx].start * secPerBeat()) displayIdx++;
-          }
-          const orderNum = i - displayIdx + 1;
+          // order number: 1 = the note currently at the hit line to press
+          const orderNum = i - currentIdx + 1;
           if (orderNum >= 1 && orderNum <= 5 && st.result == null) {
             const numSize = Math.max(9, Math.min(14, ww() * 0.6));
             ctx.font = `900 ${numSize}px system-ui`;

@@ -562,7 +562,7 @@ views.song = (params, id) => {
   const tl = buildTimeline(parsed);
   const secs = durationSeconds(parsed);
   const st = { playing: false, beat: 0, speed: settings.tempo / 100, loop: false, metro: settings.metronome, hands: ['rh', 'lh'], tab: 'sheet' };
-  const speeds = [0.5, 0.75, 1, 1.25];
+  const speeds = [0.25, 0.5, 0.75, 1, 1.25];
   if (!speeds.includes(st.speed)) speeds.push(st.speed), speeds.sort();
 
   app.innerHTML = `<section class="view">
@@ -594,6 +594,16 @@ views.song = (params, id) => {
       <div class="card kb-info">
         <div class="mini-score-wrap"><div id="miniScore" class="mini-score"></div></div>
         <div class="cn-block"><div class="cn">Current note<b id="cnote">—</b></div><div class="next" id="nnote"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 8px 4px;background:var(--bg)">
+        <button id="kbPlay" style="background:var(--p);border:none;border-radius:10px;padding:6px 14px;font-size:15px;cursor:pointer;color:#fff;display:flex;align-items:center;gap:4px;flex-shrink:0">${icon('play')}</button>
+        <div style="display:flex;gap:4px;flex:1;justify-content:center;flex-wrap:wrap">
+          <button class="kb-spd-btn" data-spd="0.25" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">0.25x</button>
+          <button class="kb-spd-btn" data-spd="0.5" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">0.5x</button>
+          <button class="kb-spd-btn" data-spd="0.75" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">0.75x</button>
+          <button class="kb-spd-btn" data-spd="1" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">1x</button>
+          <button class="kb-spd-btn" data-spd="1.25" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">1.25x</button>
+        </div>
       </div>
       <div class="kb" id="kb"></div>
     </div>
@@ -668,6 +678,7 @@ views.song = (params, id) => {
     lastBeatClick = Math.ceil(st.beat) - 1;
     st.playing = true;
     $('#play').innerHTML = icon('pause');
+    const kbPlayBtn = $('#kbPlay'); if (kbPlayBtn) kbPlayBtn.innerHTML = icon('pause');
     timer = setInterval(schedule, 25);
     schedule();
     raf = requestAnimationFrame(frame);
@@ -677,6 +688,15 @@ views.song = (params, id) => {
     clearInterval(timer);
     cancelAnimationFrame(raf);
     $('#play').innerHTML = icon('play');
+    const kbPlayBtn = $('#kbPlay'); if (kbPlayBtn) kbPlayBtn.innerHTML = icon('play');
+  };
+  const syncKbSpdBtns = () => {
+    app.querySelectorAll('.kb-spd-btn').forEach(b => {
+      const active = parseFloat(b.dataset.spd) === st.speed;
+      b.style.background = active ? 'var(--p)' : 'var(--card)';
+      b.style.color = active ? '#fff' : 'var(--ink)';
+      b.style.borderColor = active ? 'var(--p)' : 'var(--border)';
+    });
   };
   const seek = (beat) => {
     const was = st.playing;
@@ -695,8 +715,19 @@ views.song = (params, id) => {
   $('#speed').onclick = (e) => {
     st.speed = speeds[(speeds.indexOf(st.speed) + 1) % speeds.length];
     e.currentTarget.textContent = st.speed + 'x';
+    syncKbSpdBtns();
     if (st.playing) { stop(); start(); }
   };
+  $('#kbPlay').onclick = () => (st.playing ? stop() : start());
+  app.querySelectorAll('.kb-spd-btn').forEach(b => {
+    b.onclick = () => {
+      st.speed = parseFloat(b.dataset.spd);
+      $('#speed').textContent = st.speed + 'x';
+      syncKbSpdBtns();
+      if (st.playing) { stop(); start(); }
+    };
+  });
+  syncKbSpdBtns();
   $('#fav').onclick = (e) => {
     favs.has(id) ? favs.delete(id) : favs.add(id);
     save('np.favs', [...favs]);

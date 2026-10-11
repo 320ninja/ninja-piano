@@ -683,15 +683,23 @@ views.song = (params, id) => {
         const kbHost = app.querySelector('#kb');
         if (kbHost) {
           kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
-          const midiOrder = new Map();
-          upcoming.forEach((ev, i) => { ev.midis.forEach(m => { if (!midiOrder.has(m)) midiOrder.set(m, i === 0 ? 'NOW' : i); }); });
+          const midiOrder = new Map(); // midi → nearest order label
+          const midiCount = new Map(); // midi → how many times in upcoming 5
+          upcoming.forEach((ev, i) => {
+            ev.midis.forEach(m => {
+              if (!midiOrder.has(m)) midiOrder.set(m, i === 0 ? 'NOW' : i);
+              midiCount.set(m, (midiCount.get(m) || 0) + 1);
+            });
+          });
           midiOrder.forEach((order, midi) => {
             const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
             if (!el) return;
             const lbl = document.createElement('span');
             lbl.className = 'degree-label';
             lbl.style.bottom = '16px';
-            lbl.textContent = order;
+            const count = midiCount.get(midi) || 1;
+            const dots = count > 1 ? `<span style="font-size:8px;letter-spacing:1px;display:block;line-height:1;margin-top:1px">${'●'.repeat(count)}</span>` : '';
+            lbl.innerHTML = `${order}${dots}`;
             el.appendChild(lbl);
           });
         }
@@ -1053,9 +1061,13 @@ views.practice = (params, id) => {
     kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
     if (hidden) return;
     const midiOrder = new Map();
+    const midiCount = new Map();
     for (let i = st.idx; i < Math.min(steps.length, st.idx + 5); i++) {
       const order = i - st.idx + 1;
-      steps[i].midis.forEach(midi => { if (!midiOrder.has(midi)) midiOrder.set(midi, order); });
+      steps[i].midis.forEach(midi => {
+        if (!midiOrder.has(midi)) midiOrder.set(midi, order);
+        midiCount.set(midi, (midiCount.get(midi) || 0) + 1);
+      });
     }
     midiOrder.forEach((order, midi) => {
       const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
@@ -1063,7 +1075,9 @@ views.practice = (params, id) => {
       const lbl = document.createElement('span');
       lbl.className = 'degree-label';
       lbl.style.bottom = '16px';
-      lbl.textContent = order;
+      const count = midiCount.get(midi) || 1;
+      const dots = count > 1 ? `<span style="font-size:8px;letter-spacing:1px;display:block;line-height:1;margin-top:1px">${'●'.repeat(count)}</span>` : '';
+      lbl.innerHTML = `${order}${dots}`;
       el.appendChild(lbl);
     });
   };

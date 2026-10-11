@@ -167,17 +167,44 @@ const songsReady = Promise.allSettled(SONG_FILES.map((f) => fetch(`songs/${f}.js
   });
 
 /* ---------- theme preview ---------- */
-const themePreview = (primary, accent, bg) => {
-  // 8 white keys, black keys at positions 1,2,4,5,6 (C D E F G A B C layout)
-  const WK = 8, ww = 14, wh = 44, bw = 9, bh = 27;
-  const totalW = WK * ww;
-  // highlight keys: C(0), E(2), G(4) in primary; D(1) in accent
+const themePreview = (primary, accent) => {
+  // Realistic piano: 8 white keys (C..C), black keys between C#,D#,F#,G#,A#
+  const WK = 8, ww = 16, wh = 56, bw = 10, bh = 34, pad = 3;
+  const totalW = WK * ww + pad * 2;
+  const totalH = wh + pad * 2 + 6; // +6 for piano case top
+  // White key highlight: C(0),E(2),G(4) = primary; others = ivory
   const wHit = new Set([0, 2, 4]);
-  const bHit = new Set([0]); // C# highlight
-  const BK_X = [ww-bw/2, 2*ww-bw/2, 4*ww-bw/2, 5*ww-bw/2, 6*ww-bw/2];
-  const wkeys = Array.from({length:WK},(_,i)=>`<rect x="${i*ww+1}" y="1" width="${ww-2}" height="${wh-2}" rx="2" fill="${wHit.has(i)?primary:'#f5f5f5'}" stroke="#ccc" stroke-width="0.5"/>`).join('');
-  const bkeys = BK_X.map((x,i)=>`<rect x="${x}" y="1" width="${bw}" height="${bh}" rx="1" fill="${bHit.has(i)?accent:'#222'}"/>`).join('');
-  return `<svg width="100%" viewBox="0 0 ${totalW+2} ${wh}" style="display:block;border-radius:6px;overflow:hidden;background:#f5f5f5"><rect width="${totalW+2}" height="${wh}" fill="#f5f5f5"/>${wkeys}${bkeys}</svg>`;
+  // Black key positions (x from left edge of keys area)
+  const BK_X = [ww - bw/2, 2*ww - bw/2, 4*ww - bw/2, 5*ww - bw/2, 6*ww - bw/2];
+  const bHit = new Set([0, 2]); // C#, F# in accent color
+  const ky = pad + 6; // keys start below case top
+  // White keys with subtle gradient for depth
+  const wkeys = Array.from({length:WK}, (_,i) => {
+    const x = pad + i * ww;
+    const fill = wHit.has(i) ? primary : '#f0ede8';
+    const shine = wHit.has(i) ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.6)';
+    return `<rect x="${x+1}" y="${ky}" width="${ww-2}" height="${wh}" rx="0 0 3 3" fill="${fill}" stroke="#b8b0a8" stroke-width="0.5"/>` +
+           `<rect x="${x+1}" y="${ky}" width="${ww-2}" height="6" fill="${shine}"/>`;
+  }).join('');
+  // Black keys with glossy look
+  const bkeys = BK_X.map((bx, i) => {
+    const x = pad + bx;
+    const fill = bHit.has(i) ? accent : '#1a1a1a';
+    const gloss = bHit.has(i) ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.12)';
+    return `<rect x="${x}" y="${ky}" width="${bw}" height="${bh}" rx="0 0 2 2" fill="${fill}"/>` +
+           `<rect x="${x+1}" y="${ky}" width="${bw-2}" height="8" rx="1" fill="${gloss}"/>`;
+  }).join('');
+  // Key dividers between white keys
+  const dividers = Array.from({length:WK-1}, (_,i) =>
+    `<line x1="${pad + (i+1)*ww}" y1="${ky}" x2="${pad + (i+1)*ww}" y2="${ky+wh}" stroke="#b8b0a8" stroke-width="0.5"/>`
+  ).join('');
+  return `<svg width="100%" viewBox="0 0 ${totalW} ${totalH}" style="display:block;border-radius:8px;overflow:hidden">` +
+    `<defs><linearGradient id="case" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#111"/></linearGradient></defs>` +
+    `<rect width="${totalW}" height="${totalH}" rx="8" fill="url(#case)"/>` +
+    `<rect x="${pad}" y="${ky}" width="${WK*ww}" height="${wh}" fill="#f0ede8"/>` +
+    wkeys + dividers + bkeys +
+    `<rect x="${pad}" y="${ky}" width="${WK*ww}" height="${wh}" rx="0 0 4 4" fill="none" stroke="#888" stroke-width="0.5"/>` +
+  `</svg>`;
 };
 const themeCard = (k, t, active) =>
   `<button class="th ${active?'on':''}" data-t="${k}">${themePreview(t[1],t[2],t[5])}<span>${t[0]}</span></button>`;

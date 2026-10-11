@@ -663,12 +663,15 @@ views.song = (params, id) => {
       $('#nnote').innerHTML = nxt ? `Next: ${eventLabel(nxt.names)} ›` : '';
       kb.setTargets(active.flatMap((e) => e.midis));
       renderMiniScore($('#miniScore'), active.filter(e=>e.hand==='rh').flatMap(e=>e.midis), active.filter(e=>e.hand==='lh').flatMap(e=>e.midis), parsed.key);
-      // Upcoming notes strip: current + next 4 right-hand events
+    }
+    // Upcoming strip + keyboard degree labels — always updated every frame
+    {
+      const NOTE_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f59e0b','#10b981','#6366f1','#f43f5e'];
+      const anchor = lead ? lead.start : b;
+      const allFwd = tl.events.filter(e => st.hands.includes(e.hand) && e.hand === 'rh' && e.start >= anchor);
+      const upcoming = allFwd.slice(0, 5);
       const strip = $('#upcomingStrip');
       if (strip) {
-        const NOTE_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f59e0b','#10b981','#6366f1','#f43f5e'];
-        const allFwd = tl.events.filter(e => st.hands.includes(e.hand) && e.hand === 'rh' && e.start >= lead.start);
-        const upcoming = allFwd.slice(0, 5); // current + 4 ahead
         strip.innerHTML = upcoming.map((ev, i) => {
           const isCurrent = i === 0;
           const label = eventLabel(ev.names);
@@ -679,32 +682,30 @@ views.song = (params, id) => {
             <div style="padding:4px 10px;border-radius:8px;background:${isCurrent?col:col+'22'};color:${isCurrent?'#fff':col};font-size:13px;font-weight:800;border:2px solid ${isCurrent?col:col+'66'};white-space:nowrap">${label}</div>
           </div>`;
         }).join('<span style="color:#ccc;font-size:16px;flex-shrink:0">›</span>');
-        // Degree numbers on keyboard keys
-        const kbHost = app.querySelector('#kb');
-        if (kbHost) {
-          kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
-          const midiOrder = new Map(); // midi → nearest order label
-          const midiCount = new Map(); // midi → how many times in upcoming 5
-          upcoming.forEach((ev, i) => {
-            ev.midis.forEach(m => {
-              if (!midiOrder.has(m)) midiOrder.set(m, i + 1);
-              midiCount.set(m, (midiCount.get(m) || 0) + 1);
-            });
+      }
+      const kbHost = app.querySelector('#kb');
+      if (kbHost) {
+        kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+        const midiOrder = new Map();
+        const midiCount = new Map();
+        upcoming.forEach((ev, i) => {
+          ev.midis.forEach(m => {
+            if (!midiOrder.has(m)) midiOrder.set(m, i + 1);
+            midiCount.set(m, (midiCount.get(m) || 0) + 1);
           });
-          midiOrder.forEach((order, midi) => {
-            const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
-            if (!el) return;
-            const lbl = document.createElement('span');
-            lbl.className = 'degree-label';
-            lbl.style.bottom = '16px';
-            const isCurrent = order === 1;
-            lbl.style.color = '#ef4444';
-            lbl.style.fontSize = isCurrent ? '16px' : '12px';
-            const count = midiCount.get(midi) || 1;
-            lbl.innerHTML = (isCurrent && count > 1) ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
-            el.appendChild(lbl);
-          });
-        }
+        });
+        midiOrder.forEach((order, midi) => {
+          const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
+          if (!el) return;
+          const lbl = document.createElement('span');
+          lbl.className = 'degree-label';
+          lbl.style.bottom = '16px';
+          lbl.style.color = '#ef4444';
+          lbl.style.fontSize = order === 1 ? '16px' : '12px';
+          const count = midiCount.get(midi) || 1;
+          lbl.innerHTML = (order === 1 && count > 1) ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
+          el.appendChild(lbl);
+        });
       }
     }
     updateProg();

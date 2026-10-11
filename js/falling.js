@@ -147,14 +147,25 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
             ctx.beginPath(); ctx.roundRect(x + 1, y + 1, w - 2, Math.min(6, h - 2), [rx, rx, 0, 0]); ctx.fill();
           }
 
+          ctx.save();
+          ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
           const name = e.names?.[mi] || e.names?.[0];
           if (name) {
-            ctx.save();
-            ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
             ctx.fillStyle = st.result === 'miss' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.95)';
-            ctx.fillText(name.replace(/\d+$/, ''), x + w / 2, y + Math.min(fontSize + 2, h / 2));
-            ctx.restore();
+            ctx.fillText(name.replace(/\d+$/, ''), x + w / 2, y + Math.min(fontSize + 2, h * 0.65));
           }
+          // order number (1=next, 2=after, …) on upcoming steps only
+          const orderNum = i - currentIdx + 1;
+          if (orderNum >= 1 && orderNum <= 5 && st.result == null) {
+            const numSize = Math.max(9, Math.min(14, ww() * 0.6));
+            ctx.font = `900 ${numSize}px system-ui`;
+            ctx.fillStyle = '#22c55e';
+            ctx.textBaseline = 'top';
+            ctx.fillText(orderNum, x + w / 2, y + 2);
+            ctx.font = `bold ${fontSize}px system-ui`;
+            ctx.textBaseline = 'top';
+          }
+          ctx.restore();
           ctx.globalAlpha = 1;
         });
       });

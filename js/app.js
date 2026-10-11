@@ -1868,6 +1868,7 @@ views.progressionPlay = (params, progId) => {
     const nameEl = app.querySelector('#curChordName');
     const romEl  = app.querySelector('#curRoman');
     const pillsEl= app.querySelector('#progPills');
+    const kbPillsEl = app.querySelector('#kbProgPills');
     const infoEl = app.querySelector('#chordInfo');
     if (nameEl) nameEl.textContent = label;
     if (romEl)  romEl.textContent = chord.r || '';
@@ -1879,8 +1880,9 @@ views.progressionPlay = (params, progId) => {
     if (infoEl) infoEl.textContent = midis.map(m => midiName(m).replace(/\d+/,'')).join(' – ');
     const notEl = app.querySelector('#chordNotation');
     if (notEl) notEl.innerHTML = chordNotationSVG(midis);
-    if (pillsEl) {
-      pillsEl.querySelectorAll('.pp').forEach((el,i) => {
+    [pillsEl, kbPillsEl].forEach(container => {
+      if (!container) return;
+      container.querySelectorAll('.pp').forEach((el,i) => {
         const col = pillColor(prog.chords[i].r);
         const active = i===curIdx;
         el.style.background = active ? col+'22' : '';
@@ -1889,7 +1891,7 @@ views.progressionPlay = (params, progId) => {
         el.style.boxShadow = active ? `0 0 0 3px ${col}44` : '';
         el.style.fontWeight = '800';
       });
-    }
+    });
     if (kb) {
       kb.setTargets([]);
       kb.setHint([]);
@@ -1993,6 +1995,7 @@ views.progressionPlay = (params, progId) => {
           <button id="kbNext" style="background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;color:var(--ink)" title="Next">▶▶</button>
         </div>
       </div>
+      <div class="chips" id="kbProgPills" style="justify-content:center;flex-wrap:wrap;padding:4px 8px 2px;gap:5px">${buildChordList()}</div>
       <div class="kb" id="kb"></div>
     </div>
   </section>`;
@@ -2131,10 +2134,12 @@ views.progressionPlay = (params, progId) => {
   };
 
   // Pill selector
-  app.querySelector('#progPills').onclick = (e) => {
+  const pillClickHandler = (e) => {
     const i = e.target.closest('[data-i]')?.dataset.i;
     if (i!=null){curIdx=Number(i);renderWithImprov();}
   };
+  app.querySelector('#progPills').onclick = pillClickHandler;
+  app.querySelector('#kbProgPills').onclick = pillClickHandler;
 
   // Auto advance also re-renders improv panel
   const origAdvance = advance;

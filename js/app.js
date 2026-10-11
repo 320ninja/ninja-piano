@@ -595,7 +595,8 @@ views.song = (params, id) => {
         <div class="mini-score-wrap"><div id="miniScore" class="mini-score"></div></div>
         <div class="cn-block"><div class="cn">Current note<b id="cnote">—</b></div><div class="next" id="nnote"></div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 8px 4px;background:var(--bg)">
+      <div id="upcomingStrip" style="display:flex;align-items:center;gap:6px;padding:6px 10px 4px;background:var(--bg);overflow-x:auto;min-height:44px"></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:4px 8px 4px;background:var(--bg)">
         <button id="kbPlay" style="background:var(--p);border:none;border-radius:10px;padding:6px 14px;font-size:15px;cursor:pointer;color:#fff;display:flex;align-items:center;gap:4px;flex-shrink:0">${icon('play')}</button>
         <div style="display:flex;gap:4px;flex:1;justify-content:center;flex-wrap:wrap">
           <button class="kb-spd-btn" data-spd="0.25" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">0.25x</button>
@@ -660,6 +661,23 @@ views.song = (params, id) => {
       $('#nnote').innerHTML = nxt ? `Next: ${eventLabel(nxt.names)} ›` : '';
       kb.setTargets(active.flatMap((e) => e.midis));
       renderMiniScore($('#miniScore'), active.filter(e=>e.hand==='rh').flatMap(e=>e.midis), active.filter(e=>e.hand==='lh').flatMap(e=>e.midis), parsed.key);
+      // Upcoming notes strip: current + next 4 right-hand events
+      const strip = $('#upcomingStrip');
+      if (strip) {
+        const NOTE_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f59e0b','#10b981','#6366f1','#f43f5e'];
+        const allFwd = tl.events.filter(e => st.hands.includes(e.hand) && e.hand === 'rh' && e.start >= lead.start);
+        const upcoming = allFwd.slice(0, 5); // current + 4 ahead
+        strip.innerHTML = upcoming.map((ev, i) => {
+          const isCurrent = i === 0;
+          const label = eventLabel(ev.names);
+          const pc = ev.midis[0] % 12;
+          const col = NOTE_COLORS[pc] || '#888';
+          return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0">
+            <span style="font-size:10px;font-weight:700;color:${isCurrent?col:'#aaa'}">${isCurrent?'NOW':i}</span>
+            <div style="padding:4px 10px;border-radius:8px;background:${isCurrent?col:col+'22'};color:${isCurrent?'#fff':col};font-size:13px;font-weight:800;border:2px solid ${isCurrent?col:col+'66'};white-space:nowrap">${label}</div>
+          </div>`;
+        }).join('<span style="color:#ccc;font-size:16px;flex-shrink:0">›</span>');
+      }
     }
     updateProg();
     raf = requestAnimationFrame(frame);

@@ -672,16 +672,33 @@ views.song = (params, id) => {
       const upcoming = allFwd.slice(0, 5);
       const strip = $('#upcomingStrip');
       if (strip) {
+        const WK = [{pc:0,i:0},{pc:2,i:1},{pc:4,i:2},{pc:5,i:3},{pc:7,i:4},{pc:9,i:5},{pc:11,i:6}];
+        const BK = [{pc:1,x:11},{pc:3,x:27},{pc:6,x:59},{pc:8,x:75},{pc:10,x:91}];
+        const miniKb = (midis, col, active) => {
+          const pcs = new Set(midis.map(m => m % 12));
+          const op = active ? 1 : 0.55;
+          const border = active ? `2px solid ${col}` : '1.5px solid #444';
+          const shadow = active ? `0 0 0 2px ${col}55` : 'none';
+          const wkeys = WK.map(({pc,i}) => {
+            const hit = pcs.has(pc);
+            return `<rect x="${i*15+1}" y="1" width="13" height="44" rx="2" fill="${hit?col:'white'}" stroke="${hit?col:'#ddd'}" stroke-width="${hit?1.5:0.5}"/>`;
+          }).join('');
+          const bkeys = BK.map(({pc,x}) => {
+            const hit = pcs.has(pc);
+            return `<rect x="${x}" y="1" width="9" height="28" rx="1" fill="${hit?col:'#333'}"/>`;
+          }).join('');
+          return `<svg width="108" height="46" viewBox="0 0 106 46" style="border-radius:6px;overflow:hidden;border:${border};box-shadow:${shadow};opacity:${op};display:block">${wkeys}${bkeys}</svg>`;
+        };
         strip.innerHTML = upcoming.map((ev, i) => {
           const isCurrent = i === 0;
           const label = eventLabel(ev.names);
           const pc = ev.midis[0] % 12;
           const col = NOTE_COLORS[pc] || '#888';
-          return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0">
-            <span style="font-size:10px;font-weight:700;color:${isCurrent?col:'#aaa'}">${i+1}</span>
-            <div style="padding:4px 10px;border-radius:8px;background:${isCurrent?col:col+'22'};color:${isCurrent?'#fff':col};font-size:13px;font-weight:800;border:2px solid ${isCurrent?col:col+'66'};white-space:nowrap">${label}</div>
+          return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+            <span style="font-size:11px;font-weight:800;color:${isCurrent?col:'#888'}">${i+1} · ${label}</span>
+            ${miniKb(ev.midis, col, isCurrent)}
           </div>`;
-        }).join('<span style="color:#ccc;font-size:16px;flex-shrink:0">›</span>');
+        }).join('<span style="color:#555;font-size:14px;flex-shrink:0;align-self:center">›</span>');
       }
       const kbHost = app.querySelector('#kb');
       if (kbHost) {

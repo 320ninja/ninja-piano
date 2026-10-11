@@ -1210,6 +1210,10 @@ const progChordMidis = (keyMidi, semOff, q) => {
   const root = ((keyMidi + semOff - 48 + 120) % 12) + 48;
   return (CHORD_TYPE_INTERVALS[q] || CHORD_TYPE_INTERVALS.M).map(s => root + s);
 };
+const progChordInversion = (label, q) => {
+  const type = q === 'm' ? 'minor' : q === 'M7' ? 'major 7th' : q === 'm7' ? 'minor 7th' : q === '7' ? 'dominant 7th' : q === 'dim' ? 'diminished' : q === 'aug' ? 'augmented' : q === 'sus4' ? 'sus4' : 'major';
+  return `${label} ${type}`;
+};
 
 const PROG_MOODS = ['All','😊 Happy','😢 Sad','💫 Emotional','🔥 Epic','🎷 Jazz','🎼 Blues','🎵 Pop','🎸 Rock','🎤 Hip-Hop','🎧 EDM','💕 Romantic','🌙 Dark'];
 const MOOD_KEY   = { 'All':'all','😊 Happy':'happy','😢 Sad':'sad','💫 Emotional':'emotional','🔥 Epic':'epic','🎷 Jazz':'jazz','🎼 Blues':'blues','🎵 Pop':'pop','🎸 Rock':'rock','🎤 Hip-Hop':'hiphop','🎧 EDM':'edm','💕 Romantic':'romantic','🌙 Dark':'dark' };
@@ -1425,7 +1429,11 @@ const PROGRESSIONS_DB = [
 views.progressions = (params) => {
   setNav('practice');
   const mood = params?.get('mood') || 'all';
-  const filtered = mood === 'all' ? PROGRESSIONS_DB : PROGRESSIONS_DB.filter(p => p.mood.includes(mood));
+  const scale = params?.get('scale') || 'all'; // 'all' | 'major' | 'minor'
+  const isProgMinor = (p) => /^i[^I]|^i$/.test(p.chords[0]?.r || '') || p.mood.some(m => /sad|dark/.test(m));
+  let filtered = mood === 'all' ? PROGRESSIONS_DB : PROGRESSIONS_DB.filter(p => p.mood.includes(mood));
+  if (scale === 'major') filtered = filtered.filter(p => !isProgMinor(p));
+  if (scale === 'minor') filtered = filtered.filter(p => isProgMinor(p));
   const MOOD_COLORS = {
     happy:'#f59e0b',sad:'#6366f1',emotional:'#8b5cf6',epic:'#ef4444',
     jazz:'#d97706',blues:'#1d4ed8',pop:'#ec4899',rock:'#dc2626',hiphop:'#7c3aed',edm:'#0891b2',
@@ -1435,8 +1443,11 @@ views.progressions = (params) => {
 
   app.innerHTML = `<section class="view">
     <div class="top"><a class="iconbtn" href="#/practice">${icon('back')}</a><h1>Chord Progressions</h1><span style="width:42px"></span></div>
-    <div class="chips" style="padding-top:0;overflow-x:auto;flex-wrap:nowrap">
+    <div class="chips" style="padding-top:0;overflow-x:auto;flex-wrap:nowrap" id="moodChips">
       ${PROG_MOODS.map(m=>`<button class="chip ${MOOD_KEY[m]===mood?'on':''}" data-mood="${MOOD_KEY[m]}">${m}</button>`).join('')}
+    </div>
+    <div class="chips" style="padding-top:0" id="scaleChips">
+      ${['all','major','minor'].map(s=>`<button class="chip ${s===scale?'on':''}" data-scale="${s}">${s==='all'?'🎼 All':s==='major'?'☀️ Major':'🌙 Minor'}</button>`).join('')}
     </div>
     <div class="list" id="plist">
       ${filtered.map(p=>`
@@ -1453,9 +1464,13 @@ views.progressions = (params) => {
         </a>`).join('')}
     </div>
   </section>`;
-  app.querySelector('.chips').onclick = (e) => {
+  app.querySelector('#moodChips').onclick = (e) => {
     const m = e.target.closest('[data-mood]')?.dataset.mood;
-    if (m) location.hash = `#/progressions?mood=${m}`;
+    if (m) location.hash = `#/progressions?mood=${m}&scale=${scale}`;
+  };
+  app.querySelector('#scaleChips').onclick = (e) => {
+    const s = e.target.closest('[data-scale]')?.dataset.scale;
+    if (s) location.hash = `#/progressions?mood=${mood}&scale=${s}`;
   };
 };
 
@@ -1771,6 +1786,8 @@ views.progressionPlay = (params, progId) => {
     const infoEl = app.querySelector('#chordInfo');
     if (nameEl) nameEl.textContent = label;
     if (romEl)  romEl.textContent = chord.r || '';
+    const typeEl = app.querySelector('#chordTypeName');
+    if (typeEl) typeEl.textContent = progChordInversion(label, chord.q);
     if (infoEl) infoEl.textContent = midis.map(m => midiName(m).replace(/\d+/,'')).join(' – ');
     const notEl = app.querySelector('#chordNotation');
     if (notEl) notEl.innerHTML = chordNotationSVG(midis);
@@ -1855,7 +1872,8 @@ views.progressionPlay = (params, progId) => {
         <div id="chordNotation" style="flex-shrink:0">${chordNotationSVG(progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
         <div>
           <div id="curChordName" style="font-size:52px;font-weight:900;line-height:1;color:var(--ink)">${progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q)}</div>
-          <div id="chordInfo" style="font-size:13px;opacity:.5;margin-top:4px">${progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q).map(m=>midiName(m).replace(/\d+/,'')).join(' – ')}</div>
+          <div id="chordTypeName" style="font-size:14px;font-weight:700;color:var(--p);margin-top:2px">${progChordInversion(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q)}</div>
+          <div id="chordInfo" style="font-size:13px;opacity:.5;margin-top:2px">${progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q).map(m=>midiName(m).replace(/\d+/,'')).join(' – ')}</div>
         </div>
       </div>
     </div>

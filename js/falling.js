@@ -147,12 +147,13 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
             ctx.beginPath(); ctx.roundRect(x + 1, y + 1, w - 2, Math.min(6, h - 2), [rx, rx, 0, 0]); ctx.fill();
           }
 
-          if (h > fontSize + 4) {
-            const name = e.names?.[mi] || e.names?.[0];
-            if (name) {
-              ctx.fillStyle = st.result === 'miss' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.95)';
-              ctx.fillText(name.replace(/\d+$/, ''), x + w / 2, y + 3);
-            }
+          const name = e.names?.[mi] || e.names?.[0];
+          if (name) {
+            ctx.save();
+            ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+            ctx.fillStyle = st.result === 'miss' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.95)';
+            ctx.fillText(name.replace(/\d+$/, ''), x + w / 2, y + Math.min(fontSize + 2, h / 2));
+            ctx.restore();
           }
           ctx.globalAlpha = 1;
         });

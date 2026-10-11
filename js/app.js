@@ -806,8 +806,8 @@ views.practice = (params, id) => {
     const keyAcc  = keyStr.includes('#') ? 1 : keyStr.replace(/m$/, '').endsWith('b') ? -1 : 0;
     const keyPc   = ((KEY_PC[keyRoot[0]] ?? 0) + keyAcc + 12) % 12;
 
-    const falling = createFalling($('#fall-canvas'), {
-      steps, low, high, bpm: parsed.bpm, speed: cfg.speed, keyPc, isMinor: minorKey,
+    const makeFalling = (spd) => createFalling($('#fall-canvas'), {
+      steps, low, high, bpm: parsed.bpm, speed: spd, keyPc, isMinor: minorKey,
       setTargets(midis) { kb?.setHint(midis); },
       flashKey(m, cls, ms) { kb?.flash(m, cls, ms); },
       autoPlay(m) { if (soundOn) { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); } },
@@ -824,6 +824,7 @@ views.practice = (params, id) => {
         }
       },
     });
+    let falling = makeFalling(cfg.speed);
 
     let showLabels = settings.keyLabels;
     let kb = createKeyboard($('#kb'), {
@@ -862,9 +863,10 @@ views.practice = (params, id) => {
       $('#fallSpeedVal').textContent = pct + '%';
       cfg.speed = pct / 100;
       save(`np.pcfg.${id}`, cfg);
-      // restart with new speed (reset started so startGame re-initializes)
-      started = false;
+      // recreate falling engine with new speed, then restart
       falling.stop();
+      falling = makeFalling(cfg.speed);
+      started = false;
       score = 0; judged = 0;
       startGame();
     };

@@ -806,11 +806,16 @@ views.practice = (params, id) => {
     const keyAcc  = keyStr.includes('#') ? 1 : keyStr.replace(/m$/, '').endsWith('b') ? -1 : 0;
     const keyPc   = ((KEY_PC[keyRoot[0]] ?? 0) + keyAcc + 12) % 12;
 
+    const currentlyPlaying = new Set();
     const makeFalling = (spd) => createFalling($('#fall-canvas'), {
       steps, low, high, bpm: parsed.bpm, speed: spd, keyPc, isMinor: minorKey,
       setTargets(midis) { kb?.setHint(midis); },
       flashKey(m, cls, ms) { kb?.flash(m, cls, ms); },
-      autoPlay(m) { if (soundOn) { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); } },
+      autoPlay(m) {
+        if (soundOn) { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); }
+        currentlyPlaying.add(m);
+        setTimeout(() => currentlyPlaying.delete(m), 500);
+      },
       onJudge(idx, val) {
         score += val; judged++;
         if (judged >= steps.length) {
@@ -841,11 +846,7 @@ views.practice = (params, id) => {
       const kbHost = $('#kb');
       if (!kbHost) return;
       kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
-      const upcoming = falling.getUpcoming(6);
-      const doneMidi = new Set();
-      upcoming.forEach(midi => {
-        if (doneMidi.has(midi)) return;
-        doneMidi.add(midi);
+      currentlyPlaying.forEach(midi => {
         const pc = (midi - keyPc + 120) % 12;
         const deg = degScale.indexOf(pc);
         if (deg === -1) return;

@@ -169,7 +169,7 @@ const fitChord = (weights, bassPc, flat) => {
       if (!best || score > best.score) best = { score, root, suffix, tones, cover: inW / total };
     }
   }
-  if (!best || best.cover < 0.6) return null;
+  if (!best || best.cover < 0.45) return null;
   const spell = (pc) => (flat ? FLAT_NAMES : SHARP_SPELL)[pc];
   const degree = best.tones.indexOf(bassPc);
   const name = spell(best.root) + best.suffix;

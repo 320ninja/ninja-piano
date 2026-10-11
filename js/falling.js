@@ -154,8 +154,12 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
             ctx.fillStyle = st.result === 'miss' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.95)';
             ctx.fillText(name.replace(/\d+$/, ''), x + w / 2, y + Math.min(fontSize + 2, h * 0.65));
           }
-          // order number (1=next, 2=after, …) on upcoming steps only
-          const orderNum = i - currentIdx + 1;
+          // order number (1=next, 2=after, …) synced to wall time like autoPlay
+          let displayIdx = currentIdx;
+          if (startTime !== null) {
+            while (displayIdx < steps.length && now >= startTime / 1000 + steps[displayIdx].start * secPerBeat()) displayIdx++;
+          }
+          const orderNum = i - displayIdx + 1;
           if (orderNum >= 1 && orderNum <= 5 && st.result == null) {
             const numSize = Math.max(9, Math.min(14, ww() * 0.6));
             ctx.font = `900 ${numSize}px system-ui`;
@@ -362,8 +366,14 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
     },
     get paused() { return !running && pausedAt !== null; },
     getUpcomingSteps(n = 5) {
+      // advance from currentIdx based on wall time so numbers sync with sound
+      let from = currentIdx;
+      if (startTime !== null) {
+        const now = performance.now() / 1000;
+        while (from < steps.length && now >= startTime / 1000 + steps[from].start * secPerBeat()) from++;
+      }
       const result = [];
-      for (let i = currentIdx; i < Math.min(steps.length, currentIdx + n); i++) {
+      for (let i = from; i < Math.min(steps.length, from + n); i++) {
         const midis = [];
         steps[i].events.forEach(e => e.midis.forEach(m => { if (m != null) midis.push(m); }));
         if (midis.length) result.push({ order: result.length + 1, midis });

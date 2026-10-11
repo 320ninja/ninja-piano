@@ -2,7 +2,7 @@ import { THEMES, applyTheme } from './themes.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
 import { renderScore } from './score.js';
 import { playNote, playClick, unlockAudio, now, setSustain, getSustain } from './audio.js';
-import { createKeyboard } from './keyboard.js?v=38';
+import { createKeyboard } from './keyboard.js?v=39';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
 

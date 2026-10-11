@@ -29,7 +29,7 @@ export const createKeyboard = (host, { low, high, labels, nameSystem, onPress })
     const name = midiName(m);
     // On narrow keys only label the Cs so the board stays readable.
     const tight = host.clientWidth / whiteCount < 24;
-    if (labels && !black && (!tight || m % 12 === 0)) el.textContent = labelFor(name, nameSystem, !black && nameSystem === 'letters');
+    if (labels && !black && (!tight || m % 12 === 0)) el.textContent = labelFor(name, nameSystem, false);
     if (m === 60) el.insertAdjacentHTML('beforeend', '<i class="c4"></i>');
     if (black) { el.style.left = `${whiteIndex * whitePct - blackPct / 2}%`; el.style.width = `${blackPct}%`; }
     else whiteIndex++;

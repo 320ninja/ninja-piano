@@ -1214,6 +1214,19 @@ const progChordInversion = (label, q) => {
   const type = q === 'm' ? 'minor' : q === 'M7' ? 'major 7th' : q === 'm7' ? 'minor 7th' : q === '7' ? 'dominant 7th' : q === 'dim' ? 'diminished' : q === 'aug' ? 'augmented' : q === 'sus4' ? 'sus4' : 'major';
   return `${label} ${type}`;
 };
+const getChordInversionName = (label, q, midis) => {
+  const type = q === 'm' ? 'minor' : q === 'M7' ? 'major 7th' : q === 'm7' ? 'minor 7th' : q === '7' ? 'dominant 7th' : q === 'dim' ? 'diminished' : q === 'aug' ? 'augmented' : q === 'sus4' ? 'sus4' : 'major';
+  const shifted = midis.map(m => { let n = m; while (n < 60) n += 12; while (n > 71) n -= 12; return n; }).sort((a,b) => a - b);
+  const rootPc = midis[0] % 12;
+  const bassPc = shifted[0] % 12;
+  const intervals = CHORD_TYPE_INTERVALS[q] || CHORD_TYPE_INTERVALS.M;
+  const bassInterval = (bassPc - rootPc + 12) % 12;
+  let inv = 'Root position';
+  if (intervals.length >= 2 && bassInterval === intervals[1]) inv = '1st inversion';
+  else if (intervals.length >= 3 && bassInterval === intervals[2]) inv = '2nd inversion';
+  else if (intervals.length >= 4 && bassInterval === intervals[3]) inv = '3rd inversion';
+  return `${label} ${type} – ${inv}`;
+};
 
 const PROG_MOODS = ['All','😊 Happy','😢 Sad','💫 Emotional','🔥 Epic','🎷 Jazz','🎼 Blues','🎵 Pop','🎸 Rock','🎤 Hip-Hop','🎧 EDM','💕 Romantic','🌙 Dark'];
 const MOOD_KEY   = { 'All':'all','😊 Happy':'happy','😢 Sad':'sad','💫 Emotional':'emotional','🔥 Epic':'epic','🎷 Jazz':'jazz','🎼 Blues':'blues','🎵 Pop':'pop','🎸 Rock':'rock','🎤 Hip-Hop':'hiphop','🎧 EDM':'edm','💕 Romantic':'romantic','🌙 Dark':'dark' };
@@ -1860,6 +1873,8 @@ views.progressionPlay = (params, progId) => {
     if (romEl)  romEl.textContent = chord.r || '';
     const typeEl = app.querySelector('#chordTypeName');
     if (typeEl) typeEl.textContent = progChordInversion(label, chord.q);
+    const kbLabelEl = app.querySelector('#kbChordLabel');
+    if (kbLabelEl) kbLabelEl.textContent = getChordInversionName(label, chord.q, midis);
     if (infoEl) infoEl.textContent = midis.map(m => midiName(m).replace(/\d+/,'')).join(' – ');
     const notEl = app.querySelector('#chordNotation');
     if (notEl) notEl.innerHTML = chordNotationSVG(midis);
@@ -1965,7 +1980,10 @@ views.progressionPlay = (params, progId) => {
     </div>
 
     <div id="improvPanel" style="margin:10px 0"></div>
-    <div class="kb-dock"><div class="kb" id="kb"></div></div>
+    <div class="kb-dock">
+      <div id="kbChordLabel" style="text-align:center;padding:6px 0 3px;font-size:16px;font-weight:800;color:var(--ink);letter-spacing:.3px">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+      <div class="kb" id="kb"></div>
+    </div>
   </section>`;
 
   const renderImprov = (currentChordMidis) => {

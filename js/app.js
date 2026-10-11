@@ -166,6 +166,23 @@ const songsReady = Promise.allSettled(SONG_FILES.map((f) => fetch(`songs/${f}.js
     SONGS.sort((a, b) => CATEGORIES.indexOf(a.cat) - CATEGORIES.indexOf(b.cat) || order[a.level] - order[b.level] || a.title.localeCompare(b.title));
   });
 
+/* ---------- theme preview ---------- */
+const themePreview = (primary, accent, bg) => {
+  // 8 white keys, black keys at positions 1,2,4,5,6 (C D E F G A B C layout)
+  const WK = 8, ww = 14, wh = 44, bw = 9, bh = 27;
+  const totalW = WK * ww;
+  // highlight keys: C(0), E(2), G(4) in primary; D(1) in accent
+  const wHit = new Set([0, 2, 4]);
+  const bHit = new Set([0]); // C# highlight
+  const BK_X = [ww-bw/2, 2*ww-bw/2, 4*ww-bw/2, 5*ww-bw/2, 6*ww-bw/2];
+  const wkeys = Array.from({length:WK},(_,i)=>`<rect x="${i*ww+1}" y="1" width="${ww-2}" height="${wh-2}" rx="2" fill="${wHit.has(i)?primary:'#f5f5f5'}" stroke="#ccc" stroke-width="0.5"/>`).join('');
+  const bkeys = BK_X.map((x,i)=>`<rect x="${x}" y="1" width="${bw}" height="${bh}" rx="1" fill="${bHit.has(i)?accent:'#222'}"/>`).join('');
+  return `<svg width="100%" viewBox="0 0 ${totalW+2} ${wh}" style="display:block;border-radius:6px;overflow:hidden;background:#f5f5f5"><rect width="${totalW+2}" height="${wh}" fill="#f5f5f5"/>${wkeys}${bkeys}</svg>`;
+};
+const themeCard = (k, t, active) =>
+  `<button class="th ${active?'on':''}" data-t="${k}">${themePreview(t[1],t[2],t[5])}<span>${t[0]}</span></button>`;
+const themeGrid = (cur) => Object.entries(THEMES).map(([k,t])=>themeCard(k,t,k===cur)).join('');
+
 /* ---------- shell ---------- */
 const app = document.getElementById('app');
 const nav = document.getElementById('nav');
@@ -2746,7 +2763,7 @@ views.settings = () => {
       ${sw('waitMode', 'Practice waits for the right note')}</div>
     <div class="card group"><h4>Display</h4>
       <div class="row"><span>Theme</span><div class="seg" id="mode" style="width:230px"><button data-m="light">${icon('sun')}</button><button data-m="auto">Auto</button><button data-m="dark">${icon('moon')}</button></div></div>
-      <div class="themes" id="themes">${Object.entries(THEMES).map(([k, t]) => `<button class="th ${k === settings.theme ? 'on' : ''}" data-t="${k}"><i><s style="background:${t[1]}"></s><s style="background:${t[2]}"></s><s style="background:${t[5]}"></s></i>${t[0]}</button>`).join('')}</div></div>
+      <div class="themes" id="themes">${themeGrid(settings.theme)}</div></div>
     <div class="card group"><h4>Data</h4>
       <div class="row"><span>Songs in library</span><b>${SONGS.length}</b></div>
       <div class="row"><span>Reset progress</span><button class="btn sm ghost" id="reset">Reset</button></div>
@@ -2781,7 +2798,7 @@ const openThemeSheet = () => {
   const draw = () => {
     sh.innerHTML = `<div class="grab"></div><h4>Theme</h4>
       <div class="seg" id="tmode">${['light', 'auto', 'dark'].map((m) => `<button data-m="${m}" class="${settings.mode === m ? 'on' : ''}">${m === 'light' ? icon('sun') + ' Light' : m === 'dark' ? icon('moon') + ' Dark' : 'Auto'}</button>`).join('')}</div>
-      <div class="themes">${Object.entries(THEMES).map(([k, t]) => `<button class="th ${k === settings.theme ? 'on' : ''}" data-t="${k}"><i><s style="background:${t[1]}"></s><s style="background:${t[2]}"></s><s style="background:${t[5]}"></s></i>${t[0]}</button>`).join('')}</div>`;
+      <div class="themes">${themeGrid(settings.theme)}</div>`;
   };
   draw();
   const close = () => { bg.remove(); sh.remove(); };

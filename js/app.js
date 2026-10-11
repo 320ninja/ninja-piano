@@ -1905,9 +1905,11 @@ views.progressionPlay = (params, progId) => {
     render();
   };
 
+  const syncKbAuto = (playing) => { const b = app.querySelector('#kbAuto'); if (b) b.textContent = playing ? '⏸' : '▶'; };
   const startAuto = () => {
     autoPlaying = true;
     app.querySelector('#autoBtn').innerHTML = icon('pause')+' Stop';
+    syncKbAuto(true);
     const ms = Math.round(60000/bpm)*2;
     autoTimer = setInterval(()=>{ curIdx = (curIdx + 1) % prog.chords.length; renderWithImprov(); }, ms);
   };
@@ -1916,6 +1918,7 @@ views.progressionPlay = (params, progId) => {
     clearInterval(autoTimer);
     const btn = app.querySelector('#autoBtn');
     if (btn) btn.innerHTML = icon('play')+' Auto';
+    syncKbAuto(false);
   };
 
   // Consistent color per roman numeral root (same chord = same color)
@@ -1982,7 +1985,14 @@ views.progressionPlay = (params, progId) => {
 
     <div id="improvPanel" style="margin:10px 0"></div>
     <div class="kb-dock">
-      <div id="kbChordLabel" style="text-align:center;padding:6px 0 3px;font-size:16px;font-weight:800;color:${pillColor(prog.chords[0].r)};letter-spacing:.3px">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px 2px;gap:8px">
+        <div id="kbChordLabel" style="font-size:15px;font-weight:800;color:${pillColor(prog.chords[0].r)};letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button id="kbPrev" style="background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;color:var(--ink)" title="Prev">◀</button>
+          <button id="kbAuto" style="background:var(--p);border:none;border-radius:8px;padding:4px 10px;font-size:13px;cursor:pointer;color:#fff" title="Play/Pause">▶</button>
+          <button id="kbNext" style="background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;color:var(--ink)" title="Next">▶▶</button>
+        </div>
+      </div>
       <div class="kb" id="kb"></div>
     </div>
   </section>`;
@@ -2129,6 +2139,9 @@ views.progressionPlay = (params, progId) => {
   app.querySelector('#prevBtn').onclick=()=>{stopAuto();advanceWithImprov(-1);};
   app.querySelector('#nextBtn').onclick=()=>{stopAuto();advanceWithImprov(1);};
   app.querySelector('#autoBtn').onclick=()=>autoPlaying?stopAuto():startAuto();
+  app.querySelector('#kbPrev').onclick=()=>{stopAuto();advanceWithImprov(-1);};
+  app.querySelector('#kbNext').onclick=()=>{stopAuto();advanceWithImprov(1);};
+  app.querySelector('#kbAuto').onclick=()=>{ if(autoPlaying){stopAuto();app.querySelector('#kbAuto').textContent='▶';}else{startAuto();app.querySelector('#kbAuto').textContent='⏸';} };
   app.querySelector('#bpmSlider').oninput=(e)=>{
     bpm=Number(e.target.value);
     app.querySelector('#bpmVal').textContent=bpm;

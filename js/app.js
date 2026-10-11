@@ -2268,6 +2268,10 @@ views.scan = () => {
     progLabel.textContent = label;
   };
 
+  const dz = $('#dropzone');
+  const fileInput = $('#file');
+  const cameraInput = $('#fileCamera');
+
   const processFile = async (file) => {
     const url = ($('#srv').value.trim()).replace(/\/$/, '');
     if (!url) {
@@ -2326,6 +2330,9 @@ views.scan = () => {
     }
   };
 
+  $('#btnCamera').onclick = () => cameraInput.click();
+  $('#btnFile').onclick = () => fileInput.click();
+  cameraInput.onchange = (e) => { if (e.target.files[0]) processFile(e.target.files[0]); };
   dz.onclick = () => fileInput.click();
   fileInput.onchange = (e) => { if (e.target.files[0]) processFile(e.target.files[0]); };
   $('#btnCamera').onclick = () => cameraInput.click();

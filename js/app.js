@@ -2163,7 +2163,14 @@ views.progressionPlay = (params, progId) => {
     if(midi){ unlockAudio(); playNote(midi,{voice:settings.voice,volume:settings.volume/100,duration:0.5}); }
   });
 
-  cleanup=()=>{stopAuto();kb?.destroy();};
+  const onSpaceKey = (e) => {
+    if (e.code === 'Space' && !e.target.matches('input,textarea,button')) {
+      e.preventDefault();
+      autoPlaying ? stopAuto() : startAuto();
+    }
+  };
+  addEventListener('keydown', onSpaceKey);
+  cleanup=()=>{stopAuto();kb?.destroy();removeEventListener('keydown',onSpaceKey);};
 };
 
 // --- Chord Speller quiz ---

@@ -842,20 +842,19 @@ views.practice = (params, id) => {
       if (!kbHost) return;
       kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
       const upcoming = falling.getUpcoming(6);
-      const donePc = new Set();
+      const doneMidi = new Set();
       upcoming.forEach(midi => {
+        if (doneMidi.has(midi)) return;
+        doneMidi.add(midi);
         const pc = (midi - keyPc + 120) % 12;
         const deg = degScale.indexOf(pc);
-        if (deg === -1 || donePc.has(pc)) return;
-        donePc.add(pc);
-        kbHost.querySelectorAll('.key').forEach(el => {
-          if ((Number(el.dataset.midi) - keyPc + 120) % 12 === pc) {
-            const lbl = document.createElement('span');
-            lbl.className = 'degree-label';
-            lbl.textContent = deg + 1;
-            el.appendChild(lbl);
-          }
-        });
+        if (deg === -1) return;
+        const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
+        if (!el) return;
+        const lbl = document.createElement('span');
+        lbl.className = 'degree-label';
+        lbl.textContent = deg + 1;
+        el.appendChild(lbl);
       });
       requestAnimationFrame(updateDegrees);
     };

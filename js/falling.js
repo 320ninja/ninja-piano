@@ -378,14 +378,9 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
       }
     },
     getUpcomingSteps(n = 5) {
-      // advance from currentIdx based on wall time so numbers sync with sound
-      let from = currentIdx;
-      if (startTime !== null) {
-        const now = performance.now() / 1000;
-        while (from < steps.length && now >= startTime / 1000 + steps[from].start * secPerBeat()) from++;
-      }
+      // currentIdx is always the note to press next — order 1
       const result = [];
-      for (let i = from; i < Math.min(steps.length, from + n); i++) {
+      for (let i = currentIdx; i < Math.min(steps.length, currentIdx + n); i++) {
         const midis = [];
         steps[i].events.forEach(e => e.midis.forEach(m => { if (m != null) midis.push(m); }));
         if (midis.length) result.push({ order: result.length + 1, midis });

@@ -596,14 +596,16 @@ views.song = (params, id) => {
         <div class="cn-block"><div class="cn">Current note<b id="cnote">—</b></div><div class="next" id="nnote"></div></div>
       </div>
       <div id="upcomingStrip" style="display:flex;align-items:center;gap:6px;padding:6px 10px 4px;background:var(--bg);overflow-x:auto;min-height:44px"></div>
-      <div style="display:flex;align-items:center;gap:8px;padding:4px 8px 4px;background:var(--bg)">
-        <button id="kbPlay" style="background:var(--p);border:none;border-radius:10px;padding:6px 14px;font-size:15px;cursor:pointer;color:#fff;display:flex;align-items:center;gap:4px;flex-shrink:0">${icon('play')}</button>
-        <div style="display:flex;gap:4px;flex:1;justify-content:center;flex-wrap:wrap">
-          <button class="kb-spd-btn" data-spd="0.25" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">0.25x</button>
-          <button class="kb-spd-btn" data-spd="0.5" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">0.5x</button>
-          <button class="kb-spd-btn" data-spd="0.75" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">0.75x</button>
-          <button class="kb-spd-btn" data-spd="1" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">1x</button>
-          <button class="kb-spd-btn" data-spd="1.25" style="padding:4px 8px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:12px;font-weight:700;cursor:pointer">1.25x</button>
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 10px 4px;background:var(--bg)">
+        <button id="kbSkipBack" title="Back 5 notes" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);flex-shrink:0">⏮5</button>
+        <button id="kbPlay" style="background:var(--p);border:none;border-radius:10px;padding:6px 16px;font-size:15px;cursor:pointer;color:#fff;display:flex;align-items:center;gap:4px;flex-shrink:0">${icon('play')}</button>
+        <button id="kbSkipFwd" title="Forward 5 notes" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);flex-shrink:0">5⏭</button>
+        <div style="display:flex;flex-direction:column;flex:1;gap:2px;min-width:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:10px;color:var(--muted);font-weight:600">SPEED</span>
+            <span id="kbSpdLabel" style="font-size:12px;font-weight:800;color:var(--p)">${st.speed}x</span>
+          </div>
+          <input type="range" id="kbSpdSlider" min="5" max="200" step="5" value="${Math.round(st.speed*100)}" style="width:100%;accent-color:var(--p);height:4px;cursor:pointer">
         </div>
       </div>
       <div class="kb" id="kb"></div>
@@ -708,13 +710,16 @@ views.song = (params, id) => {
     $('#play').innerHTML = icon('play');
     const kbPlayBtn = $('#kbPlay'); if (kbPlayBtn) kbPlayBtn.innerHTML = icon('play');
   };
-  const syncKbSpdBtns = () => {
-    app.querySelectorAll('.kb-spd-btn').forEach(b => {
-      const active = parseFloat(b.dataset.spd) === st.speed;
-      b.style.background = active ? 'var(--p)' : 'var(--card)';
-      b.style.color = active ? '#fff' : 'var(--ink)';
-      b.style.borderColor = active ? 'var(--p)' : 'var(--border)';
-    });
+  const syncKbSpd = () => {
+    const lbl = $('#kbSpdLabel'); if (lbl) lbl.textContent = st.speed + 'x';
+    const sl = $('#kbSpdSlider'); if (sl) sl.value = Math.round(st.speed * 100);
+    $('#speed').textContent = st.speed + 'x';
+  };
+  const skipNotes = (n) => {
+    const rhEvents = tl.events.filter(e => e.hand === 'rh');
+    const cur = rhEvents.findIndex(e => e.start >= st.beat - 0.01);
+    const idx = Math.max(0, Math.min(rhEvents.length - 1, (cur < 0 ? rhEvents.length : cur) + n));
+    seek(rhEvents[idx]?.start ?? 0);
   };
   const seek = (beat) => {
     const was = st.playing;
@@ -732,20 +737,18 @@ views.song = (params, id) => {
   $('#metro').classList.toggle('on', st.metro);
   $('#speed').onclick = (e) => {
     st.speed = speeds[(speeds.indexOf(st.speed) + 1) % speeds.length];
-    e.currentTarget.textContent = st.speed + 'x';
-    syncKbSpdBtns();
+    syncKbSpd();
     if (st.playing) { stop(); start(); }
   };
   $('#kbPlay').onclick = () => (st.playing ? stop() : start());
-  app.querySelectorAll('.kb-spd-btn').forEach(b => {
-    b.onclick = () => {
-      st.speed = parseFloat(b.dataset.spd);
-      $('#speed').textContent = st.speed + 'x';
-      syncKbSpdBtns();
-      if (st.playing) { stop(); start(); }
-    };
-  });
-  syncKbSpdBtns();
+  $('#kbSkipBack').onclick = () => skipNotes(-5);
+  $('#kbSkipFwd').onclick = () => skipNotes(5);
+  $('#kbSpdSlider').oninput = (e) => {
+    st.speed = Math.round(parseInt(e.target.value)) / 100;
+    syncKbSpd();
+    if (st.playing) { stop(); start(); }
+  };
+  syncKbSpd();
   $('#fav').onclick = (e) => {
     favs.has(id) ? favs.delete(id) : favs.add(id);
     save('np.favs', [...favs]);

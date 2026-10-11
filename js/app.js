@@ -687,7 +687,7 @@ views.song = (params, id) => {
             const hit = pcs.has(pc);
             return `<rect x="${x}" y="1" width="9" height="32" rx="1" fill="${hit?col:'#222'}"/>`;
           }).join('');
-          return `<svg width="120" height="54" viewBox="0 0 106 54" style="border-radius:7px;overflow:hidden;border:${border};box-shadow:${shadow};opacity:${op};display:block;background:#f5f5f5">${wkeys}${bkeys}</svg>`;
+          return `<svg width="120" height="54" viewBox="0 0 106 54" style="border-radius:7px;overflow:hidden;border:${border};box-shadow:${shadow};opacity:${op};display:block"><rect width="106" height="54" fill="#f0f0f0"/>${wkeys}${bkeys}</svg>`;
         };
         strip.innerHTML = upcoming.map((ev, i) => {
           const isCurrent = i === 0;

@@ -16,9 +16,9 @@
   --staff:#141631;
 }
 :root[data-mode=dark]{
-  --bg:#0b0f1c;--b1:color-mix(in srgb,var(--p) 18%,#070b16);--b2:color-mix(in srgb,var(--a) 14%,#0b1020);
-  --card:rgba(255,255,255,.07);--solid:#121827;--ink:#e8edf6;--muted:rgba(226,232,240,.62);
-  --line:rgba(255,255,255,.12);--shadow:0 10px 30px -12px rgba(0,0,0,.6);--staff:#e8edf6;
+  --bg:#080c18;--b1:color-mix(in srgb,var(--p) 22%,#060a14);--b2:color-mix(in srgb,var(--a) 16%,#080c18);
+  --card:rgba(255,255,255,.065);--solid:#101726;--ink:#eaefff;--muted:rgba(200,215,240,.58);
+  --line:rgba(255,255,255,.1);--shadow:0 12px 36px -12px rgba(0,0,0,.7);--staff:#eaefff;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
@@ -38,6 +38,12 @@ body.nonav #app{padding-bottom:calc(12px + var(--safe-b))}
 .view{animation:viewIn .45s var(--ease) both}
 @keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* Falling Notes landscape on mobile */
+@media (orientation:landscape) and (max-height:500px){
+  #app{padding-top:4px;padding-bottom:4px}
+  .kb{height:70px}
+  .top h1{font-size:14px}
+}
 
 /* Top bar */
 .top{display:flex;align-items:center;gap:10px;padding:8px 0 14px;position:sticky;top:0;z-index:20;
@@ -85,17 +91,19 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 /* Song rows */
 .list{display:grid;gap:10px}
 @media (min-width:760px){.list.grid2{grid-template-columns:1fr 1fr}}
-.song{display:flex;align-items:center;gap:14px;padding:10px;border-radius:20px;background:var(--card);border:1px solid var(--line);
+.song{display:flex;align-items:center;gap:14px;padding:11px;border-radius:20px;background:var(--card);border:1px solid var(--line);
   transition:transform .25s var(--ease),box-shadow .25s,border-color .25s}
-.song:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--p) 40%,transparent)}
+.song:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--p) 50%,transparent);background:color-mix(in srgb,var(--p) 6%,var(--card))}
 .song:active{transform:scale(.98)}
-.thumb{width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-size:28px;flex:none;position:relative;overflow:hidden}
-.thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.35),transparent 50%)}
+[data-mode=dark] .song{border-color:rgba(255,255,255,.09)}
+.thumb{width:60px;height:60px;border-radius:16px;display:grid;place-items:center;font-size:28px;flex:none;position:relative;overflow:hidden;box-shadow:0 4px 14px -4px rgba(0,0,0,.45)}
+.thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(145deg,rgba(255,255,255,.28) 0%,transparent 55%,rgba(0,0,0,.15) 100%)}
 .song .meta{flex:1;min-width:0}
 .song .t{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .song .s{font-size:12.5px;color:var(--muted);margin:2px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .song .tags{display:flex;gap:6px;flex-wrap:wrap}
-.play{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--p) 14%,transparent);color:var(--p);flex:none}
+.play{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--p);color:#fff;flex:none;box-shadow:0 6px 18px -6px var(--p);transition:transform .2s,filter .2s}
+.play:hover{filter:brightness(1.15);transform:scale(1.07)}
 .play svg{fill:currentColor;stroke:none;width:16px;height:16px}
 
 /* Buttons */
@@ -168,8 +176,8 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .score svg .vf-stavenote.cur path,.score svg .vf-stavenote.cur text{fill:var(--p)!important;stroke:var(--p)!important}
 .score svg .vf-stavenote.hit path,.score svg .vf-stavenote.hit text{fill:var(--ok)!important;stroke:var(--ok)!important}
 .score svg .vf-stavenote.miss path{fill:var(--bad)!important;stroke:var(--bad)!important}
-.score svg text.nn{font-family:'Plus Jakarta Sans',sans-serif!important;font-weight:700;fill:var(--muted)}
-.score svg .cur text.nn{fill:var(--p)!important}
+.score svg text.nn{font-family:'Plus Jakarta Sans',sans-serif!important;font-weight:700;fill:#ef4444;opacity:.45}
+.score svg .vf-stavenote.cur text.nn{fill:#facc15!important;opacity:1!important;font-size:14px!important;filter:drop-shadow(0 0 4px #facc15)}
 .score .cursor{fill:color-mix(in srgb,var(--p) 18%,transparent)!important;stroke:none!important}
 
 /* Piano keyboard */
@@ -178,7 +186,7 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .kb-info .cn{font-size:12px;color:var(--muted)}
 .kb-info .cn b{display:inline;font-size:20px;color:var(--ink);margin-left:8px}
 .kb-info .next{font-size:13px;color:var(--p);font-weight:700}
-.kb{position:relative;height:132px;overflow:hidden;overflow-y:hidden;border-radius:18px;background:#1a1b2e;padding:8px 6px 6px;
+.kb{position:relative;height:90px;overflow:hidden;overflow-y:hidden;border-radius:18px;background:#1a1b2e;padding:5px 6px 4px;
   scrollbar-width:none;touch-action:pan-x;box-shadow:inset 0 6px 14px rgba(0,0,0,.5)}
 .kb::-webkit-scrollbar{display:none}
 .kb .keys{position:relative;height:100%;display:flex}
@@ -193,10 +201,20 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .key.target::before{content:"";position:absolute;inset:-3px;border-radius:inherit;box-shadow:0 0 0 3px var(--a);animation:pulse 1s ease-in-out infinite}
 .key.wrong{background:var(--bad)!important;color:#fff;animation:shake .3s}
 .key.good{background:var(--ok)!important;color:#fff}
+.key.hint{background:linear-gradient(#ffe066,#facc15)!important;color:#78350f!important}
+.key.b.hint{background:#facc15!important;color:#78350f!important}
+.key.correct{background:#22c55e!important;color:#fff!important}
+.key.b.correct{background:#16a34a!important;color:#fff!important}
+.hint-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:900;color:#dc2626;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px #fff,0 1px 4px rgba(0,0,0,.6);line-height:1;z-index:3}
+.key.b .hint-label{bottom:2px;color:#ff4444;font-size:10px}
+.play-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:900;color:#dc2626;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px #fff,0 1px 4px rgba(0,0,0,.6);line-height:1;z-index:3}
+.key.b .play-label{bottom:2px;font-size:10px;color:#ff4444}
+.target-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:900;color:#dc2626;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px #fff,0 1px 4px rgba(0,0,0,.6);line-height:1;z-index:3}
+.key.b .target-label{bottom:2px;font-size:10px;color:#ff4444}
 @keyframes pulse{50%{opacity:.25}}
 @keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 .key .c4{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--p)}
-@media (min-width:760px){.kb{height:170px}}
+@media (min-width:760px){.kb{height:120px}}
 .kb.tight .key{font-size:8px;padding-bottom:5px;color:#4b4b63;letter-spacing:-.02em}
 
 /* Practice */
@@ -397,3 +415,89 @@ h3.sec:has(a)::after{display:none}
 .card.pad b{color:var(--p)}
 .nav a.on{background:linear-gradient(135deg,color-mix(in srgb,var(--p) 18%,transparent),color-mix(in srgb,var(--a) 18%,transparent))}
 .muted{transition:color .3s}
+
+/* ── Piano keyboard header decoration ─────────────────── */
+.piano-deco{width:calc(100% + 32px);margin-left:-16px;margin-right:-16px;overflow:hidden;margin-top:0;margin-bottom:6px;height:46px;position:relative}
+.piano-deco svg{width:100%;height:100%}
+
+/* ── Practice styles list ──────────────────────────────── */
+.practice-styles-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.pstyle-card{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;animation:fadeSlideUp .4s var(--ease) forwards}
+.pstyle-nota{flex:none;width:80px;height:44px;border-radius:8px;background:var(--bg);border:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pstyle-nota svg{width:100%;height:100%}
+.pstyle-info{flex:1;min-width:0}
+.pstyle-info b{display:block;font-size:14px;font-weight:800;color:var(--ink);margin-bottom:3px}
+.pstyle-info span{font-size:12px;color:var(--muted);line-height:1.4}
+.pstyle-songs{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.pstyle-song-link{font-size:11px;font-weight:700;padding:2px 8px;background:var(--p)1a;color:var(--p);border:1px solid var(--p)44;border-radius:10px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.pstyle-song-link:hover{background:var(--p);color:#fff}
+
+/* ── Improv keyboard highlighting (progression play) ───── */
+/* Chord tones: vivid color + strong glow ring so they clearly stand out */
+.key[data-improv="chord"]{background:var(--improv-col)!important;border-color:var(--improv-col)!important;box-shadow:0 0 0 3px #fff,0 0 0 5px var(--improv-col),0 4px 16px var(--improv-col)cc!important;z-index:3;transform:scaleY(1.04);transform-origin:top}
+.key.b[data-improv="chord"]{background:var(--improv-col)!important;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--improv-col),0 2px 12px var(--improv-col)cc!important;filter:brightness(1.1);z-index:4}
+/* Passing notes: barely a tint — just enough to suggest they exist */
+.key[data-improv="pass"]{background:color-mix(in srgb,var(--improv-col) 12%,#f8f8fc)!important;border-color:var(--improv-col)44!important}
+.key.b[data-improv="pass"]{background:color-mix(in srgb,var(--improv-col) 18%,#1a1b2e)!important}
+
+/* ── Voice / instrument picker in top bar ─────────────── */
+.voice-pick-wrap{display:flex;align-items:center}
+.voice-pick{appearance:none;-webkit-appearance:none;background:var(--card);border:1.5px solid var(--line);color:var(--ink);font-size:12px;font-weight:700;font-family:inherit;padding:5px 10px 5px 8px;border-radius:20px;cursor:pointer;outline:none;max-width:100px}
+.voice-pick:focus{border-color:var(--p)}
+
+/* ── Faves button ──────────────────────────────────────── */
+.fav-btn{position:relative}
+.fav-btn.has-fav svg{fill:var(--bad);stroke:var(--bad)}
+.fav-count{position:absolute;top:2px;right:2px;min-width:16px;height:16px;border-radius:8px;background:var(--bad);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 3px;pointer-events:none;opacity:0;transition:opacity .2s}
+.fav-btn.has-fav .fav-count{opacity:1}
+
+/* ── Animated section headings ────────────────────────── */
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes iconBounce{0%,100%{transform:scale(1) rotate(0deg)}30%{transform:scale(1.18) rotate(-8deg)}60%{transform:scale(1.1) rotate(6deg)}}
+@keyframes headlineSlide{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+
+h3.sec{animation:fadeSlideUp .45s var(--ease) forwards}
+h3.sec .badge{animation:iconBounce 3.5s ease-in-out infinite}
+h3.sec .gt{animation:headlineSlide .4s var(--ease) .05s forwards;opacity:0}
+h3.sec::after{animation:lineGrow .9s var(--ease) .2s forwards}
+
+.top h1{animation:fadeSlideUp .35s var(--ease) forwards}
+.brand{animation:fadeSlideUp .3s var(--ease) forwards}
+
+/* Page-entry animations for cards and lists */
+.view > .card,.view > .hero-card{animation:fadeSlideUp .4s var(--ease) forwards}
+.view > .list > .song:nth-child(1){animation:fadeSlideUp .35s var(--ease) .04s forwards}
+.view > .list > .song:nth-child(2){animation:fadeSlideUp .35s var(--ease) .08s forwards}
+.view > .list > .song:nth-child(3){animation:fadeSlideUp .35s var(--ease) .12s forwards}
+.view > .list > .song:nth-child(4){animation:fadeSlideUp .35s var(--ease) .16s forwards}
+.view > .list > .song:nth-child(n+5){animation:fadeSlideUp .35s var(--ease) .18s forwards}
+
+/* Icon animation on nav */
+.nav a svg{transition:transform .25s var(--ease)}
+.nav a:hover svg,.nav a.on svg{transform:scale(1.2) translateY(-1px)}
+.nav a.on svg{animation:iconBounce 2s ease-in-out 0.1s both}
+
+.th:hover{transform:translateY(-3px) scale(1.03);transition:transform .25s var(--ease)}
+
+/* Quiz stat cards — always visible, strong contrast */
+.stats .stat{color:var(--ink)!important}
+.stats .stat b{color:var(--p);font-size:24px;font-weight:900}
+.stats .stat span{color:var(--muted);font-size:12px;font-weight:600}
+.stats:not(.done-screen .stats) .stat{background:var(--card);border:1.5px solid var(--line)}
+
+/* Piano deco background pulse */
+.piano-deco{animation:fadeSlideUp .5s var(--ease) both}
+.piano-deco svg rect:not([fill*="0,0,0"]){animation:pianoPulse 3s ease-in-out infinite alternate}
+.piano-deco svg rect:nth-child(3n){animation-delay:.3s}
+.piano-deco svg rect:nth-child(3n+1){animation-delay:.6s}
+@keyframes pianoPulse{from{fill:rgba(255,255,255,.08)}to{fill:rgba(255,255,255,.18)}}
+
+/* ── Mini score in kb-info bar ─────────────────────────── */
+.kb-info{display:flex;align-items:center;gap:12px;padding:10px 14px!important;min-height:72px}
+.mini-score-wrap{flex:none;width:110px;height:62px;overflow:hidden;border-radius:10px;background:var(--card);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center}
+.mini-score{width:100%;height:100%}
+.mini-score svg{width:100%!important;height:100%!important}
+.cn-block{flex:1;min-width:0}
+.cn-block .cn{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.cn-block .cn b{font-size:18px;font-weight:900;color:var(--ink);text-transform:none;letter-spacing:0}
+.cn-block .next{font-size:12px;color:var(--p);font-weight:700;margin-top:2px}

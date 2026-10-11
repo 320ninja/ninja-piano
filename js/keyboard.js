@@ -39,10 +39,24 @@ export const createKeyboard = (host, { low, high, labels, nameSystem, onPress })
   const active = new Map();
   const press = (m) => {
     const el = keys.get(m);
-    el?.classList.add('down');
+    if (el) {
+      el.classList.add('down');
+      if (!el.querySelector('.play-label')) {
+        const span = document.createElement('span');
+        span.className = 'play-label';
+        span.textContent = midiName(m).replace(/\d+$/, '');
+        el.appendChild(span);
+      }
+    }
     onPress(m);
   };
-  const release = (m) => keys.get(m)?.classList.remove('down');
+  const release = (m) => {
+    const el = keys.get(m);
+    if (el) {
+      el.classList.remove('down');
+      el.querySelector('.play-label')?.remove();
+    }
+  };
 
   host.addEventListener('pointerdown', (e) => {
     const el = e.target.closest('.key');
@@ -89,14 +103,53 @@ export const createKeyboard = (host, { low, high, labels, nameSystem, onPress })
     const el = keys.get(m);
     if (!el) return;
     el.classList.add(cls);
+    if (cls === 'down' || cls === 'correct') {
+      if (!el.querySelector('.play-label')) {
+        const span = document.createElement('span');
+        span.className = 'play-label';
+        span.textContent = midiName(m).replace(/\d+$/, '');
+        el.appendChild(span);
+      }
+      setTimeout(() => el.querySelector('.play-label')?.remove(), ms);
+    }
     setTimeout(() => el.classList.remove(cls), ms);
   };
 
   return {
     flash,
+    setHint(midis) {
+      // Clear previous hints and restore original labels
+      wrap.querySelectorAll('.hint').forEach((el) => {
+        el.classList.remove('hint');
+        const lbl = el.querySelector('.hint-label');
+        if (lbl) lbl.remove();
+      });
+      midis.forEach((m) => {
+        const el = keys.get(m);
+        if (!el) return;
+        el.classList.add('hint');
+        // Show note name in red on the key
+        const name = midiName(m).replace(/\d+$/, ''); // strip octave
+        const span = document.createElement('span');
+        span.className = 'hint-label';
+        span.textContent = name;
+        el.appendChild(span);
+      });
+    },
     setTargets(midis) {
-      wrap.querySelectorAll('.target').forEach((el) => el.classList.remove('target'));
-      midis.forEach((m) => keys.get(m)?.classList.add('target'));
+      wrap.querySelectorAll('.target').forEach((el) => {
+        el.classList.remove('target');
+        el.querySelector('.target-label')?.remove();
+      });
+      midis.forEach((m) => {
+        const el = keys.get(m);
+        if (!el) return;
+        el.classList.add('target');
+        const span = document.createElement('span');
+        span.className = 'target-label';
+        span.textContent = midiName(m).replace(/\d+$/, '');
+        el.appendChild(span);
+      });
       if (midis.length) this.scrollTo(midis[0]);
     },
     showPlaying(midis, ms) { midis.forEach((m) => flash(m, 'down', ms)); },

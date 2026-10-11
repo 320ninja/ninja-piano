@@ -41,16 +41,23 @@ const VOICES = {
   electric: { partials: [[1, 1], [2, 0.18], [4, 0.3]], decay: 1.6, type: 'sine', bright: 3200, trem: true },
   soft: { partials: [[1, 1], [2, 0.12]], decay: 1.8, type: 'sine', bright: 1800 },
   synth: { partials: [[1, 0.7], [1.005, 0.7]], decay: 0.9, type: 'sawtooth', bright: 3600 },
+  organ: { partials: [[1, 1], [2, 1], [3, 1], [4, 0.5], [6, 0.5]], decay: 4.0, type: 'sine', bright: 4000 },
+  edm: { partials: [[1, 0.9], [2, 0.8], [3, 0.5], [1.001, 0.9]], decay: 0.6, type: 'square', bright: 6000, trem: true },
 };
+
+let sustainOn = false;
+export const setSustain = (on) => { sustainOn = on; };
+export const getSustain = () => sustainOn;
 
 export const playNote = (midi, { duration = 0.8, velocity = 0.8, when = 0, voice = 'grand', volume = 0.8 } = {}) => {
   ensure();
   const v = VOICES[voice] || VOICES.grand;
   const t = ctx.currentTime + Math.max(0, when);
   const f = freq(midi);
-  // Low notes ring longer, high notes die faster, like real strings.
-  const ring = Math.min(v.decay * (1.4 - (midi - 21) / 110), 4);
-  const len = Math.max(duration, 0.25) + ring * 0.5;
+  // Sustain pedal: multiply ring and duration by 3×
+  const sustainMult = sustainOn ? 3 : 1;
+  const ring = Math.min(v.decay * (1.4 - (midi - 21) / 110) * sustainMult, 8);
+  const len = Math.max(duration * sustainMult, 0.25) + ring * 0.5;
 
   const env = ctx.createGain();
   const peak = velocity * volume * 0.32;

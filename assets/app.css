@@ -210,12 +210,12 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .key.b.hint{background:#facc15!important;color:#78350f!important}
 .key.correct{background:#22c55e!important;color:#fff!important}
 .key.b.correct{background:#16a34a!important;color:#fff!important}
-.hint-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:900;color:#16a34a;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px #fff,0 1px 4px rgba(0,0,0,.6);line-height:1;z-index:3}
-.key.b .hint-label{bottom:2px;color:#22c55e;font-size:10px}
-.play-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:900;color:#16a34a;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px #fff,0 1px 4px rgba(0,0,0,.6);line-height:1;z-index:3}
-.key.b .play-label{bottom:2px;font-size:10px;color:#22c55e}
-.target-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:900;color:#16a34a;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px #fff,0 1px 4px rgba(0,0,0,.6);line-height:1;z-index:3}
-.key.b .target-label{bottom:2px;font-size:10px;color:#22c55e}
+.hint-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:15px;font-weight:900;color:#064e3b;pointer-events:none;white-space:nowrap;text-shadow:0 0 6px rgba(255,255,255,.8);line-height:1;z-index:3}
+.key.b .hint-label{bottom:2px;color:#065f46;font-size:11px}
+.play-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:15px;font-weight:900;color:#064e3b;pointer-events:none;white-space:nowrap;text-shadow:0 0 6px rgba(255,255,255,.8);line-height:1;z-index:3}
+.key.b .play-label{bottom:2px;font-size:11px;color:#065f46}
+.target-label{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);font-size:15px;font-weight:900;color:#064e3b;pointer-events:none;white-space:nowrap;text-shadow:0 0 6px rgba(255,255,255,.8);line-height:1;z-index:3}
+.key.b .target-label{bottom:2px;font-size:11px;color:#065f46}
 @keyframes pulse{50%{opacity:.25}}
 @keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 .key .c4{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--p)}

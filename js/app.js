@@ -591,10 +591,6 @@ views.song = (params, id) => {
       <a class="btn block" href="#/practice/${id}" id="fallingBtn" style="flex:1;background:linear-gradient(135deg,#6d5dfc,#4f8ef7);color:#fff">🎹 Falling Notes</a>
     </div>
     <div class="kb-dock">
-      <div class="card kb-info">
-        <div class="mini-score-wrap"><div id="miniScore" class="mini-score"></div></div>
-        <div class="cn-block"><div class="cn">Current note<b id="cnote">—</b></div><div class="next" id="nnote"></div></div>
-      </div>
       <div style="display:flex;align-items:center;gap:8px;padding:6px 10px 4px;background:var(--bg)">
         <button id="kbSkipBack" title="Back 5 notes" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);flex-shrink:0">⏮5</button>
         <button id="kbPlay" style="background:var(--p);border:none;border-radius:10px;padding:6px 16px;font-size:15px;cursor:pointer;color:#fff;display:flex;align-items:center;gap:4px;flex-shrink:0">${icon('play')}</button>
@@ -657,11 +653,7 @@ views.song = (params, id) => {
     if (lead) {
       const y = score.cursorTo(lead.id);
       if (y !== lastSys) { lastSys = y; scrollScoreTo($('#score'), y); }
-      $('#cnote').innerHTML = active.map((e) => eventLabel(e.names)).join(' + ');
-      const nxt = tl.events.find((e) => st.hands.includes(e.hand) && e.start > lead.start && e.hand === lead.hand);
-      $('#nnote').innerHTML = nxt ? `Next: ${eventLabel(nxt.names)} ›` : '';
       kb.setTargets(active.flatMap((e) => e.midis));
-      renderMiniScore($('#miniScore'), active.filter(e=>e.hand==='rh').flatMap(e=>e.midis), active.filter(e=>e.hand==='lh').flatMap(e=>e.midis), parsed.key);
     }
     updateProg();
     raf = requestAnimationFrame(frame);

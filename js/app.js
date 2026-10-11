@@ -700,9 +700,7 @@ views.song = (params, id) => {
             const isCurrent = order === 1;
             lbl.style.color = isCurrent ? '#22c55e' : '#ef4444';
             lbl.style.fontSize = isCurrent ? '16px' : '12px';
-            const count = midiCount.get(midi) || 1;
-            const dots = count > 1 ? `<span style="font-size:8px;letter-spacing:1px;display:block;line-height:1;margin-top:1px">${'●'.repeat(count)}</span>` : '';
-            lbl.innerHTML = `${order}${dots}`;
+            lbl.textContent = order;
             el.appendChild(lbl);
           });
         }
@@ -1081,9 +1079,7 @@ views.practice = (params, id) => {
       const isCurrent = order === 1;
       lbl.style.color = isCurrent ? '#22c55e' : '#ef4444';
       lbl.style.fontSize = isCurrent ? '16px' : '12px';
-      const count = midiCount.get(midi) || 1;
-      const dots = count > 1 ? `<span style="font-size:8px;letter-spacing:1px;display:block;line-height:1;margin-top:1px">${'●'.repeat(count)}</span>` : '';
-      lbl.innerHTML = `${order}${dots}`;
+      lbl.textContent = order;
       el.appendChild(lbl);
     });
   };

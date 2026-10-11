@@ -839,18 +839,15 @@ views.practice = (params, id) => {
       const kbHost = $('#kb');
       if (!kbHost) return;
       kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
-      const upcoming = falling.getUpcoming(6);
-      const seen = new Set();
-      let order = 1;
-      upcoming.forEach(midi => {
-        if (seen.has(midi)) return;
-        seen.add(midi);
-        const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
-        if (!el) return;
-        const lbl = document.createElement('span');
-        lbl.className = 'degree-label';
-        lbl.textContent = order++;
-        el.appendChild(lbl);
+      falling.getUpcomingSteps(5).forEach(({ order, midis }) => {
+        midis.forEach(midi => {
+          const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
+          if (!el) return;
+          const lbl = document.createElement('span');
+          lbl.className = 'degree-label';
+          lbl.textContent = order;
+          el.appendChild(lbl);
+        });
       });
       requestAnimationFrame(updateDegrees);
     };

@@ -835,6 +835,7 @@ views.practice = (params, id) => {
         falling.press(m, performance.now() / 1000);
       },
     });
+    stampDegrees($('#kb'), keyPc, minorKey);
 
     let started = false;
     const startGame = () => {
@@ -886,6 +887,7 @@ views.practice = (params, id) => {
           falling.press(m, performance.now() / 1000);
         },
       });
+      stampDegrees($('#kb'), keyPc, minorKey);
     };
     $('#styles').onclick = (e) => {
       const s2 = e.target.closest('.chip')?.dataset.s; if (!s2) return;
@@ -1679,6 +1681,24 @@ const chordNotationSVG = (midis) => {
     return `${sharp?`<text x="${nx-12}" y="${y+4}" font-size="13" font-weight="bold" fill="currentColor">#</text>`:''}<ellipse cx="${nx}" cy="${y}" rx="7.5" ry="5.2" fill="currentColor" transform="rotate(-12,${nx},${y})"/>`;
   }).join('');
   return `<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg" style="color:var(--ink);opacity:.85;width:100px;height:75px"><text x="0" y="70" font-size="60" font-family="serif" fill="currentColor" style="font-style:italic">𝄞</text>${staffLines}${ledgerSvg}${notes}</svg>`;
+};
+
+// Stamp scale degree numbers (1–7) onto keyboard keys for a given key/mode
+const stampDegrees = (kbHost, keyPc, isMinor) => {
+  kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+  const major = [0,2,4,5,7,9,11];
+  const minor = [0,2,3,5,7,8,10];
+  const scale = isMinor ? minor : major;
+  kbHost.querySelectorAll('.key').forEach(el => {
+    const midi = Number(el.dataset.midi);
+    const pc = (midi - keyPc + 120) % 12;
+    const deg = scale.indexOf(pc);
+    if (deg === -1) return;
+    const lbl = document.createElement('span');
+    lbl.className = 'degree-label';
+    lbl.textContent = deg + 1;
+    el.appendChild(lbl);
+  });
 };
 
 // Color only chord tone keys in a single chord color — all tones same color so the chord reads as a unit

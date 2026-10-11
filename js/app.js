@@ -595,7 +595,7 @@ views.song = (params, id) => {
         <div class="mini-score-wrap"><div id="miniScore" class="mini-score"></div></div>
         <div class="cn-block"><div class="cn">Current note<b id="cnote">—</b></div><div class="next" id="nnote"></div></div>
       </div>
-      <div id="upcomingStrip" style="display:flex;align-items:center;gap:6px;padding:6px 10px 4px;background:var(--bg);overflow-x:auto;min-height:44px"></div>
+      <div id="upcomingStrip" style="display:flex;align-items:center;gap:8px;padding:8px 12px 6px;background:var(--bg);overflow-x:auto;min-height:90px"></div>
       <div style="display:flex;align-items:center;gap:8px;padding:6px 10px 4px;background:var(--bg)">
         <button id="kbSkipBack" title="Back 5 notes" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);flex-shrink:0">⏮5</button>
         <button id="kbPlay" style="background:var(--p);border:none;border-radius:10px;padding:6px 16px;font-size:15px;cursor:pointer;color:#fff;display:flex;align-items:center;gap:4px;flex-shrink:0">${icon('play')}</button>
@@ -676,18 +676,18 @@ views.song = (params, id) => {
         const BK = [{pc:1,x:11},{pc:3,x:27},{pc:6,x:59},{pc:8,x:75},{pc:10,x:91}];
         const miniKb = (midis, col, active) => {
           const pcs = new Set(midis.map(m => m % 12));
-          const op = active ? 1 : 0.55;
-          const border = active ? `2px solid ${col}` : '1.5px solid #444';
-          const shadow = active ? `0 0 0 2px ${col}55` : 'none';
+          const op = active ? 1 : 0.6;
+          const border = active ? `2.5px solid ${col}` : '1.5px solid #555';
+          const shadow = active ? `0 0 0 3px ${col}44` : 'none';
           const wkeys = WK.map(({pc,i}) => {
             const hit = pcs.has(pc);
-            return `<rect x="${i*15+1}" y="1" width="13" height="44" rx="2" fill="${hit?col:'white'}" stroke="${hit?col:'#ddd'}" stroke-width="${hit?1.5:0.5}"/>`;
+            return `<rect x="${i*15+1}" y="1" width="13" height="52" rx="2" fill="${hit?col:'#f5f5f5'}" stroke="${hit?col:'#ccc'}" stroke-width="${hit?1.5:0.5}"/>`;
           }).join('');
           const bkeys = BK.map(({pc,x}) => {
             const hit = pcs.has(pc);
-            return `<rect x="${x}" y="1" width="9" height="28" rx="1" fill="${hit?col:'#333'}"/>`;
+            return `<rect x="${x}" y="1" width="9" height="32" rx="1" fill="${hit?col:'#222'}"/>`;
           }).join('');
-          return `<svg width="108" height="46" viewBox="0 0 106 46" style="border-radius:6px;overflow:hidden;border:${border};box-shadow:${shadow};opacity:${op};display:block">${wkeys}${bkeys}</svg>`;
+          return `<svg width="120" height="54" viewBox="0 0 106 54" style="border-radius:7px;overflow:hidden;border:${border};box-shadow:${shadow};opacity:${op};display:block;background:#f5f5f5">${wkeys}${bkeys}</svg>`;
         };
         strip.innerHTML = upcoming.map((ev, i) => {
           const isCurrent = i === 0;

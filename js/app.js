@@ -806,16 +806,11 @@ views.practice = (params, id) => {
     const keyAcc  = keyStr.includes('#') ? 1 : keyStr.replace(/m$/, '').endsWith('b') ? -1 : 0;
     const keyPc   = ((KEY_PC[keyRoot[0]] ?? 0) + keyAcc + 12) % 12;
 
-    const currentlyPlaying = new Set();
     const makeFalling = (spd) => createFalling($('#fall-canvas'), {
       steps, low, high, bpm: parsed.bpm, speed: spd, keyPc, isMinor: minorKey,
       setTargets(midis) { kb?.setHint(midis); },
       flashKey(m, cls, ms) { kb?.flash(m, cls, ms); },
-      autoPlay(m) {
-        if (soundOn) { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); }
-        currentlyPlaying.add(m);
-        setTimeout(() => currentlyPlaying.delete(m), 500);
-      },
+      autoPlay(m) { if (soundOn) { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); } },
       onJudge(idx, val) {
         score += val; judged++;
         if (judged >= steps.length) {
@@ -840,21 +835,21 @@ views.practice = (params, id) => {
         falling.press(m, performance.now() / 1000);
       },
     });
-    const MAJOR_SC = [0,2,4,5,7,9,11], MINOR_SC = [0,2,3,5,7,8,10];
-    const degScale = minorKey ? MINOR_SC : MAJOR_SC;
     const updateDegrees = () => {
       const kbHost = $('#kb');
       if (!kbHost) return;
       kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
-      currentlyPlaying.forEach(midi => {
-        const pc = (midi - keyPc + 120) % 12;
-        const deg = degScale.indexOf(pc);
-        if (deg === -1) return;
+      const upcoming = falling.getUpcoming(6);
+      const seen = new Set();
+      let order = 1;
+      upcoming.forEach(midi => {
+        if (seen.has(midi)) return;
+        seen.add(midi);
         const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
         if (!el) return;
         const lbl = document.createElement('span');
         lbl.className = 'degree-label';
-        lbl.textContent = deg + 1;
+        lbl.textContent = order++;
         el.appendChild(lbl);
       });
       requestAnimationFrame(updateDegrees);

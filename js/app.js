@@ -700,7 +700,8 @@ views.song = (params, id) => {
             const isCurrent = order === 1;
             lbl.style.color = '#ef4444';
             lbl.style.fontSize = isCurrent ? '16px' : '12px';
-            lbl.textContent = order;
+            const count = midiCount.get(midi) || 1;
+            lbl.innerHTML = count > 1 ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
             el.appendChild(lbl);
           });
         }
@@ -921,9 +922,11 @@ views.practice = (params, id) => {
       kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
       // Build a map: midi → lowest order (nearest upcoming note on that key)
       const midiOrder = new Map();
+      const midiCount = new Map();
       falling.getUpcomingSteps(5).forEach(({ order, midis }) => {
         midis.forEach(midi => {
           if (!midiOrder.has(midi)) midiOrder.set(midi, order);
+          midiCount.set(midi, (midiCount.get(midi) || 0) + 1);
         });
       });
       midiOrder.forEach((order, midi) => {
@@ -932,7 +935,10 @@ views.practice = (params, id) => {
         const lbl = document.createElement('span');
         lbl.className = 'degree-label';
         lbl.style.bottom = '16px';
-        lbl.textContent = order;
+        lbl.style.color = '#ef4444';
+        lbl.style.fontSize = order === 1 ? '16px' : '12px';
+        const count = midiCount.get(midi) || 1;
+        lbl.innerHTML = count > 1 ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
         el.appendChild(lbl);
       });
       requestAnimationFrame(updateDegrees);
@@ -1079,7 +1085,8 @@ views.practice = (params, id) => {
       const isCurrent = order === 1;
       lbl.style.color = '#ef4444';
       lbl.style.fontSize = isCurrent ? '16px' : '12px';
-      lbl.textContent = order;
+      const count = midiCount.get(midi) || 1;
+      lbl.innerHTML = count > 1 ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
       el.appendChild(lbl);
     });
   };

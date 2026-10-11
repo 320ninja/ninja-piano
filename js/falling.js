@@ -350,6 +350,13 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
       raf = requestAnimationFrame(loop);
     },
     get paused() { return !running && pausedAt !== null; },
+    getUpcoming(n = 6) {
+      const midis = [];
+      for (let i = currentIdx; i < Math.min(steps.length, currentIdx + n); i++) {
+        steps[i].events.forEach(e => e.midis.forEach(m => { if (m != null) midis.push(m); }));
+      }
+      return midis;
+    },
     press(midi, nowSec) {
       if (startTime === null) return null;
       let best = null, bestDiff = Infinity;

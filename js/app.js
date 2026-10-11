@@ -835,7 +835,31 @@ views.practice = (params, id) => {
         falling.press(m, performance.now() / 1000);
       },
     });
-    stampDegrees($('#kb'), keyPc, minorKey);
+    const MAJOR_SC = [0,2,4,5,7,9,11], MINOR_SC = [0,2,3,5,7,8,10];
+    const degScale = minorKey ? MINOR_SC : MAJOR_SC;
+    const updateDegrees = () => {
+      const kbHost = $('#kb');
+      if (!kbHost) return;
+      kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+      const upcoming = falling.getUpcoming(6);
+      const donePc = new Set();
+      upcoming.forEach(midi => {
+        const pc = (midi - keyPc + 120) % 12;
+        const deg = degScale.indexOf(pc);
+        if (deg === -1 || donePc.has(pc)) return;
+        donePc.add(pc);
+        kbHost.querySelectorAll('.key').forEach(el => {
+          if ((Number(el.dataset.midi) - keyPc + 120) % 12 === pc) {
+            const lbl = document.createElement('span');
+            lbl.className = 'degree-label';
+            lbl.textContent = deg + 1;
+            el.appendChild(lbl);
+          }
+        });
+      });
+      requestAnimationFrame(updateDegrees);
+    };
+    requestAnimationFrame(updateDegrees);
 
     let started = false;
     const startGame = () => {
@@ -887,7 +911,6 @@ views.practice = (params, id) => {
           falling.press(m, performance.now() / 1000);
         },
       });
-      stampDegrees($('#kb'), keyPc, minorKey);
     };
     $('#styles').onclick = (e) => {
       const s2 = e.target.closest('.chip')?.dataset.s; if (!s2) return;

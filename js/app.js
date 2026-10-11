@@ -2022,20 +2022,14 @@ views.progressionPlay = (params, progId) => {
       const bassPC = invNotes[0]%12;
       const chordPCset = new Set(invNotes.map(n=>n%12));
       const isActive = inv===currentInv;
-      // Active: dark/saturated chord color. Non-active: very dim (low opacity, gray keys)
+      // All inversions: chord tones always fully colored. SVG opacity dims non-active.
       const mkW = ({pc,i}) => {
         const isC = chordPCset.has(pc);
-        const fill = isActive ? (isC ? chordCol : 'white') : (isC ? chordCol : 'white');
-        const fillOp = isActive ? (isC ? 1 : 1) : (isC ? 0.18 : 1);
-        const stroke = isActive ? (isC ? chordCol : '#ddd') : '#e5e7eb';
-        const strokeOp = isActive ? 1 : 0.5;
-        return `<rect x="${i*15+1}" y="1" width="13" height="48" rx="2" fill="${fill}" fill-opacity="${fillOp}" stroke="${stroke}" stroke-opacity="${strokeOp}" stroke-width="${isC&&isActive?1.5:0.5}"/>`;
+        return `<rect x="${i*15+1}" y="1" width="13" height="48" rx="2" fill="${isC?chordCol:'white'}" stroke="${isC?chordCol:'#ddd'}" stroke-width="${isC?1.5:0.5}"/>`;
       };
       const mkB = ({pc,x}) => {
         const isC = chordPCset.has(pc);
-        const fill = isActive ? (isC ? chordCol : '#222') : '#bbb';
-        const fillOp = isActive ? (isC ? 1 : 1) : (isC ? 0.5 : 1);
-        return `<rect x="${x}" y="1" width="9" height="31" rx="1" fill="${fill}" fill-opacity="${fillOp}"/>`;
+        return `<rect x="${x}" y="1" width="9" height="31" rx="1" fill="${isC?chordCol:'#222'}"/>`;
       };
       const border = isActive ? `2.5px solid ${chordCol}` : '1.5px solid #e5e7eb';
       const shadow = isActive ? `0 0 0 3px ${chordCol}44` : 'none';

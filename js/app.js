@@ -2039,9 +2039,9 @@ views.progressionPlay = (params, progId) => {
       };
       const border = isActive ? `2.5px solid ${chordCol}` : '1.5px solid #e5e7eb';
       const shadow = isActive ? `0 0 0 3px ${chordCol}44` : 'none';
-      const opacity = isActive ? 1 : 0.45;
+      const opacity = isActive ? 1 : 0.75;
       const svg = `<svg width="106" height="50" viewBox="0 0 106 50" style="border-radius:6px;overflow:hidden;border:${border};box-shadow:${shadow};display:block;opacity:${opacity}">${wk.map(mkW).join('')}${bk.map(mkB).join('')}</svg>`;
-      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:10px;font-weight:${isActive?800:500};color:${isActive?chordCol:'#c4c4c4'};white-space:nowrap">${INV_NAMES[inv]}</span>${svg}</div>`;
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:10px;font-weight:${isActive?800:500};color:${isActive?chordCol:'#888'};white-space:nowrap">${INV_NAMES[inv]}</span>${svg}</div>`;
     }).join('');
   };
 

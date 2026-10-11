@@ -1873,8 +1873,9 @@ views.progressionPlay = (params, progId) => {
     if (romEl)  romEl.textContent = chord.r || '';
     const typeEl = app.querySelector('#chordTypeName');
     if (typeEl) typeEl.textContent = progChordInversion(label, chord.q);
+    const chordCol = pillColor(chord.r);
     const kbLabelEl = app.querySelector('#kbChordLabel');
-    if (kbLabelEl) kbLabelEl.textContent = getChordInversionName(label, chord.q, midis);
+    if (kbLabelEl) { kbLabelEl.textContent = getChordInversionName(label, chord.q, midis); kbLabelEl.style.color = chordCol; }
     if (infoEl) infoEl.textContent = midis.map(m => midiName(m).replace(/\d+/,'')).join(' – ');
     const notEl = app.querySelector('#chordNotation');
     if (notEl) notEl.innerHTML = chordNotationSVG(midis);
@@ -1981,12 +1982,41 @@ views.progressionPlay = (params, progId) => {
 
     <div id="improvPanel" style="margin:10px 0"></div>
     <div class="kb-dock">
-      <div id="kbChordLabel" style="text-align:center;padding:6px 0 3px;font-size:16px;font-weight:800;color:var(--ink);letter-spacing:.3px">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+      <div id="kbChordLabel" style="text-align:center;padding:6px 0 3px;font-size:16px;font-weight:800;color:${pillColor(prog.chords[0].r)};letter-spacing:.3px">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
       <div class="kb" id="kb"></div>
     </div>
   </section>`;
 
-  const renderImprov = (currentChordMidis) => {
+  const buildInversionKbs = (midis, q, chordCol) => {
+    const intervals = CHORD_TYPE_INTERVALS[q] || CHORD_TYPE_INTERVALS.M;
+    const rootPc = midis[0] % 12;
+    const baseRoot = 60 + rootPc;
+    const rootNotes = intervals.map(i => baseRoot + i);
+    // Detect current inversion from shifted display notes
+    const shifted = midis.map(m => { let n=m; while(n<60)n+=12; while(n>71)n-=12; return n; }).sort((a,b)=>a-b);
+    const bassPc = shifted[0] % 12;
+    const bassInterval = (bassPc - rootPc + 12) % 12;
+    let currentInv = 0;
+    for (let i = 0; i < intervals.length; i++) { if (bassInterval === intervals[i]) { currentInv = i; break; } }
+    const INV_NAMES = ['Root pos.','1st inv.','2nd inv.','3rd inv.'];
+    const wk = [{pc:0,i:0},{pc:2,i:1},{pc:4,i:2},{pc:5,i:3},{pc:7,i:4},{pc:9,i:5},{pc:11,i:6}];
+    const bk = [{pc:1,x:11},{pc:3,x:27},{pc:6,x:59},{pc:8,x:75},{pc:10,x:91}];
+    return intervals.map((_,inv) => {
+      const invNotes = [...rootNotes];
+      for (let j=0;j<inv;j++) invNotes[j]+=12;
+      invNotes.sort((a,b)=>a-b);
+      while(invNotes[0]<60) invNotes.forEach((_,k)=>invNotes[k]+=12);
+      const bassPC = invNotes[0]%12;
+      const chordPCset = new Set(invNotes.map(n=>n%12));
+      const isActive = inv===currentInv;
+      const mkW = ({pc,i}) => { const isC=chordPCset.has(pc),isB=pc===bassPC; return `<rect x="${i*15+1}" y="1" width="13" height="48" rx="2" fill="${isC?(isB?chordCol:'white'):'white'}" stroke="${isC?chordCol:'#ddd'}" stroke-width="${isC?2:0.5}"/>`; };
+      const mkB = ({pc,x}) => { const isC=chordPCset.has(pc),isB=pc===bassPC; return `<rect x="${x}" y="1" width="9" height="31" rx="1" fill="${isC?(isB?chordCol:'#333'):'#333'}" opacity="${isC?1:0.8}"/>`; };
+      const svg = `<svg width="106" height="50" viewBox="0 0 106 50" style="border-radius:6px;overflow:hidden;border:${isActive?`2px solid ${chordCol}`:'1.5px solid #e5e7eb'};box-shadow:${isActive?`0 0 0 3px ${chordCol}33`:'none'};display:block">${wk.map(mkW).join('')}${bk.map(mkB).join('')}</svg>`;
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:10px;font-weight:${isActive?800:500};color:${isActive?chordCol:'var(--muted)'};white-space:nowrap">${INV_NAMES[inv]}</span>${svg}</div>`;
+    }).join('');
+  };
+
+  const renderImprov = (currentChordMidis, currentQ, chordCol) => {
     const t = getImprovTips(keyName, prog);
     const npanel = app.querySelector('#improvPanel');
     if (!npanel) return;
@@ -2013,22 +2043,16 @@ views.progressionPlay = (params, progId) => {
     // Patterns list
     const patList = (t.patterns||[]).map(p=>`<li style="margin-bottom:4px;font-size:12.5px">${p}</li>`).join('');
 
-    // Mini one-octave keyboard showing chord tones
-    const chordPcs = new Set((currentChordMidis||[]).map(m => m % 12));
-    const wKeys = [{m:0,i:0},{m:2,i:1},{m:4,i:2},{m:5,i:3},{m:7,i:4},{m:9,i:5},{m:11,i:6}];
-    const bKeys = [{m:1,x:13},{m:3,x:31},{m:6,x:67},{m:8,x:85},{m:10,x:103}];
-    const mkW = (m,i) => `<rect x="${i*18+1}" y="1" width="16" height="57" rx="2" fill="${chordPcs.has(m)?'var(--p)':'white'}" stroke="#ccc" stroke-width="0.5"/>`;
-    const mkB = ({m,x}) => `<rect x="${x}" y="1" width="11" height="38" rx="1.5" fill="${chordPcs.has(m)?'#0d9488':'#222'}"/>`;
-    const miniKb = `<svg width="126" height="60" viewBox="0 0 126 60" style="border-radius:6px;overflow:hidden;border:1px solid #ddd;flex-shrink:0">${wKeys.map(({m,i})=>mkW(m,i)).join('')}${bKeys.map(mkB).join('')}</svg>`;
+    // Inversion keyboards row
+    const activeCol = chordCol || 'var(--p)';
+    const invRow = currentChordMidis ? buildInversionKbs(currentChordMidis, currentQ || 'M', activeCol) : '';
 
     npanel.innerHTML = `<div class="card pad" style="padding:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:20px">🎹</span>
-          <div><b style="font-size:14px;display:block">Improvisation Guide</b><span style="font-size:11px;color:var(--muted)">${t.name} · Key of ${keyName}</span></div>
-        </div>
-        ${miniKb}
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:20px">🎹</span>
+        <div><b style="font-size:14px;display:block">Improvisation Guide</b><span style="font-size:11px;color:var(--muted)">${t.name} · Key of ${keyName}</span></div>
       </div>
+      ${invRow ? `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid #e5e7eb">${invRow}</div>` : ''}
 
       <div style="margin-bottom:12px;padding:10px;background:var(--p)11;border-radius:10px;border:1.5px solid var(--p)33">
         <div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:6px">🎯 Best notes for this chord</div>
@@ -2063,7 +2087,7 @@ views.progressionPlay = (params, progId) => {
   const renderWithImprov = () => {
     render();
     const chord = prog.chords[curIdx];
-    renderImprov(progChordMidis(keyMidi, chord.s, chord.q));
+    renderImprov(progChordMidis(keyMidi, chord.s, chord.q), chord.q, pillColor(chord.r));
   };
   renderWithImprov();
 

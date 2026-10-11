@@ -168,42 +168,42 @@ const songsReady = Promise.allSettled(SONG_FILES.map((f) => fetch(`songs/${f}.js
 
 /* ---------- theme preview ---------- */
 const themePreview = (primary, accent) => {
-  // Realistic piano: 8 white keys (C..C), black keys between C#,D#,F#,G#,A#
-  const WK = 8, ww = 16, wh = 56, bw = 10, bh = 34, pad = 3;
-  const totalW = WK * ww + pad * 2;
-  const totalH = wh + pad * 2 + 6; // +6 for piano case top
-  // White key highlight: C(0),E(2),G(4) = primary; others = ivory
-  const wHit = new Set([0, 2, 4]);
-  // Black key positions (x from left edge of keys area)
-  const BK_X = [ww - bw/2, 2*ww - bw/2, 4*ww - bw/2, 5*ww - bw/2, 6*ww - bw/2];
-  const bHit = new Set([0, 2]); // C#, F# in accent color
-  const ky = pad + 6; // keys start below case top
-  // White keys with subtle gradient for depth
+  // Grand piano top-down view — characteristic curved body + keyboard
+  // ViewBox: 112 x 82. Keyboard strip at bottom (y=54..78), body above.
+  const KX = 5, KY = 54, KW = 102, KH = 24; // keyboard rect
+  // Grand piano body path (top-down: keyboard at bottom, curved lid above)
+  const body = `M ${KX},${KY} L ${KX+KW},${KY} Q ${KX+KW},20 ${KX+KW-28},8 Q ${KX+KW-58},1 ${KX+30},5 Q ${KX+4},10 ${KX},30 Z`;
+  // Fallboard shadow line (front edge of lid)
+  const fallboard = `M ${KX+2},${KY} Q ${KX+KW/2},${KY-4} ${KX+KW-2},${KY}`;
+  // 7 white keys (C D E F G A B), evenly spread
+  const WK = 7, ww = KW / WK;
+  const wHit = [0, 2, 4]; // C E G → primary
   const wkeys = Array.from({length:WK}, (_,i) => {
-    const x = pad + i * ww;
-    const fill = wHit.has(i) ? primary : '#f0ede8';
-    const shine = wHit.has(i) ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.6)';
-    return `<rect x="${x+1}" y="${ky}" width="${ww-2}" height="${wh}" rx="0 0 3 3" fill="${fill}" stroke="#b8b0a8" stroke-width="0.5"/>` +
-           `<rect x="${x+1}" y="${ky}" width="${ww-2}" height="6" fill="${shine}"/>`;
+    const x = KX + i * ww;
+    const fill = wHit.includes(i) ? primary : '#f2ede6';
+    return `<rect x="${(x+0.5).toFixed(1)}" y="${KY+1}" width="${(ww-1).toFixed(1)}" height="${KH-3}" rx="2" fill="${fill}" stroke="#c0b8af" stroke-width="0.4"/>`;
   }).join('');
-  // Black keys with glossy look
-  const bkeys = BK_X.map((bx, i) => {
-    const x = pad + bx;
-    const fill = bHit.has(i) ? accent : '#1a1a1a';
-    const gloss = bHit.has(i) ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.12)';
-    return `<rect x="${x}" y="${ky}" width="${bw}" height="${bh}" rx="0 0 2 2" fill="${fill}"/>` +
-           `<rect x="${x+1}" y="${ky}" width="${bw-2}" height="8" rx="1" fill="${gloss}"/>`;
+  // Black keys: after keys 1,2,4,5 (C# D# F# G#)
+  const bw = ww * 0.62, bh = KH * 0.56;
+  const bAfter = [1, 2, 4, 5];
+  const bAccent = [0, 2]; // C# F# → accent
+  const bkeys = bAfter.map((after, i) => {
+    const x = KX + after * ww - bw / 2;
+    const fill = bAccent.includes(i) ? accent : '#1c1c1c';
+    return `<rect x="${x.toFixed(1)}" y="${KY+1}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="1" fill="${fill}"/>` +
+      `<rect x="${(x+1).toFixed(1)}" y="${KY+1}" width="${(bw-2).toFixed(1)}" height="5" rx="1" fill="rgba(255,255,255,0.15)"/>`;
   }).join('');
-  // Key dividers between white keys
-  const dividers = Array.from({length:WK-1}, (_,i) =>
-    `<line x1="${pad + (i+1)*ww}" y1="${ky}" x2="${pad + (i+1)*ww}" y2="${ky+wh}" stroke="#b8b0a8" stroke-width="0.5"/>`
-  ).join('');
-  return `<svg width="100%" viewBox="0 0 ${totalW} ${totalH}" style="display:block;border-radius:8px;overflow:hidden">` +
-    `<defs><linearGradient id="case" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#111"/></linearGradient></defs>` +
-    `<rect width="${totalW}" height="${totalH}" rx="8" fill="url(#case)"/>` +
-    `<rect x="${pad}" y="${ky}" width="${WK*ww}" height="${wh}" fill="#f0ede8"/>` +
-    wkeys + dividers + bkeys +
-    `<rect x="${pad}" y="${ky}" width="${WK*ww}" height="${wh}" rx="0 0 4 4" fill="none" stroke="#888" stroke-width="0.5"/>` +
+  // 3 legs (small circles)
+  const legs = `<ellipse cx="${KX+10}" cy="77" rx="4" ry="3" fill="#111"/>` +
+    `<ellipse cx="${KX+KW-10}" cy="77" rx="4" ry="3" fill="#111"/>` +
+    `<ellipse cx="${KX+KW/2}" cy="80" rx="4" ry="3" fill="#111"/>`;
+  return `<svg viewBox="0 0 112 83" width="100%" style="display:block;border-radius:10px;overflow:hidden">` +
+    `<rect width="112" height="83" rx="10" fill="#111"/>` +
+    `<path d="${body}" fill="#242424" stroke="#3a3a3a" stroke-width="0.8"/>` +
+    `<path d="${fallboard}" fill="none" stroke="#3a3a3a" stroke-width="1.2"/>` +
+    `<rect x="${KX}" y="${KY}" width="${KW}" height="${KH}" fill="#ddd8d0"/>` +
+    wkeys + bkeys + legs +
+    `<rect x="${KX}" y="${KY}" width="${KW}" height="${KH}" fill="none" stroke="#888" stroke-width="0.5"/>` +
   `</svg>`;
 };
 const themeCard = (k, t, active) =>

@@ -503,3 +503,6 @@ h3.sec::after{animation:lineGrow .9s var(--ease) .2s forwards}
 .cn-block .cn{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
 .cn-block .cn b{font-size:18px;font-weight:900;color:var(--ink);text-transform:none;letter-spacing:0}
 .cn-block .next{font-size:12px;color:var(--p);font-weight:700;margin-top:2px}
+#fabHome{position:fixed;top:10px;right:10px;z-index:999;width:40px;height:40px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.25);text-decoration:none;transition:transform .15s,box-shadow .15s}
+#fabHome:active{transform:scale(.92);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#fabHome .i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}

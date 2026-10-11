@@ -260,6 +260,20 @@ const setNav = (route) => {
   nav.classList.toggle('hide', hidden);
   document.body.classList.toggle('nonav', hidden);
   nav.querySelectorAll('a').forEach((a) => a.classList.toggle('on', a.dataset.r === map[route]));
+  // Floating home button on full-screen practice pages
+  let fab = document.getElementById('fabHome');
+  if (hidden && route !== 'welcome' && route !== 'done') {
+    if (!fab) {
+      fab = document.createElement('a');
+      fab.id = 'fabHome';
+      fab.href = '#/home';
+      fab.title = 'Go Home';
+      fab.innerHTML = icon('home');
+      document.body.appendChild(fab);
+    }
+  } else {
+    fab?.remove();
+  }
 };
 
 /* ---------- views ---------- */
@@ -433,6 +447,22 @@ views.practiceHub = () => {
       </div>
       <div style="width:38px;height:38px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff">${icon('arrowR')}</div>
     </a>
+    ${heading('🎼', 'Chord Progressions')}
+    <a class="song" href="#/progressions">
+      <div class="thumb" style="background:linear-gradient(135deg,#6d28d9,#3b82f6)"><svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg"><line x1="6" y1="14" x2="52" y2="14" stroke="#fff" stroke-width="1.2" opacity=".5"/><line x1="6" y1="22" x2="52" y2="22" stroke="#fff" stroke-width="1.2" opacity=".5"/><line x1="6" y1="30" x2="52" y2="30" stroke="#fff" stroke-width="1.2" opacity=".5"/><line x1="6" y1="38" x2="52" y2="38" stroke="#fff" stroke-width="1.2" opacity=".5"/><ellipse cx="13" cy="38" rx="5" ry="3.5" fill="#ef4444"/><line x1="18" y1="38" x2="18" y2="10" stroke="#ef4444" stroke-width="1.5"/><ellipse cx="26" cy="30" rx="5" ry="3.5" fill="#eab308"/><line x1="31" y1="30" x2="31" y2="6" stroke="#eab308" stroke-width="1.5"/><ellipse cx="39" cy="22" rx="5" ry="3.5" fill="#22c55e"/><line x1="44" y1="22" x2="44" y2="4" stroke="#22c55e" stroke-width="1.5"/><ellipse cx="50" cy="30" rx="5" ry="3.5" fill="#3b82f6"/><line x1="55" y1="30" x2="55" y2="8" stroke="#3b82f6" stroke-width="1.5"/><text x="29" y="54" text-anchor="middle" font-size="8" fill="#fff" font-weight="700" opacity=".85">I – IV – V – I</text></svg></div>
+      <div class="meta"><div class="t">Progression Practice</div>
+        <div class="s">Play by mood · Transpose to any key</div>
+        <div class="tags"><span class="tag cat">😊 Happy</span><span class="tag cat">🎸 Rock</span><span class="tag cat">🎷 Jazz</span><span class="tag cat">${PROGRESSIONS_DB.length} progressions</span></div>
+      </div><span class="play">${icon('play')}</span>
+    </a>
+    ${heading('📷', 'Scan sheet music')}
+    <a class="song" href="#/scan">
+      <div class="thumb" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)"><svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="18" width="38" height="28" rx="3" fill="rgba(255,255,255,.15)" stroke="#fff" stroke-width="1.5"/><rect x="16" y="10" width="12" height="10" rx="2" fill="rgba(255,255,255,.3)" stroke="#fff" stroke-width="1.2"/><circle cx="29" cy="32" r="7" fill="none" stroke="#fff" stroke-width="2"/><circle cx="29" cy="32" r="3" fill="#fff"/><line x1="8" y1="26" x2="14" y2="26" stroke="#fff" stroke-width="2" stroke-linecap="round"/><text x="29" y="54" text-anchor="middle" font-size="8" fill="#fff" font-weight="700" opacity=".85">SCAN &amp; PLAY</text></svg></div>
+      <div class="meta"><div class="t">Import from photo or PDF</div>
+        <div class="s">Scan printed sheet music and play it instantly</div>
+        <div class="tags"><span class="tag cat">OMR</span><span class="tag cat">Free</span></div>
+      </div><span class="play">${icon('arrowR')}</span>
+    </a>
     ${heading('🎯', 'Practice styles')}
     <div class="practice-styles-list">
       ${(() => {
@@ -460,26 +490,10 @@ views.practiceHub = () => {
       <a class="song" href="#/quiz/chord"><div class="thumb" style="background:linear-gradient(135deg,#fde68a,#f59e0b)"><svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg"><line x1="6" y1="22" x2="52" y2="22" stroke="#fff" stroke-width="1.2" opacity=".6"/><line x1="6" y1="30" x2="52" y2="30" stroke="#fff" stroke-width="1.2" opacity=".6"/><line x1="6" y1="38" x2="52" y2="38" stroke="#fff" stroke-width="1.2" opacity=".6"/><line x1="6" y1="46" x2="52" y2="46" stroke="#fff" stroke-width="1.2" opacity=".6"/><ellipse cx="18" cy="38" rx="5" ry="3.5" fill="#fff"/><text x="18" y="50" text-anchor="middle" font-size="7" fill="#fff" font-weight="700">C</text><ellipse cx="29" cy="30" rx="5" ry="3.5" fill="#fff"/><text x="29" y="42" text-anchor="middle" font-size="7" fill="#fff" font-weight="700">E</text><ellipse cx="40" cy="22" rx="5" ry="3.5" fill="#fff"/><text x="40" y="34" text-anchor="middle" font-size="7" fill="#fff" font-weight="700">G</text></svg></div><div class="meta"><div class="t">Chord Speller</div><div class="s">See a chord name — play all the notes together</div><div class="tags"><span class="tag cat">Best ${load('np.quiz.chord', 0)}🔥</span><span class="tag cat">Major · Minor · 7th</span></div></div><span class="play">${icon('play')}</span></a>
       <a class="song" href="#/quiz/black"><div class="thumb" style="background:linear-gradient(135deg,#1f2937,#4b5563)"><svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="10" width="10" height="28" rx="2" fill="rgba(255,255,255,.15)"/><rect x="20" y="10" width="10" height="28" rx="2" fill="rgba(255,255,255,.15)"/><rect x="34" y="10" width="10" height="28" rx="2" fill="rgba(255,255,255,.15)"/><rect x="48" y="10" width="8" height="28" rx="2" fill="rgba(255,255,255,.15)"/><rect x="13" y="10" width="8" height="18" rx="1.5" fill="#fff"/><rect x="27" y="10" width="8" height="18" rx="1.5" fill="#fff"/><rect x="41" y="10" width="8" height="18" rx="1.5" fill="#fff"/><text x="29" y="52" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">F# · Bb · Eb</text></svg></div><div class="meta"><div class="t">Black Key Drill</div><div class="s">Ear training for sharps &amp; flats only</div><div class="tags"><span class="tag cat">Best ${load('np.quiz.black', 0)}🔥</span><span class="tag cat">5 black keys</span></div></div><span class="play">${icon('play')}</span></a>
     </div>
-    ${heading('🎼', 'Chord Progressions')}
-    <a class="song" href="#/progressions">
-      <div class="thumb" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:30px">🎼</div>
-      <div class="meta"><div class="t">Progression Practice</div>
-        <div class="s">Play by mood · Transpose to any key</div>
-        <div class="tags"><span class="tag cat">😊 Happy</span><span class="tag cat">🎸 Rock</span><span class="tag cat">🎷 Jazz</span><span class="tag cat">${PROGRESSIONS_DB.length} progressions</span></div>
-      </div><span class="play">${icon('play')}</span>
-    </a>
     ${heading('🔥', 'Hard challenges')}<div class="list grid2">${SONGS.filter((s) => s.level === 'Hard').slice(0, 6).map((s) => songRow(s)).join('')}</div>
     ${inProgress.length ? `${heading('💪', 'Keep going')}<div class="list grid2">${inProgress.map((s) => songRow(s)).join('')}</div>` : ''}
     ${heading('🔥', 'Warm-up exercises')}<div class="list grid2">${ex.map((s) => songRow(s)).join('') || '<div class="empty">Loading…</div>'}</div>
     ${heading('🌱', 'Easy songs to learn next')}<div class="list grid2">${easy.map((s) => songRow(s)).join('')}</div>
-    ${heading('📷', 'Scan sheet music')}
-    <a class="song" href="#/scan">
-      <div class="thumb" style="background:linear-gradient(135deg,#e0f2fe,#0284c7)">${icon('scan')}</div>
-      <div class="meta"><div class="t">Import from photo or PDF</div>
-        <div class="s">Scan printed sheet music and play it instantly</div>
-        <div class="tags"><span class="tag cat">OMR</span><span class="tag cat">Free</span></div>
-      </div><span class="play">${icon('arrowR')}</span>
-    </a>
   </section>`;
 };
 

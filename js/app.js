@@ -2040,8 +2040,8 @@ views.progressionPlay = (params, progId) => {
       const border = isActive ? `2.5px solid ${chordCol}` : '1.5px solid #e5e7eb';
       const shadow = isActive ? `0 0 0 3px ${chordCol}44` : 'none';
       const opacity = isActive ? 1 : 0.75;
-      const svg = `<svg width="106" height="50" viewBox="0 0 106 50" style="border-radius:6px;overflow:hidden;border:${border};box-shadow:${shadow};display:block;opacity:${opacity}">${wk.map(mkW).join('')}${bk.map(mkB).join('')}</svg>`;
-      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:10px;font-weight:${isActive?800:500};color:${isActive?chordCol:'#888'};white-space:nowrap">${INV_NAMES[inv]}</span>${svg}</div>`;
+      const svg = `<svg width="150" height="72" viewBox="0 0 106 50" style="border-radius:8px;overflow:hidden;border:${border};box-shadow:${shadow};display:block;opacity:${opacity}">${wk.map(mkW).join('')}${bk.map(mkB).join('')}</svg>`;
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span style="font-size:12px;font-weight:${isActive?800:500};color:${isActive?chordCol:'#888'};white-space:nowrap">${INV_NAMES[inv]}</span>${svg}</div>`;
     }).join('');
   };
 
@@ -2078,9 +2078,10 @@ views.progressionPlay = (params, progId) => {
     const invRow = currentChordMidis ? buildInversionKbs(currentChordMidis, currentQ || 'M', activeCol) : '';
 
     npanel.innerHTML = `<div class="card pad" style="padding:14px">
-      ${invRow ? `<div style="margin-bottom:12px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid #e5e7eb">
-        <div style="text-align:center;font-size:15px;font-weight:800;color:${activeCol};margin-bottom:8px;letter-spacing:.2px">${chordTypeName}</div>
-        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${invRow}</div>
+      ${invRow ? `<div style="margin-bottom:12px;padding:12px;background:var(--bg);border-radius:10px;border:1px solid #e5e7eb">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px">🎹 Chord Chart</div>
+        <div style="font-size:16px;font-weight:800;color:${activeCol};margin-bottom:10px;letter-spacing:.2px">${chordTypeName}</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${invRow}</div>
       </div>` : ''}
 
       <div style="margin-bottom:12px;padding:10px;background:var(--p)11;border-radius:10px;border:1.5px solid var(--p)33">

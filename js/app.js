@@ -1033,8 +1033,9 @@ views.practice = (params, id) => {
   };
   const showDegreeLabels = () => {
     const kbHost = $('#kb');
-    if (!kbHost || hidden) return;
+    if (!kbHost) return;
     kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+    if (hidden) return;
     const midiOrder = new Map();
     for (let i = st.idx; i < Math.min(steps.length, st.idx + 5); i++) {
       const order = i - st.idx + 1;

@@ -675,7 +675,7 @@ views.song = (params, id) => {
           const pc = ev.midis[0] % 12;
           const col = NOTE_COLORS[pc] || '#888';
           return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0">
-            <span style="font-size:10px;font-weight:700;color:${isCurrent?col:'#aaa'}">${isCurrent?'NOW':i}</span>
+            <span style="font-size:10px;font-weight:700;color:${isCurrent?col:'#aaa'}">${i+1}</span>
             <div style="padding:4px 10px;border-radius:8px;background:${isCurrent?col:col+'22'};color:${isCurrent?'#fff':col};font-size:13px;font-weight:800;border:2px solid ${isCurrent?col:col+'66'};white-space:nowrap">${label}</div>
           </div>`;
         }).join('<span style="color:#ccc;font-size:16px;flex-shrink:0">›</span>');
@@ -687,7 +687,7 @@ views.song = (params, id) => {
           const midiCount = new Map(); // midi → how many times in upcoming 5
           upcoming.forEach((ev, i) => {
             ev.midis.forEach(m => {
-              if (!midiOrder.has(m)) midiOrder.set(m, i === 0 ? 'NOW' : i);
+              if (!midiOrder.has(m)) midiOrder.set(m, i + 1);
               midiCount.set(m, (midiCount.get(m) || 0) + 1);
             });
           });
@@ -697,6 +697,9 @@ views.song = (params, id) => {
             const lbl = document.createElement('span');
             lbl.className = 'degree-label';
             lbl.style.bottom = '16px';
+            const isCurrent = order === 1;
+            lbl.style.color = isCurrent ? '#22c55e' : '#ef4444';
+            lbl.style.fontSize = isCurrent ? '16px' : '12px';
             const count = midiCount.get(midi) || 1;
             const dots = count > 1 ? `<span style="font-size:8px;letter-spacing:1px;display:block;line-height:1;margin-top:1px">${'●'.repeat(count)}</span>` : '';
             lbl.innerHTML = `${order}${dots}`;
@@ -1075,6 +1078,9 @@ views.practice = (params, id) => {
       const lbl = document.createElement('span');
       lbl.className = 'degree-label';
       lbl.style.bottom = '16px';
+      const isCurrent = order === 1;
+      lbl.style.color = isCurrent ? '#22c55e' : '#ef4444';
+      lbl.style.fontSize = isCurrent ? '16px' : '12px';
       const count = midiCount.get(midi) || 1;
       const dots = count > 1 ? `<span style="font-size:8px;letter-spacing:1px;display:block;line-height:1;margin-top:1px">${'●'.repeat(count)}</span>` : '';
       lbl.innerHTML = `${order}${dots}`;

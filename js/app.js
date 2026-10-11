@@ -1987,15 +1987,15 @@ views.progressionPlay = (params, progId) => {
 
     <div id="improvPanel" style="margin:10px 0"></div>
     <div class="kb-dock">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px 2px;gap:8px">
-        <div id="kbChordLabel" style="font-size:15px;font-weight:800;color:${pillColor(prog.chords[0].r)};letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:4px 8px 2px;flex-wrap:wrap">
+        <div id="kbChordLabel" style="font-size:14px;font-weight:800;color:${pillColor(prog.chords[0].r)};letter-spacing:.2px;white-space:nowrap;flex-shrink:0">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+        <div class="chips" id="kbProgPills" style="flex:1;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding:0;margin:0;gap:5px">${buildChordList()}</div>
         <div style="display:flex;gap:4px;flex-shrink:0">
           <button id="kbPrev" style="background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;color:var(--ink)" title="Prev">◀</button>
           <button id="kbAuto" style="background:var(--p);border:none;border-radius:8px;padding:4px 10px;font-size:13px;cursor:pointer;color:#fff" title="Play/Pause">▶</button>
           <button id="kbNext" style="background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;color:var(--ink)" title="Next">▶▶</button>
         </div>
       </div>
-      <div class="chips" id="kbProgPills" style="justify-content:center;flex-wrap:wrap;padding:4px 8px 2px;gap:5px">${buildChordList()}</div>
       <div class="kb" id="kb"></div>
     </div>
   </section>`;

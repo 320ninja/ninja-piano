@@ -1647,10 +1647,11 @@ const colorKbChord = (chordMidis, chordColor) => {
   });
   const host = document.querySelector('#kb');
   if (!host) return;
-  const chordSet = new Set(chordMidis.map(m => m % 12));
+  // Shift chord into octave 4 (C4=60) for middle-keyboard display
+  const shifted = chordMidis.map(m => { while (m < 60) m += 12; while (m > 71) m -= 12; return m; });
+  const chordSet = new Set(shifted);
   host.querySelectorAll('.key').forEach(el => {
-    const pc = Number(el.dataset.midi) % 12;
-    if (chordSet.has(pc)) {
+    if (chordSet.has(Number(el.dataset.midi))) {
       el.dataset.improv = 'chord';
       el.style.setProperty('--improv-col', chordColor);
     }

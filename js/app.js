@@ -679,6 +679,22 @@ views.song = (params, id) => {
             <div style="padding:4px 10px;border-radius:8px;background:${isCurrent?col:col+'22'};color:${isCurrent?'#fff':col};font-size:13px;font-weight:800;border:2px solid ${isCurrent?col:col+'66'};white-space:nowrap">${label}</div>
           </div>`;
         }).join('<span style="color:#ccc;font-size:16px;flex-shrink:0">›</span>');
+        // Degree numbers on keyboard keys
+        const kbHost = app.querySelector('#kb');
+        if (kbHost) {
+          kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+          const midiOrder = new Map();
+          upcoming.forEach((ev, i) => { ev.midis.forEach(m => { if (!midiOrder.has(m)) midiOrder.set(m, i === 0 ? 'NOW' : i); }); });
+          midiOrder.forEach((order, midi) => {
+            const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
+            if (!el) return;
+            const lbl = document.createElement('span');
+            lbl.className = 'degree-label';
+            lbl.style.bottom = '16px';
+            lbl.textContent = order;
+            el.appendChild(lbl);
+          });
+        }
       }
     }
     updateProg();
@@ -1035,7 +1051,7 @@ views.practice = (params, id) => {
     const kbHost = $('#kb');
     if (!kbHost) return;
     kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
-    if (style !== 'learn') return;
+    if (hidden) return;
     const midiOrder = new Map();
     for (let i = st.idx; i < Math.min(steps.length, st.idx + 5); i++) {
       const order = i - st.idx + 1;

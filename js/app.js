@@ -2078,10 +2078,6 @@ views.progressionPlay = (params, progId) => {
     const invRow = currentChordMidis ? buildInversionKbs(currentChordMidis, currentQ || 'M', activeCol) : '';
 
     npanel.innerHTML = `<div class="card pad" style="padding:14px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span style="font-size:20px">🎹</span>
-        <div><b style="font-size:14px;display:block">Improvisation Guide</b><span style="font-size:11px;color:var(--muted)">${t.name} · Key of ${keyName}</span></div>
-      </div>
       ${invRow ? `<div style="margin-bottom:12px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid #e5e7eb">
         <div style="text-align:center;font-size:15px;font-weight:800;color:${activeCol};margin-bottom:8px;letter-spacing:.2px">${chordTypeName}</div>
         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${invRow}</div>
@@ -2108,8 +2104,13 @@ views.progressionPlay = (params, progId) => {
         <ul style="margin:0;padding-left:16px;color:var(--ink)">${patList}</ul>
       </div>
 
-      <div style="font-size:11px;padding:6px 10px;background:var(--bad)18;border-radius:8px;color:var(--bad)">
+      <div style="font-size:11px;padding:6px 10px;background:var(--bad)18;border-radius:8px;color:var(--bad);margin-bottom:12px">
         ⚠️ ${t.avoid}
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;padding-top:4px;border-top:1px solid var(--border)">
+        <span style="font-size:20px">🎹</span>
+        <div><b style="font-size:14px;display:block">Improvisation Guide</b><span style="font-size:11px;color:var(--muted)">${t.name} · Key of ${keyName}</span></div>
       </div>
     </div>`;
   };

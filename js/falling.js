@@ -50,6 +50,7 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
   let startTime = null;
   let raf = 0;
   let running = false;
+  let pausedAt = null; // wall-clock ms when paused
   const secPerBeat = () => 60 / (bpm * speed);
 
   const state = steps.map(() => ({ pressed: false, result: null, t: null, played: false }));
@@ -330,9 +331,24 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
     },
     stop() {
       running = false;
+      pausedAt = null;
       cancelAnimationFrame(raf);
       setTargets?.([]);
     },
+    pause() {
+      if (!running) return;
+      running = false;
+      pausedAt = performance.now();
+      cancelAnimationFrame(raf);
+    },
+    resume() {
+      if (running || startTime === null || pausedAt === null) return;
+      startTime += performance.now() - pausedAt;
+      pausedAt = null;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    },
+    get paused() { return !running && pausedAt !== null; },
     press(midi, nowSec) {
       if (startTime === null) return null;
       let best = null, bestDiff = Infinity;

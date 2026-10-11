@@ -788,6 +788,11 @@ views.practice = (params, id) => {
           <button class="btn soft${settings.fallingSound !== false ? ' on' : ''}" id="toggleSound" title="Toggle auto-play sound">🔊 Sound</button>
           <button class="btn soft${settings.keyLabels ? ' on' : ''}" id="toggleLabels" title="Toggle note names">🎵 Names</button>
         </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:6px 4px 2px">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap">SPEED</span>
+          <input type="range" id="fallSpeed" min="25" max="150" step="5" value="${Math.round(cfg.speed*100)}" style="flex:1;accent-color:var(--p)">
+          <span id="fallSpeedVal" style="font-size:12px;font-weight:800;color:var(--p);min-width:36px;text-align:right">${Math.round(cfg.speed*100)}%</span>
+        </div>
       </div>
     </section>`;
 
@@ -841,8 +846,28 @@ views.practice = (params, id) => {
       $('#go').innerHTML = icon('pause');
     };
 
-    $('#go').onclick = startGame;
+    $('#go').onclick = () => {
+      if (!started) { startGame(); return; }
+      if (falling.paused) {
+        falling.resume();
+        $('#go').innerHTML = icon('pause');
+      } else {
+        falling.pause();
+        $('#go').innerHTML = icon('play');
+      }
+    };
     $('#restart').onclick = () => { started = false; falling.stop(); score = 0; judged = 0; startGame(); };
+    $('#fallSpeed').oninput = (e) => {
+      const pct = Number(e.target.value);
+      $('#fallSpeedVal').textContent = pct + '%';
+      cfg.speed = pct / 100;
+      save(`np.pcfg.${id}`, cfg);
+      // restart with new speed (reset started so startGame re-initializes)
+      started = false;
+      falling.stop();
+      score = 0; judged = 0;
+      startGame();
+    };
     $('#toggleSound').onclick = () => {
       soundOn = !soundOn;
       save('np.settings', { ...load('np.settings'), fallingSound: soundOn });

@@ -173,6 +173,24 @@ export const renderScore = (container, parsed, opts) => {
     });
   });
   const noteBoxes = chordLabels.length ? [...svg.querySelectorAll('.vf-stavenote, .vf-beam')].map((g) => g.getBBox()) : [];
+  // Draw a subtle tinted background rect for each chord region
+  const nonScale = chordLabels.filter((c) => !c.scale);
+  nonScale.forEach((c, i) => {
+    const next = nonScale[i + 1];
+    const sameSys = next && next.sysY === c.sysY;
+    const x1 = c.x - 10;
+    const x2 = sameSys ? next.x - 10 : width - 10;
+    const rect = document.createElementNS(NS, 'rect');
+    rect.setAttribute('x', x1);
+    rect.setAttribute('y', c.sysY + TREBLE_Y - 2);
+    rect.setAttribute('width', Math.max(0, x2 - x1));
+    rect.setAttribute('height', BASS_Y - TREBLE_Y + 68);
+    rect.setAttribute('rx', 4);
+    rect.setAttribute('fill', '#e11d4810');
+    rect.setAttribute('stroke', '#e11d4828');
+    rect.setAttribute('stroke-width', '1');
+    svg.insertBefore(rect, svg.firstChild);
+  });
   chordLabels.forEach((c) => {
     if (c.scale) {
       const t = document.createElementNS(NS, 'text');

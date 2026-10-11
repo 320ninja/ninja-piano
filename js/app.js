@@ -616,7 +616,7 @@ views.song = (params, id) => {
   $('#fallingBtn')?.addEventListener('click', goFalling);
   $('#fallingBtnTop')?.addEventListener('click', goFalling);
   let score;
-  const draw = () => { score = renderScore($('#score'), parsed, { ...scoreOpts(), showChords: false }); colorizeScore($('#score')); };
+  const draw = () => { score = renderScore($('#score'), parsed, { ...scoreOpts(), showChords: true }); colorizeScore($('#score')); };
   draw();
   const { low, high } = keyRange(parsed);
   const kb = createKeyboard($('#kb'), { low, high, labels: settings.keyLabels, nameSystem: settings.nameSystem,

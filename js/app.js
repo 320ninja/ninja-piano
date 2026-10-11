@@ -788,8 +788,10 @@ views.practice = (params, id) => {
           <button class="btn soft${settings.fallingSound !== false ? ' on' : ''}" id="toggleSound" title="Toggle auto-play sound">🔊 Sound</button>
           <button class="btn soft${settings.keyLabels ? ' on' : ''}" id="toggleLabels" title="Toggle note names">🎵 Names</button>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;padding:6px 4px 2px">
-          <span style="font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap">SPEED</span>
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 4px 2px">
+          <button class="btn soft" id="seekBack" style="flex:none;padding:0 10px;font-size:16px" title="Back 5s">⏪</button>
+          <button class="btn soft" id="seekFwd" style="flex:none;padding:0 10px;font-size:16px" title="Forward 5s">⏩</button>
+          <span style="font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;margin-left:4px">SPEED</span>
           <input type="range" id="fallSpeed" min="10" max="150" step="5" value="${Math.round(cfg.speed*100)}" style="flex:1;accent-color:var(--p)">
           <span id="fallSpeedVal" style="font-size:12px;font-weight:800;color:var(--p);min-width:36px;text-align:right">${Math.round(cfg.speed*100)}%</span>
         </div>
@@ -875,6 +877,8 @@ views.practice = (params, id) => {
       }
     };
     $('#restart').onclick = () => { started = false; falling.stop(); score = 0; judged = 0; startGame(); };
+    $('#seekBack').onclick = () => { if (started) { falling.seekBy(-5000); score = 0; judged = 0; } };
+    $('#seekFwd').onclick  = () => { if (started) { falling.seekBy(5000);  score = 0; judged = 0; } };
     $('#fallSpeed').oninput = (e) => {
       const pct = Number(e.target.value);
       $('#fallSpeedVal').textContent = pct + '%';

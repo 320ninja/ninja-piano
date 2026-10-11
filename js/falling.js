@@ -365,6 +365,22 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
       raf = requestAnimationFrame(loop);
     },
     get paused() { return !running && pausedAt !== null; },
+    seekBy(deltaMs) {
+      if (startTime === null) return;
+      startTime -= deltaMs; // shift startTime: negative = rewind, positive = forward
+      // recompute currentIdx from new time
+      const now = performance.now() / 1000;
+      currentIdx = 0;
+      while (currentIdx < steps.length) {
+        const wallHit = startTime / 1000 + steps[currentIdx].start * secPerBeat();
+        if (now > wallHit + GOOD_WIN) currentIdx++;
+        else break;
+      }
+      // reset results for steps after new currentIdx so they can be hit again
+      for (let i = currentIdx; i < steps.length; i++) {
+        state[i].pressed = false; state[i].result = null; state[i].t = null; state[i].played = false;
+      }
+    },
     getUpcomingSteps(n = 5) {
       // advance from currentIdx based on wall time so numbers sync with sound
       let from = currentIdx;

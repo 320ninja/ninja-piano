@@ -1650,10 +1650,16 @@ const colorKbChord = (chordMidis, chordColor) => {
   // Shift chord into octave 4 (C4=60) for middle-keyboard display
   const shifted = chordMidis.map(m => { while (m < 60) m += 12; while (m > 71) m -= 12; return m; });
   const chordSet = new Set(shifted);
+  const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   host.querySelectorAll('.key').forEach(el => {
+    el.querySelector('.improv-note-label')?.remove();
     if (chordSet.has(Number(el.dataset.midi))) {
       el.dataset.improv = 'chord';
       el.style.setProperty('--improv-col', chordColor);
+      const lbl = document.createElement('span');
+      lbl.className = 'improv-note-label';
+      lbl.textContent = NOTE_NAMES[Number(el.dataset.midi) % 12];
+      el.appendChild(lbl);
     }
   });
 };
@@ -1784,6 +1790,7 @@ views.progressionPlay = (params, progId) => {
       <b id="bpmVal" style="min-width:36px;text-align:right;font-size:14px">${bpm}</b>
     </div>
 
+    <div id="improvPanel" style="margin:10px 0"></div>
     <div class="kb-dock"><div class="kb" id="kb"></div></div>
   </section>`;
 
@@ -1793,10 +1800,12 @@ views.progressionPlay = (params, progId) => {
     if (!npanel) return;
     const NC = { C:'#ef4444',D:'#f97316',E:'#eab308',F:'#22c55e',G:'#06b6d4',A:'#3b82f6',B:'#8b5cf6' };
     const nc = (n) => NC[n.charAt(0)] || 'var(--p)';
+    const NOTE_MIDI5 = {C:72,'C#':73,D:74,'D#':75,E:76,F:77,'F#':78,G:79,'G#':80,A:81,'A#':82,B:83};
     const noteChip = (n, label='', highlight=false) => {
       const col = nc(n);
+      const midi = NOTE_MIDI5[n] ?? 72;
       return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-        <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:${highlight?col:col+'22'};color:${highlight?'#fff':col};font-weight:900;font-size:13px;border:2px solid ${col}${highlight?'':'66'}">${n}</span>
+        <button data-play-midi="${midi}" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:${highlight?col:col+'22'};color:${highlight?'#fff':col};font-weight:900;font-size:13px;border:2px solid ${col}${highlight?'':'66'};cursor:pointer;padding:0;outline:none">${n}</button>
         ${label?`<span style="font-size:9px;color:var(--muted);text-align:center;line-height:1.1;max-width:36px">${label}</span>`:''}
       </div>`;
     };
@@ -1807,7 +1816,7 @@ views.progressionPlay = (params, progId) => {
     // Chord tones chips — use actual current chord midis if available
     const NOTE_SEQ_R = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     const liveChordNames = currentChordMidis ? [...new Set(currentChordMidis.map(m => NOTE_SEQ_R[m%12]))] : (t.chordTones||[]);
-    const ctRow = liveChordNames.map(n => `<span style="padding:3px 10px;border-radius:10px;background:${nc(n)};color:#fff;font-weight:900;font-size:13px">${n}</span>`).join('');
+    const ctRow = liveChordNames.map(n => { const midi = NOTE_MIDI5[n] ?? 72; return `<button data-play-midi="${midi}" style="padding:6px 14px;border-radius:12px;background:${nc(n)};color:#fff;font-weight:900;font-size:14px;border:none;cursor:pointer;outline:none">${n}</button>`; }).join('');
 
     // Patterns list
     const patList = (t.patterns||[]).map(p=>`<li style="margin-bottom:4px;font-size:12.5px">${p}</li>`).join('');
@@ -1848,7 +1857,11 @@ views.progressionPlay = (params, progId) => {
   let kb = null;
   const onPress = (m) => { unlockAudio(); playNote(m,{voice:settings.voice,volume:settings.volume/100}); };
   kb = createKeyboard(app.querySelector('#kb'),{low:48,high:84,labels:true,nameSystem:settings.nameSystem,onPress});
-  const renderWithImprov = () => { render(); };
+  const renderWithImprov = () => {
+    render();
+    const chord = prog.chords[curIdx];
+    renderImprov(progChordMidis(keyMidi, chord.s, chord.q));
+  };
   renderWithImprov();
 
   // Key selector
@@ -1879,9 +1892,14 @@ views.progressionPlay = (params, progId) => {
     if(autoPlaying){stopAuto();startAuto();}
   };
   app.querySelector('#voicePick')?.addEventListener('change',(e)=>setSetting('voice',e.target.value));
-  app.querySelector('#sustainBtn')?.addEventListener('click',()=>{
-    setSustain(!getSustain());
-    app.querySelector('#sustainBtn').classList.toggle('on', getSustain());
+  // Sustain — delegated so it survives re-renders of the top bar
+  app.addEventListener('click',(e)=>{
+    if(e.target.closest('#sustainBtn')){
+      setSustain(!getSustain());
+      app.querySelectorAll('#sustainBtn').forEach(b=>b.classList.toggle('on',getSustain()));
+    }
+    const midi = Number(e.target.closest('[data-play-midi]')?.dataset.playMidi);
+    if(midi){ unlockAudio(); playNote(midi,{voice:settings.voice,volume:settings.volume/100,duration:0.5}); }
   });
 
   cleanup=()=>{stopAuto();kb?.destroy();};

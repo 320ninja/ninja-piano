@@ -784,14 +784,15 @@ views.practice = (params, id) => {
       <div class="kb-dock" style="flex-shrink:0">
         <div class="kb" id="kb"></div>
         <div class="prac-nav" style="gap:6px;flex-wrap:wrap">
+          <button class="btn soft" id="seekBack" style="font-size:15px;padding:0 10px" title="Back 5s">⏪</button>
+          <button class="btn soft" id="goKb" aria-label="Play/Pause" style="padding:0 12px">${icon('play')}</button>
+          <button class="btn soft" id="seekFwd" style="font-size:15px;padding:0 10px" title="Forward 5s">⏩</button>
           <button class="btn soft" id="restart">${icon('restart')} Restart</button>
           <button class="btn soft${settings.fallingSound !== false ? ' on' : ''}" id="toggleSound" title="Toggle auto-play sound">🔊 Sound</button>
           <button class="btn soft${settings.keyLabels ? ' on' : ''}" id="toggleLabels" title="Toggle note names">🎵 Names</button>
         </div>
         <div style="display:flex;align-items:center;gap:6px;padding:6px 4px 2px">
-          <button class="btn soft" id="seekBack" style="flex:none;padding:0 10px;font-size:16px" title="Back 5s">⏪</button>
-          <button class="btn soft" id="seekFwd" style="flex:none;padding:0 10px;font-size:16px" title="Forward 5s">⏩</button>
-          <span style="font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;margin-left:4px">SPEED</span>
+          <span style="font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap">SPEED</span>
           <input type="range" id="fallSpeed" min="10" max="150" step="5" value="${Math.round(cfg.speed*100)}" style="flex:1;accent-color:var(--p)">
           <span id="fallSpeedVal" style="font-size:12px;font-weight:800;color:var(--p);min-width:36px;text-align:right">${Math.round(cfg.speed*100)}%</span>
         </div>
@@ -858,6 +859,9 @@ views.practice = (params, id) => {
     requestAnimationFrame(updateDegrees);
 
     let started = false;
+    const syncPlayBtns = (playing) => {
+      [$('#go'), $('#goKb')].forEach(b => { if (b) b.innerHTML = playing ? icon('pause') : icon('play'); });
+    };
     const startGame = () => {
       if (started) return;
       started = true;
@@ -865,20 +869,17 @@ views.practice = (params, id) => {
       const countInMs = (60 / parsed.bpm) * cfg.speed * 1000 * parsed.barBeats;
       for (let b = 0; b < parsed.barBeats; b++) playClick(b === 0, (b * 60) / (parsed.bpm * cfg.speed));
       falling.start(performance.now() + countInMs);
-      $('#go').innerHTML = icon('pause');
+      syncPlayBtns(true);
     };
 
-    $('#go').onclick = () => {
+    const togglePlay = () => {
       if (!started) { startGame(); return; }
-      if (falling.paused) {
-        falling.resume();
-        $('#go').innerHTML = icon('pause');
-      } else {
-        falling.pause();
-        $('#go').innerHTML = icon('play');
-      }
+      if (falling.paused) { falling.resume(); syncPlayBtns(true); }
+      else { falling.pause(); syncPlayBtns(false); }
     };
-    $('#restart').onclick = () => { started = false; falling.stop(); score = 0; judged = 0; startGame(); };
+    $('#go').onclick = togglePlay;
+    $('#goKb').onclick = togglePlay;
+    $('#restart').onclick = () => { started = false; falling.stop(); score = 0; judged = 0; syncPlayBtns(false); startGame(); };
     $('#seekBack').onclick = () => { if (started) { falling.seekBy(-5000); score = 0; judged = 0; } };
     $('#seekFwd').onclick  = () => { if (started) { falling.seekBy(5000);  score = 0; judged = 0; } };
     $('#fallSpeed').oninput = (e) => {

@@ -25,6 +25,7 @@ export const createKeyboard = (host, { low, high, labels, nameSystem, onPress })
     const black = isBlack(m);
     el.className = `key${black ? ' b' : ''}`;
     el.dataset.midi = m;
+    el.dataset.clef = m < 60 ? 'bass' : 'treble';
     const name = midiName(m);
     // On narrow keys only label the Cs so the board stays readable.
     const tight = host.clientWidth / whiteCount < 24;

@@ -2,7 +2,7 @@ import { THEMES, applyTheme } from './themes.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
 import { renderScore } from './score.js';
 import { playNote, playClick, unlockAudio, now, setSustain, getSustain } from './audio.js';
-import { createKeyboard } from './keyboard.js';
+import { createKeyboard } from './keyboard.js?v=38';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
 
@@ -49,6 +49,7 @@ const P = {
   restart: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
   scan: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
   upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+  sustain: '<rect x="3" y="3" width="18" height="10" rx="2"/><line x1="7" y1="13" x2="7" y2="21"/><line x1="12" y1="13" x2="12" y2="21"/><line x1="17" y1="13" x2="17" y2="21"/><line x1="4" y1="21" x2="20" y2="21"/>',
 };
 const icon = (n, extra = '') => `<svg class="i" viewBox="0 0 24 24" ${extra}>${P[n]}</svg>`;
 const LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3" fill="currentColor"/><circle cx="18" cy="16" r="3" fill="currentColor"/></svg>';
@@ -202,7 +203,7 @@ const heading = (emoji, text, extra = '') => `<h3 class="sec"><span class="badge
 const VOICE_ICONS = { grand:'🎹', bright:'✨', electric:'🎸', soft:'🪗', synth:'🎛️', organ:'🎺', edm:'🎧' };
 const VOICE_LABELS = { grand:'Grand', bright:'Bright', electric:'Electric', soft:'Soft', synth:'Synth', organ:'Organ', edm:'EDM' };
 const voicePicker = () => `<div class="voice-pick-wrap"><select class="voice-pick" id="voicePick" title="Instrument sound">${Object.keys(VOICE_LABELS).map(v=>`<option value="${v}"${settings.voice===v?' selected':''}>${VOICE_ICONS[v]} ${VOICE_LABELS[v]}</option>`).join('')}</select></div>`;
-const sustainBtn = () => `<button id="sustainBtn" class="iconbtn${getSustain()?' on':''}" title="Sustain pedal" style="font-size:16px">🎚️</button>`;
+const sustainBtn = () => `<button id="sustainBtn" class="iconbtn${getSustain()?' on':''}" title="Sustain pedal">${icon('sustain')}</button>`;
 
 // Per-note-name color system (C=red, D=orange, E=yellow, F=green, G=teal, A=blue, B=purple)
 const NOTE_COLORS = { C:'#ef4444', D:'#f97316', E:'#eab308', F:'#22c55e', G:'#06b6d4', A:'#3b82f6', B:'#8b5cf6' };

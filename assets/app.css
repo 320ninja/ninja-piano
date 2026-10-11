@@ -193,8 +193,16 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .key{position:relative;flex:none;width:var(--kw,44px);height:100%;border-right:2px solid #1a1b2e;border-radius:0 0 9px 9px;background:linear-gradient(#fff,#f1f1f4);
   display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:11px;font-weight:700;color:#8a8aa3;
   box-shadow:inset 0 -5px 0 #d8d8e2;transition:background .08s,transform .08s;touch-action:none}
+/* Bass clef keys (below C4): warm amber tint */
+.key[data-clef="bass"]{background:linear-gradient(#fff8ee,#fdeec8);box-shadow:inset 0 -5px 0 #f0d090}
+/* Treble clef keys (C4 and above): cool blue tint */
+.key[data-clef="treble"]{background:linear-gradient(#f0f6ff,#dbeafe);box-shadow:inset 0 -5px 0 #bcd4f8}
 .key.b{position:absolute;top:0;height:60%;margin:0;border:0;z-index:2;background:linear-gradient(#2d2f45,#0d0e19);color:#9ca3af;
   box-shadow:inset 0 -4px 0 #000;border-radius:0 0 6px 6px;font-size:9px;padding-bottom:6px}
+/* Bass black keys: warm dark */
+.key.b[data-clef="bass"]{background:linear-gradient(#3d2e1a,#1a1000)}
+/* Treble black keys: cool dark */
+.key.b[data-clef="treble"]{background:linear-gradient(#1a2540,#080e1e)}
 .key.down,.key.b.down{background:var(--p);color:#fff;transform:translateY(2px);box-shadow:none}
 .key.target{background:linear-gradient(color-mix(in srgb,var(--a) 35%,#fff),var(--a));color:#fff}
 .key.b.target{background:var(--a);color:#fff}

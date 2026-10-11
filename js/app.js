@@ -701,7 +701,7 @@ views.song = (params, id) => {
             lbl.style.color = '#ef4444';
             lbl.style.fontSize = isCurrent ? '16px' : '12px';
             const count = midiCount.get(midi) || 1;
-            lbl.innerHTML = count > 1 ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
+            lbl.innerHTML = (isCurrent && count > 1) ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
             el.appendChild(lbl);
           });
         }
@@ -938,7 +938,7 @@ views.practice = (params, id) => {
         lbl.style.color = '#ef4444';
         lbl.style.fontSize = order === 1 ? '16px' : '12px';
         const count = midiCount.get(midi) || 1;
-        lbl.innerHTML = count > 1 ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
+        lbl.innerHTML = (order === 1 && count > 1) ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
         el.appendChild(lbl);
       });
       requestAnimationFrame(updateDegrees);
@@ -1086,7 +1086,7 @@ views.practice = (params, id) => {
       lbl.style.color = '#ef4444';
       lbl.style.fontSize = isCurrent ? '16px' : '12px';
       const count = midiCount.get(midi) || 1;
-      lbl.innerHTML = count > 1 ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
+      lbl.innerHTML = (isCurrent && count > 1) ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
       el.appendChild(lbl);
     });
   };

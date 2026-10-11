@@ -687,11 +687,10 @@ views.song = (params, id) => {
       if (kbHost) {
         kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
         const midiOrder = new Map();
-        const midiCount = new Map();
+        
         upcoming.forEach((ev, i) => {
           ev.midis.forEach(m => {
             if (!midiOrder.has(m)) midiOrder.set(m, i + 1);
-            midiCount.set(m, (midiCount.get(m) || 0) + 1);
           });
         });
         midiOrder.forEach((order, midi) => {
@@ -702,8 +701,8 @@ views.song = (params, id) => {
           lbl.style.bottom = '16px';
           lbl.style.color = '#ef4444';
           lbl.style.fontSize = order === 1 ? '16px' : '12px';
-          const count = midiCount.get(midi) || 1;
-          lbl.innerHTML = (order === 1 && count > 1) ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
+          
+          lbl.innerHTML = `${order}`;
           el.appendChild(lbl);
         });
       }
@@ -923,11 +922,10 @@ views.practice = (params, id) => {
       kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
       // Build a map: midi → lowest order (nearest upcoming note on that key)
       const midiOrder = new Map();
-      const midiCount = new Map();
+      
       falling.getUpcomingSteps(5).forEach(({ order, midis }) => {
         midis.forEach(midi => {
           if (!midiOrder.has(midi)) midiOrder.set(midi, order);
-          midiCount.set(midi, (midiCount.get(midi) || 0) + 1);
         });
       });
       midiOrder.forEach((order, midi) => {
@@ -938,8 +936,8 @@ views.practice = (params, id) => {
         lbl.style.bottom = '16px';
         lbl.style.color = '#ef4444';
         lbl.style.fontSize = order === 1 ? '16px' : '12px';
-        const count = midiCount.get(midi) || 1;
-        lbl.innerHTML = (order === 1 && count > 1) ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
+        
+        lbl.innerHTML = `${order}`;
         el.appendChild(lbl);
       });
       requestAnimationFrame(updateDegrees);
@@ -1069,12 +1067,11 @@ views.practice = (params, id) => {
     kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
     if (hidden) return;
     const midiOrder = new Map();
-    const midiCount = new Map();
+    
     for (let i = st.idx; i < Math.min(steps.length, st.idx + 5); i++) {
       const order = i - st.idx + 1;
       steps[i].midis.forEach(midi => {
         if (!midiOrder.has(midi)) midiOrder.set(midi, order);
-        midiCount.set(midi, (midiCount.get(midi) || 0) + 1);
       });
     }
     midiOrder.forEach((order, midi) => {
@@ -1086,8 +1083,8 @@ views.practice = (params, id) => {
       const isCurrent = order === 1;
       lbl.style.color = '#ef4444';
       lbl.style.fontSize = isCurrent ? '16px' : '12px';
-      const count = midiCount.get(midi) || 1;
-      lbl.innerHTML = (isCurrent && count > 1) ? `${order}<sup style="font-size:8px;font-weight:900">×${count}</sup>` : `${order}`;
+      
+      lbl.innerHTML = `${order}`;
       el.appendChild(lbl);
     });
   };

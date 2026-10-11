@@ -595,7 +595,6 @@ views.song = (params, id) => {
         <div class="mini-score-wrap"><div id="miniScore" class="mini-score"></div></div>
         <div class="cn-block"><div class="cn">Current note<b id="cnote">—</b></div><div class="next" id="nnote"></div></div>
       </div>
-      <div id="upcomingStrip" style="display:flex;align-items:center;gap:8px;padding:8px 12px 6px;background:var(--bg);overflow-x:auto;min-height:90px"></div>
       <div style="display:flex;align-items:center;gap:8px;padding:6px 10px 4px;background:var(--bg)">
         <button id="kbSkipBack" title="Back 5 notes" style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);flex-shrink:0">⏮5</button>
         <button id="kbPlay" style="background:var(--p);border:none;border-radius:10px;padding:6px 16px;font-size:15px;cursor:pointer;color:#fff;display:flex;align-items:center;gap:4px;flex-shrink:0">${icon('play')}</button>
@@ -663,66 +662,6 @@ views.song = (params, id) => {
       $('#nnote').innerHTML = nxt ? `Next: ${eventLabel(nxt.names)} ›` : '';
       kb.setTargets(active.flatMap((e) => e.midis));
       renderMiniScore($('#miniScore'), active.filter(e=>e.hand==='rh').flatMap(e=>e.midis), active.filter(e=>e.hand==='lh').flatMap(e=>e.midis), parsed.key);
-    }
-    // Upcoming strip + keyboard degree labels — always updated every frame
-    {
-      const NOTE_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f59e0b','#10b981','#6366f1','#f43f5e'];
-      const anchor = lead ? lead.start : b;
-      const allFwd = tl.events.filter(e => st.hands.includes(e.hand) && e.hand === 'rh' && e.start >= anchor);
-      const upcoming = allFwd.slice(0, 5);
-      const strip = $('#upcomingStrip');
-      if (strip) {
-        const WK = [{pc:0,i:0},{pc:2,i:1},{pc:4,i:2},{pc:5,i:3},{pc:7,i:4},{pc:9,i:5},{pc:11,i:6}];
-        const BK = [{pc:1,x:11},{pc:3,x:27},{pc:6,x:59},{pc:8,x:75},{pc:10,x:91}];
-        const miniKb = (midis, col, active) => {
-          const pcs = new Set(midis.map(m => m % 12));
-          const op = active ? 1 : 0.6;
-          const border = active ? `2.5px solid ${col}` : '1.5px solid #555';
-          const shadow = active ? `0 0 0 3px ${col}44` : 'none';
-          const wkeys = WK.map(({pc,i}) => {
-            const hit = pcs.has(pc);
-            return `<rect x="${i*15+1}" y="1" width="13" height="52" rx="2" fill="${hit?col:'#f5f5f5'}" stroke="${hit?col:'#ccc'}" stroke-width="${hit?1.5:0.5}"/>`;
-          }).join('');
-          const bkeys = BK.map(({pc,x}) => {
-            const hit = pcs.has(pc);
-            return `<rect x="${x}" y="1" width="9" height="32" rx="1" fill="${hit?col:'#222'}"/>`;
-          }).join('');
-          return `<svg width="120" height="54" viewBox="0 0 106 54" style="border-radius:7px;overflow:hidden;border:${border};box-shadow:${shadow};opacity:${op};display:block"><rect width="106" height="54" fill="#f0f0f0"/>${wkeys}${bkeys}</svg>`;
-        };
-        strip.innerHTML = upcoming.map((ev, i) => {
-          const isCurrent = i === 0;
-          const label = eventLabel(ev.names);
-          const pc = ev.midis[0] % 12;
-          const col = NOTE_COLORS[pc] || '#888';
-          return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
-            <span style="font-size:11px;font-weight:800;color:${isCurrent?col:'#888'}">${i+1} · ${label}</span>
-            ${miniKb(ev.midis, col, isCurrent)}
-          </div>`;
-        }).join('<span style="color:#555;font-size:14px;flex-shrink:0;align-self:center">›</span>');
-      }
-      const kbHost = app.querySelector('#kb');
-      if (kbHost) {
-        kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
-        const midiOrder = new Map();
-        
-        upcoming.forEach((ev, i) => {
-          ev.midis.forEach(m => {
-            if (!midiOrder.has(m)) midiOrder.set(m, i + 1);
-          });
-        });
-        midiOrder.forEach((order, midi) => {
-          const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
-          if (!el) return;
-          const lbl = document.createElement('span');
-          lbl.className = 'degree-label';
-          lbl.style.bottom = '16px';
-          lbl.style.color = '#ef4444';
-          lbl.style.fontSize = order === 1 ? '16px' : '12px';
-          
-          lbl.innerHTML = `${order}`;
-          el.appendChild(lbl);
-        });
-      }
     }
     updateProg();
     raf = requestAnimationFrame(frame);

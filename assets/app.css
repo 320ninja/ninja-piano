@@ -220,7 +220,7 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 @keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 .key .c4{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--p)}
 @media (min-width:760px){.kb{height:120px}}
-.kb.tight .key{font-size:8px;padding-bottom:5px;color:#4b4b63;letter-spacing:-.02em}
+.kb.tight .key{font-size:8px;padding-bottom:4px;color:#7070a0;letter-spacing:-.02em}
 
 /* Practice */
 .prac-top{display:flex;align-items:center;gap:14px;padding:14px}

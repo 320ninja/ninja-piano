@@ -2,7 +2,7 @@ import { THEMES, applyTheme } from './themes.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
 import { renderScore } from './score.js';
 import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio } from './audio.js';
-import { createKeyboard } from './keyboard.js?v=39';
+import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
 
@@ -168,43 +168,71 @@ const songsReady = Promise.allSettled(SONG_FILES.map((f) => fetch(`songs/${f}.js
 
 /* ---------- theme preview ---------- */
 const themePreview = (primary, accent) => {
-  // Grand piano top-down view — characteristic curved body + keyboard
-  // ViewBox: 112 x 82. Keyboard strip at bottom (y=54..78), body above.
-  const KX = 5, KY = 54, KW = 102, KH = 24; // keyboard rect
-  // Grand piano body path (top-down: keyboard at bottom, curved lid above)
-  const body = `M ${KX},${KY} L ${KX+KW},${KY} Q ${KX+KW},20 ${KX+KW-28},8 Q ${KX+KW-58},1 ${KX+30},5 Q ${KX+4},10 ${KX},30 Z`;
-  // Fallboard shadow line (front edge of lid)
-  const fallboard = `M ${KX+2},${KY} Q ${KX+KW/2},${KY-4} ${KX+KW-2},${KY}`;
-  // 7 white keys (C D E F G A B), evenly spread
-  const WK = 7, ww = KW / WK;
-  const wHit = [0, 2, 4]; // C E G → primary
+  // Grand piano 3/4 angle: open lid, visible strings interior, keyboard at front
+  // Interior string lines running vertically within the interior quad
+  const strings = Array.from({length:22}, (_,i) => {
+    const t = (i + 0.5) / 22;
+    const x1 = (18 + t * 96).toFixed(1), y1 = (12 - t * 1.5).toFixed(1);
+    const x2 = (17 + t * 98).toFixed(1), y2 = (45 - t * 1.5).toFixed(1);
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(255,255,255,0.22)" stroke-width="0.5"/>`;
+  }).join('');
+  // Cross braces (harp structure)
+  const braces = [0.25,0.5,0.75].map(t => {
+    const x1 = (18 + t*96).toFixed(1), x2 = (18 + (t+0.12)*96).toFixed(1);
+    const y1 = 12, y2 = 45;
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>`;
+  }).join('');
+  // White keys at front (simple row, slightly in perspective)
+  const WK = 13, KY1 = 53, KY2 = 71;
+  const kTotalW = 111, kX0 = 9;
+  const wHit = new Set([0,2,4,7,9,12]);
   const wkeys = Array.from({length:WK}, (_,i) => {
-    const x = KX + i * ww;
-    const fill = wHit.includes(i) ? primary : '#f2ede6';
-    return `<rect x="${(x+0.5).toFixed(1)}" y="${KY+1}" width="${(ww-1).toFixed(1)}" height="${KH-3}" rx="2" fill="${fill}" stroke="#c0b8af" stroke-width="0.4"/>`;
+    const x1 = (kX0 + i/WK*kTotalW).toFixed(1);
+    const x2 = (kX0 + (i+1)/WK*kTotalW).toFixed(1);
+    const fill = wHit.has(i) ? primary : '#f0ede6';
+    return `<polygon points="${x1},${KY1} ${x2},${KY1} ${x2},${KY2} ${x1},${KY2}" fill="${fill}" stroke="#bbb" stroke-width="0.4"/>`;
   }).join('');
-  // Black keys: after keys 1,2,4,5 (C# D# F# G#)
-  const bw = ww * 0.62, bh = KH * 0.56;
-  const bAfter = [1, 2, 4, 5];
-  const bAccent = [0, 2]; // C# F# → accent
+  // Black keys
+  const kw = kTotalW / WK;
+  const bAfter = [1,2,4,5,7,8,10,11];
+  const bAccentSet = new Set([0,3,6]);
   const bkeys = bAfter.map((after, i) => {
-    const x = KX + after * ww - bw / 2;
-    const fill = bAccent.includes(i) ? accent : '#1c1c1c';
-    return `<rect x="${x.toFixed(1)}" y="${KY+1}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="1" fill="${fill}"/>` +
-      `<rect x="${(x+1).toFixed(1)}" y="${KY+1}" width="${(bw-2).toFixed(1)}" height="5" rx="1" fill="rgba(255,255,255,0.15)"/>`;
+    const cx = kX0 + (after + 0.5) * kw;
+    const bw = (kw * 0.62).toFixed(1), bh = ((KY2-KY1)*0.62).toFixed(1);
+    const fill = bAccentSet.has(i) ? accent : '#111';
+    return `<rect x="${(cx-kw*0.31).toFixed(1)}" y="${KY1}" width="${bw}" height="${bh}" rx="1" fill="${fill}"/>` +
+      `<rect x="${(cx-kw*0.31+1).toFixed(1)}" y="${KY1}" width="${(kw*0.62-2).toFixed(1)}" height="5" rx="1" fill="rgba(255,255,255,0.14)"/>`;
   }).join('');
-  // 3 legs (small circles)
-  const legs = `<ellipse cx="${KX+10}" cy="77" rx="4" ry="3" fill="#111"/>` +
-    `<ellipse cx="${KX+KW-10}" cy="77" rx="4" ry="3" fill="#111"/>` +
-    `<ellipse cx="${KX+KW/2}" cy="80" rx="4" ry="3" fill="#111"/>`;
-  return `<svg viewBox="0 0 112 83" width="100%" style="display:block;border-radius:10px;overflow:hidden">` +
-    `<rect width="112" height="83" rx="10" fill="#111"/>` +
-    `<path d="${body}" fill="#242424" stroke="#3a3a3a" stroke-width="0.8"/>` +
-    `<path d="${fallboard}" fill="none" stroke="#3a3a3a" stroke-width="1.2"/>` +
-    `<rect x="${KX}" y="${KY}" width="${KW}" height="${KH}" fill="#ddd8d0"/>` +
-    wkeys + bkeys + legs +
-    `<rect x="${KX}" y="${KY}" width="${KW}" height="${KH}" fill="none" stroke="#888" stroke-width="0.5"/>` +
-  `</svg>`;
+  return (
+    `<svg viewBox="0 0 130 85" width="100%" style="display:block;border-radius:10px;overflow:hidden">` +
+    // Background
+    `<rect width="130" height="85" fill="#080808"/>` +
+    // Piano body (grand piano curved shape, 3/4 view, black lacquer)
+    `<path d="M 8,51 Q 4,35 10,19 Q 17,6 40,3 Q 66,0 94,3 L 122,4 L 120,51 L 106,68 Q 82,76 52,76 Q 22,76 8,65 Z" fill="#1a1a1a" stroke="#2e2e2e" stroke-width="1"/>` +
+    // Lacquer sheen (highlight line on body)
+    `<path d="M 15,60 Q 50,70 100,58" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>` +
+    // Lid (dark outer frame, angled open)
+    `<path d="M 12,49 L 121,47 L 119,5 L 14,7 Z" fill="#0e0e0e" stroke="#3a3a3a" stroke-width="0.8"/>` +
+    // Interior (strings & soundboard) — theme primary color
+    `<path d="M 16,46 L 116,44 L 114,10 L 18,12 Z" fill="${primary}"/>` +
+    strings + braces +
+    // Interior front highlight
+    `<line x1="16" y1="46" x2="116" y2="44" stroke="rgba(255,255,255,0.28)" stroke-width="1.2"/>` +
+    // Lid prop stick
+    `<line x1="113" y1="44" x2="120" y2="5" stroke="#999" stroke-width="1.8" stroke-linecap="round"/>` +
+    `<circle cx="113" cy="44" r="2.5" fill="#666"/>` +
+    // Keyboard bed (dark strip)
+    `<path d="M 8,51 L 121,49 L 121,73 L 8,75 Z" fill="#1c1c1c"/>` +
+    wkeys + bkeys +
+    // Front rail below keys
+    `<path d="M 8,75 L 121,73 L 121,79 L 8,81 Z" fill="#111" stroke="#252525" stroke-width="0.5"/>` +
+    // Legs
+    `<rect x="8" y="79" width="7" height="6" rx="1" fill="#0f0f0f"/>` +
+    `<rect x="116" y="77" width="6" height="6" rx="1" fill="#0f0f0f"/>` +
+    // Brand
+    `<text x="64" y="84" font-size="4" fill="#2a2a2a" text-anchor="middle" font-family="Georgia,serif" letter-spacing="1.5">STUDIO GRAND</text>` +
+    `</svg>`
+  );
 };
 const themeCard = (k, t, active) =>
   `<button class="th ${active?'on':''}" data-t="${k}">${themePreview(t[1],t[2],t[5])}<span>${t[0]}</span></button>`;

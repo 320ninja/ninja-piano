@@ -1035,6 +1035,21 @@ views.practice = (params, id) => {
     const kbHost = $('#kb');
     if (!kbHost) return;
     kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+    if (style !== 'learn') return;
+    const midiOrder = new Map();
+    for (let i = st.idx; i < Math.min(steps.length, st.idx + 5); i++) {
+      const order = i - st.idx + 1;
+      steps[i].midis.forEach(midi => { if (!midiOrder.has(midi)) midiOrder.set(midi, order); });
+    }
+    midiOrder.forEach((order, midi) => {
+      const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
+      if (!el) return;
+      const lbl = document.createElement('span');
+      lbl.className = 'degree-label';
+      lbl.style.bottom = '16px';
+      lbl.textContent = order;
+      el.appendChild(lbl);
+    });
   };
   const show = () => {
     const step = steps[st.idx];

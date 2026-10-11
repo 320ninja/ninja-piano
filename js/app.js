@@ -2009,10 +2009,22 @@ views.progressionPlay = (params, progId) => {
       const bassPC = invNotes[0]%12;
       const chordPCset = new Set(invNotes.map(n=>n%12));
       const isActive = inv===currentInv;
-      const mkW = ({pc,i}) => { const isC=chordPCset.has(pc),isB=pc===bassPC; return `<rect x="${i*15+1}" y="1" width="13" height="48" rx="2" fill="${isC?(isB?chordCol:'white'):'white'}" stroke="${isC?chordCol:'#ddd'}" stroke-width="${isC?2:0.5}"/>`; };
-      const mkB = ({pc,x}) => { const isC=chordPCset.has(pc),isB=pc===bassPC; return `<rect x="${x}" y="1" width="9" height="31" rx="1" fill="${isC?(isB?chordCol:'#333'):'#333'}" opacity="${isC?1:0.8}"/>`; };
-      const svg = `<svg width="106" height="50" viewBox="0 0 106 50" style="border-radius:6px;overflow:hidden;border:${isActive?`2px solid ${chordCol}`:'1.5px solid #e5e7eb'};box-shadow:${isActive?`0 0 0 3px ${chordCol}33`:'none'};display:block">${wk.map(mkW).join('')}${bk.map(mkB).join('')}</svg>`;
-      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:10px;font-weight:${isActive?800:500};color:${isActive?chordCol:'var(--muted)'};white-space:nowrap">${INV_NAMES[inv]}</span>${svg}</div>`;
+      // All inversions show chord tones filled — active at full opacity, inactive slightly dimmed
+      const op = isActive ? 1 : 0.5;
+      const mkW = ({pc,i}) => {
+        const isC = chordPCset.has(pc), isBass = pc===bassPC;
+        const fill = isC ? chordCol : 'white';
+        const stroke = isC ? chordCol : '#ddd';
+        return `<rect x="${i*15+1}" y="1" width="13" height="48" rx="2" fill="${fill}" fill-opacity="${isC?op:1}" stroke="${stroke}" stroke-opacity="${op}" stroke-width="${isC?1.5:0.5}"/>`;
+      };
+      const mkB = ({pc,x}) => {
+        const isC = chordPCset.has(pc);
+        return `<rect x="${x}" y="1" width="9" height="31" rx="1" fill="${isC?chordCol:'#333'}" fill-opacity="${isC?op:0.85}"/>`;
+      };
+      const border = isActive ? `2.5px solid ${chordCol}` : '1.5px solid #e5e7eb';
+      const shadow = isActive ? `0 0 0 3px ${chordCol}44` : 'none';
+      const svg = `<svg width="106" height="50" viewBox="0 0 106 50" style="border-radius:6px;overflow:hidden;border:${border};box-shadow:${shadow};display:block">${wk.map(mkW).join('')}${bk.map(mkB).join('')}</svg>`;
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:10px;font-weight:${isActive?800:500};color:${isActive?chordCol:'#9ca3af'};white-space:nowrap">${INV_NAMES[inv]}</span>${svg}</div>`;
     }).join('');
   };
 

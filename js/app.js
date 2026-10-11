@@ -1,7 +1,7 @@
 import { THEMES, applyTheme } from './themes.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
 import { renderScore } from './score.js';
-import { playNote, playClick, unlockAudio, now, setSustain, getSustain } from './audio.js';
+import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio } from './audio.js';
 import { createKeyboard } from './keyboard.js?v=39';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
@@ -949,6 +949,7 @@ views.practice = (params, id) => {
       const s2 = e.target.closest('.chip')?.dataset.s; if (!s2) return;
       save('np.pstyle', { style: s2 }); views.practice(params, id);
     };
+    cleanup = () => { falling.stop(); kb?.destroy(); };
     return;
   }
 
@@ -2813,6 +2814,7 @@ const notFound = () => { app.innerHTML = '<div class="empty view">Song not found
 /* ---------- router ---------- */
 const route = async () => {
   cleanup(); cleanup = () => {};
+  stopAllAudio();
   const [path, query = ''] = location.hash.slice(2).split('?');
   const [name, id] = path.split('/');
   const params = new URLSearchParams(query);

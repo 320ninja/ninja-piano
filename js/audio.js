@@ -123,3 +123,13 @@ export const playClick = (accent, when = 0) => {
 };
 
 export const now = () => (ctx ? ctx.currentTime : 0);
+
+let outGain = null;
+const ensure2 = () => { ensure(); return outGain; };
+
+export const stopAllAudio = () => {
+  if (!ctx) return;
+  // Close and recreate the AudioContext to kill all in-flight nodes.
+  ctx.close().catch(() => {});
+  ctx = null; master = null; reverb = null; outGain = null;
+};

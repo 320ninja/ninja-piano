@@ -698,7 +698,7 @@ views.song = (params, id) => {
             lbl.className = 'degree-label';
             lbl.style.bottom = '16px';
             const isCurrent = order === 1;
-            lbl.style.color = '#eab308';
+            lbl.style.color = '#ef4444';
             lbl.style.fontSize = isCurrent ? '16px' : '12px';
             lbl.textContent = order;
             el.appendChild(lbl);
@@ -1077,7 +1077,7 @@ views.practice = (params, id) => {
       lbl.className = 'degree-label';
       lbl.style.bottom = '16px';
       const isCurrent = order === 1;
-      lbl.style.color = '#eab308';
+      lbl.style.color = '#ef4444';
       lbl.style.fontSize = isCurrent ? '16px' : '12px';
       lbl.textContent = order;
       el.appendChild(lbl);

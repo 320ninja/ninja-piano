@@ -200,7 +200,7 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .key.b[data-clef="bass"].down,.key.b[data-clef="bass"].correct{background:#2563eb!important;color:#fff!important}
 .key[data-clef="bass"].target{background:linear-gradient(#bfdbfe,#3b82f6)!important;color:#fff!important}
 .key.b[data-clef="bass"].target{background:#2563eb!important;color:#fff!important}
-.key.down,.key.b.down{background:var(--p);color:#fff;transform:translateY(2px);box-shadow:none}
+.key.down,.key.b.down{background:#22c55e;color:#fff;transform:translateY(2px);box-shadow:none}
 .key.target{background:linear-gradient(color-mix(in srgb,var(--a) 35%,#fff),var(--a));color:#fff}
 .key.b.target{background:var(--a);color:#fff}
 .key.target::before{content:"";position:absolute;inset:-3px;border-radius:inherit;box-shadow:0 0 0 3px var(--a);animation:pulse 1s ease-in-out infinite}

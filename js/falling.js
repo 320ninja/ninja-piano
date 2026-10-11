@@ -159,7 +159,7 @@ export function createFalling(host, { steps, low, high, bpm, speed, keyPc = 0, i
           if (orderNum >= 1 && orderNum <= 5 && st.result == null) {
             const numSize = Math.max(9, Math.min(14, ww() * 0.6));
             ctx.font = `900 ${numSize}px system-ui`;
-            ctx.fillStyle = '#22c55e';
+            ctx.fillStyle = '#ef4444';
             ctx.textBaseline = 'top';
             ctx.fillText(orderNum, x + w / 2, y + 2);
             ctx.font = `bold ${fontSize}px system-ui`;

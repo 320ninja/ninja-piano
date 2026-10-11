@@ -1697,7 +1697,6 @@ views.progressionPlay = (params, progId) => {
     if (kb) {
       kb.setTargets([]);
       kb.setHint([]);
-      // All chord tones in one chord color so the chord reads as a unit
       colorKbChord(midis, pillColor(chord.r));
     }
     // Play the chord tones
@@ -1784,7 +1783,6 @@ views.progressionPlay = (params, progId) => {
       <b id="bpmVal" style="min-width:36px;text-align:right;font-size:14px">${bpm}</b>
     </div>
 
-    <div id="improvPanel" style="margin-bottom:10px"></div>
     <div class="kb-dock"><div class="kb" id="kb"></div></div>
   </section>`;
 
@@ -1849,11 +1847,7 @@ views.progressionPlay = (params, progId) => {
   let kb = null;
   const onPress = (m) => { unlockAudio(); playNote(m,{voice:settings.voice,volume:settings.volume/100}); };
   kb = createKeyboard(app.querySelector('#kb'),{low:48,high:84,labels:true,nameSystem:settings.nameSystem,onPress});
-  const renderWithImprov = () => {
-    render();
-    const chord = prog.chords[curIdx];
-    renderImprov(progChordMidis(keyMidi, chord.s, chord.q));
-  };
+  const renderWithImprov = () => { render(); };
   renderWithImprov();
 
   // Key selector

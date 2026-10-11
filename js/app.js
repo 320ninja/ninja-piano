@@ -2028,7 +2028,7 @@ views.progressionPlay = (params, progId) => {
     }).join('');
   };
 
-  const renderImprov = (currentChordMidis, currentQ, chordCol) => {
+  const renderImprov = (currentChordMidis, currentQ, chordCol, chordLabel) => {
     const t = getImprovTips(keyName, prog);
     const npanel = app.querySelector('#improvPanel');
     if (!npanel) return;
@@ -2057,6 +2057,7 @@ views.progressionPlay = (params, progId) => {
 
     // Inversion keyboards row
     const activeCol = chordCol || 'var(--p)';
+    const chordTypeName = progChordInversion(chordLabel || '', currentQ || 'M');
     const invRow = currentChordMidis ? buildInversionKbs(currentChordMidis, currentQ || 'M', activeCol) : '';
 
     npanel.innerHTML = `<div class="card pad" style="padding:14px">
@@ -2064,7 +2065,10 @@ views.progressionPlay = (params, progId) => {
         <span style="font-size:20px">🎹</span>
         <div><b style="font-size:14px;display:block">Improvisation Guide</b><span style="font-size:11px;color:var(--muted)">${t.name} · Key of ${keyName}</span></div>
       </div>
-      ${invRow ? `<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid #e5e7eb">${invRow}</div>` : ''}
+      ${invRow ? `<div style="margin-bottom:12px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid #e5e7eb">
+        <div style="text-align:center;font-size:15px;font-weight:800;color:${activeCol};margin-bottom:8px;letter-spacing:.2px">${chordTypeName}</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${invRow}</div>
+      </div>` : ''}
 
       <div style="margin-bottom:12px;padding:10px;background:var(--p)11;border-radius:10px;border:1.5px solid var(--p)33">
         <div style="font-size:11px;font-weight:700;color:var(--p);margin-bottom:6px">🎯 Best notes for this chord</div>
@@ -2099,7 +2103,7 @@ views.progressionPlay = (params, progId) => {
   const renderWithImprov = () => {
     render();
     const chord = prog.chords[curIdx];
-    renderImprov(progChordMidis(keyMidi, chord.s, chord.q), chord.q, pillColor(chord.r));
+    renderImprov(progChordMidis(keyMidi, chord.s, chord.q), chord.q, pillColor(chord.r), progChordLabel(keyMidi, chord.s, chord.q));
   };
   renderWithImprov();
 

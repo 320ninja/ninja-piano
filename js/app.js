@@ -2857,23 +2857,24 @@ views.scales = () => {
   const wPC=[0,2,4,5,7,9,11];
   const bDef=[{pc:1,ox:10},{pc:3,ox:24},{pc:6,ox:52},{pc:8,ox:66},{pc:10,ox:80}];
 
-  const buildKb = (scalePCs, chordMidis) => {
+  const buildKb = (scalePCs, chordMidis, chordColor) => {
     const scSet=new Set(scalePCs), chSet=new Set(chordMidis||[]);
+    const cCol=chordColor||'var(--p)';
     let wk='', bk='', lb='';
     for(let o=0;o<nOcts;o++){
       const ox=o*octW, base=KB0+o*12;
       wPC.forEach((pc,wi)=>{
         const midi=base+pc, gpc=midi%12, x=ox+wi*KW+1;
         const isCh=chSet.has(midi), isSc=scSet.has(gpc);
-        const fill=isCh?'var(--p)':isSc?'#fecaca':'white';
+        const fill=isCh?cCol:isSc?'#fecaca':'white';
         const stroke=isSc||isCh?'#ef4444':'#ddd', sw=isSc||isCh?1.5:0.5;
-        wk+=`<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+        wk+=`<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${fill}" stroke="${isCh?cCol:stroke}" stroke-width="${sw}"/>`;
         if(isSc||isCh) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh?'#fff':'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
       });
       bDef.forEach(({pc,ox:bx})=>{
         const midi=base+pc, gpc=midi%12;
         const isCh=chSet.has(midi), isSc=scSet.has(gpc);
-        const fill=isCh?'var(--p)':isSc?'#ef4444':'#1a1a1a';
+        const fill=isCh?cCol:isSc?'#ef4444':'#1a1a1a';
         bk+=`<rect x="${ox+bx}" y="1" width="${BW}" height="${BH}" rx="1" fill="${fill}"/>`;
         if(isSc||isCh) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="#fff" font-weight="800">${nn(gpc)}</text>`;
       });
@@ -2889,18 +2890,19 @@ views.scales = () => {
       const t3Int=(intervals[(deg+2)%len]-iv+12)%12 || 12;
       let t5Int=(intervals[(deg+4)%len]-iv+12)%12;
       if(t5Int<=t3Int) t5Int+=12;
-      let sym='',qcls='M';
-      if(t3Int===4&&t5Int===7){sym='';qcls='M';}
-      else if(t3Int===3&&t5Int===7){sym='m';qcls='m';}
-      else if(t3Int===3&&t5Int===6){sym='°';qcls='d';}
-      else if(t3Int===4&&t5Int===8){sym='+';qcls='a';}
-      else{sym='';qcls='M';}
+      let sym='',qcls='M',typeName='Major';
+      if(t3Int===4&&t5Int===7){sym='';qcls='M';typeName='Major';}
+      else if(t3Int===3&&t5Int===7){sym='m';qcls='m';typeName='minor';}
+      else if(t3Int===3&&t5Int===6){sym='°';qcls='d';typeName='dim';}
+      else if(t3Int===4&&t5Int===8){sym='+';qcls='a';typeName='aug';}
+      else{sym='';qcls='M';typeName='Major';}
       const RNUMS=['I','II','III','IV','V','VI','VII','VIII'].slice(0,len);
       const deg_label=qcls==='m'||qcls==='d'?RNUMS[deg].toLowerCase()+sym:RNUMS[deg]+sym;
       const rm=60+(cRoot+12)%12;
-      let midis=[rm, rm+t3Int, rm+(t5Int>12?t5Int:t5Int)];
+      let midis=[rm, rm+t3Int, rm+t5Int];
       midis=midis.map(m=>{ while(m<KB0)m+=12; while(m>KB0+nOcts*12-1)m-=12; return m; });
-      return {name:nn(cRoot)+sym, deg_label, midis, sym};
+      const noteNames=midis.map(m=>nn(m)).join(' · ');
+      return {name:nn(cRoot)+sym, deg_label, midis, sym, typeName, noteNames};
     });
   };
 
@@ -2910,7 +2912,9 @@ views.scales = () => {
     const scalePCs=ivs.map(i=>(selRoot+i)%12);
     const chords=getDiatonic(selRoot,ivs);
     const chord=chords[selChordIdx];
-    const kbSvg=buildKb(scalePCs, chord?.midis||null);
+    const CHORD_COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#8b5cf6','#ec4899','#10b981','#3b82f6','#f43f5e','#14b8a6','#a855f7'];
+    const chordKbColor=selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:null;
+    const kbSvg=buildKb(scalePCs, chord?.midis||null, chordKbColor);
     const scaleNotes=scalePCs.map(pc=>nn(pc));
     const panel=app.querySelector('#scales-panel');
     if(!panel) return;
@@ -2926,7 +2930,14 @@ views.scales = () => {
     const noteChips=scaleNotes.map(n=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#ef444420;color:#ef4444;font-weight:800;font-size:12px;border:2px solid #ef444460">${n}</span>`).join('');
     const chordBtns=chords.map((ch,i)=>{
       const on=i===selChordIdx;
-      return `<button data-schord="${i}" style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 10px;border-radius:12px;background:${on?'var(--p)':'var(--card)'};color:${on?'#fff':'var(--fg)'};border:1.5px solid ${on?'var(--p)':'#3a3a4a'};cursor:pointer;min-width:48px"><span style="font-size:10px;opacity:.7">${ch.deg_label}</span><span style="font-weight:800;font-size:14px">${ch.name}</span></button>`;
+      const col=CHORD_COLORS[i%CHORD_COLORS.length];
+      const bg=on?col:`${col}18`, fg=on?'#fff':col, bd=on?col:`${col}55`;
+      return `<button data-schord="${i}" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 12px;border-radius:14px;background:${bg};color:${fg};border:2px solid ${bd};cursor:pointer;min-width:64px;text-align:center">
+        <span style="font-size:10px;font-weight:700;opacity:.8">${ch.deg_label}</span>
+        <span style="font-weight:900;font-size:16px;line-height:1">${ch.name}</span>
+        <span style="font-size:10px;font-weight:600;opacity:.85;margin-top:1px">${ch.typeName}</span>
+        <span style="font-size:9px;opacity:.7;margin-top:2px;letter-spacing:.2px">${ch.noteNames}</span>
+      </button>`;
     }).join('');
     panel.innerHTML=`
       <div style="font-size:18px;font-weight:800;color:var(--p);margin-bottom:10px">${nn(selRoot)} ${selScale}</div>
@@ -2934,7 +2945,7 @@ views.scales = () => {
       <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">${scaleBtns}</div>
       <div style="margin-bottom:10px">${kbSvg}</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;align-items:center">${noteChips}</div>
-      ${chords.length?`<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Diatonic Chords — tap to hear &amp; highlight</div>
+      ${chords.length?`<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px">Diatonic Chords — tap to hear &amp; highlight</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">${chordBtns}</div>`:''}
     `;
     panel.querySelectorAll('[data-sroot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.sroot; selChordIdx=-1; localStorage.setItem('np.scales',JSON.stringify({root:selRoot,scale:selScale})); render(); }));

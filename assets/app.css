@@ -443,7 +443,7 @@ h3.sec:has(a)::after{display:none}
 .key.b[data-improv="chord"]{background:var(--improv-col)!important;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--improv-col),0 2px 12px var(--improv-col)cc!important;filter:brightness(1.1);z-index:4}
 .improv-note-label{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:900;color:#fff;pointer-events:none;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.5);line-height:1;z-index:5}
 .key.b .improv-note-label{bottom:3px;font-size:9px}
-.degree-label{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:900;color:#ef4444;pointer-events:none;white-space:nowrap;line-height:1;z-index:4;text-shadow:0 0 6px #fff,0 1px 4px rgba(0,0,0,.3)}
+.degree-label{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:900;color:#ef4444;pointer-events:none;white-space:nowrap;line-height:1;z-index:4;text-shadow:0 0 6px #fff,0 1px 4px rgba(0,0,0,.3)}
 .key.b .degree-label{bottom:auto;top:2px;font-size:9px;color:#ef4444;text-shadow:none}
 /* Passing notes: barely a tint — just enough to suggest they exist */
 .key[data-improv="pass"]{background:color-mix(in srgb,var(--improv-col) 12%,#f8f8fc)!important;border-color:var(--improv-col)44!important}

@@ -842,11 +842,13 @@ views.practice = (params, id) => {
       if (!kbHost) return;
       kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
       falling.getUpcomingSteps(5).forEach(({ order, midis }) => {
+        const row = order % 2 === 1 ? '16px' : '32px'; // alternate rows
         midis.forEach(midi => {
           const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
           if (!el) return;
           const lbl = document.createElement('span');
           lbl.className = 'degree-label';
+          lbl.style.bottom = row;
           lbl.textContent = order;
           el.appendChild(lbl);
         });

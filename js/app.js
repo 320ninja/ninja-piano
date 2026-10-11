@@ -1031,6 +1031,25 @@ views.practice = (params, id) => {
     $('#cnt').textContent = `${st.idx}/${steps.length}`;
     $('#arc').style.strokeDashoffset = 226 - (226 * st.idx) / steps.length;
   };
+  const showDegreeLabels = () => {
+    const kbHost = $('#kb');
+    if (!kbHost || hidden) return;
+    kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+    const midiOrder = new Map();
+    for (let i = st.idx; i < Math.min(steps.length, st.idx + 5); i++) {
+      const order = i - st.idx + 1;
+      steps[i].midis.forEach(midi => { if (!midiOrder.has(midi)) midiOrder.set(midi, order); });
+    }
+    midiOrder.forEach((order, midi) => {
+      const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
+      if (!el) return;
+      const lbl = document.createElement('span');
+      lbl.className = 'degree-label';
+      lbl.style.bottom = '16px';
+      lbl.textContent = order;
+      el.appendChild(lbl);
+    });
+  };
   const show = () => {
     const step = steps[st.idx];
     if (!step) return sectionDone();
@@ -1045,6 +1064,7 @@ views.practice = (params, id) => {
     $('#nnote').innerHTML = hidden ? '' : nx ? `Next: ${nx.events.map((e) => eventLabel(e.names)).join(' + ')} ›` : 'Last note!';
     if (!hidden) renderMiniScore($('#miniScore'), step.events.filter(e=>e.hand==='rh').flatMap(e=>e.midis), step.events.filter(e=>e.hand==='lh').flatMap(e=>e.midis), parsed.key);
     progressUi();
+    showDegreeLabels();
   };
 
   // Result of one step: 1 = perfect, 0.7 = good/late, 0 = missed.

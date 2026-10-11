@@ -728,7 +728,31 @@ views.song = (params, id) => {
       kb.setTargets(active.flatMap((e) => e.midis));
     }
     updateProg();
+    updateSongDegrees(b);
     raf = requestAnimationFrame(frame);
+  };
+  const updateSongDegrees = (b) => {
+    const kbHost = $('#kb');
+    if (!kbHost) return;
+    kbHost.querySelectorAll('.degree-label').forEach(el => el.remove());
+    const midiOrder = new Map();
+    let order = 1;
+    for (let i = 0; i < tl.events.length && order <= 5; i++) {
+      const e = tl.events[i];
+      if (!st.hands.includes(e.hand)) continue;
+      if (e.start < b - 0.05) continue;
+      e.midis.forEach(midi => { if (!midiOrder.has(midi)) midiOrder.set(midi, order); });
+      order++;
+    }
+    midiOrder.forEach((ord, midi) => {
+      const el = kbHost.querySelector(`.key[data-midi="${midi}"]`);
+      if (!el) return;
+      const lbl = document.createElement('span');
+      lbl.className = 'degree-label';
+      lbl.style.fontSize = ord === 1 ? '16px' : '12px';
+      lbl.textContent = ord;
+      el.appendChild(lbl);
+    });
   };
   const updateProg = () => {
     const pct = Math.min(100, (st.beat / tl.total) * 100);
@@ -736,6 +760,8 @@ views.song = (params, id) => {
     $('#prog b').style.left = pct + '%';
     $('#tcur').textContent = fmtTime(beatToSec(st.beat));
   };
+  // Show degree numbers immediately on load
+  requestAnimationFrame(() => updateSongDegrees(0));
   const start = () => {
     unlockAudio();
     startCtx = now() - beatToSec(st.beat) + 0.05;
@@ -773,6 +799,7 @@ views.song = (params, id) => {
     st.beat = Math.max(0, Math.min(beat, tl.total - 0.01));
     score.clear(); kb.setTargets([]); lastSys = -1;
     updateProg();
+    updateSongDegrees(st.beat);
     if (was) start();
   };
 

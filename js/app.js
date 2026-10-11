@@ -1423,17 +1423,73 @@ const PROGRESSIONS_DB = [
     chords:[{s:0,q:'m',r:'i'},{s:10,q:'M',r:'VII'},{s:0,q:'m',r:'i'},{s:7,q:'M',r:'V'}] },
   { id:'i-iv-i-V',      name:'i – iv – i – V',        mood:['dark','sad'],               genre:'Classical',
     chords:[{s:0,q:'m',r:'i'},{s:5,q:'m',r:'iv'},{s:0,q:'m',r:'i'},{s:7,q:'M',r:'V'}] },
+
+  // ── Minor Blues (10) ──────────────────────────────────
+  { id:'mb-12bar',       name:'12-Bar Minor Blues',         mood:['blues','sad'],          genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'},
+            {s:5,q:'m7',r:'ivm7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'},
+            {s:7,q:'7',r:'V7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mb-shuffle',     name:'Minor Blues Shuffle',        mood:['blues','sad'],          genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mb-quick-iv',    name:'Minor Quick Change Blues',   mood:['blues','sad'],          genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'},
+            {s:5,q:'m7',r:'ivm7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mb-flat6',       name:'Minor Blues ♭VI Turnaround', mood:['blues','sad','dark'],   genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},
+            {s:8,q:'M7',r:'♭VImaj7'},{s:7,q:'7',r:'V7'},{s:0,q:'m7',r:'im7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mb-slow',        name:'Slow Minor Blues',           mood:['blues','sad'],          genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:0,q:'7',r:'I7'},{s:5,q:'m7',r:'ivm7'},{s:5,q:'m7',r:'ivm7'},
+            {s:0,q:'m7',r:'im7'},{s:8,q:'M7',r:'♭VImaj7'},{s:7,q:'7',r:'V7'},{s:0,q:'m7',r:'im7'}] },
+  { id:'mb-texas',       name:'Texas Minor Blues',          mood:['blues','sad'],          genre:'Blues',
+    chords:[{s:0,q:'7',r:'I7'},{s:0,q:'7',r:'I7'},{s:0,q:'7',r:'I7'},{s:0,q:'7',r:'I7'},
+            {s:5,q:'m7',r:'ivm7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'7',r:'I7'},{s:0,q:'7',r:'I7'},
+            {s:8,q:'M',r:'♭VI'},{s:7,q:'7',r:'V7'},{s:0,q:'7',r:'I7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mb-jazz-minor',  name:'Jazz Minor Blues',           mood:['blues','jazz','sad'],   genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},{s:9,q:'7',r:'VI7'},
+            {s:5,q:'m7',r:'ivm7'},{s:3,q:'7',r:'♭III7'},{s:0,q:'m7',r:'im7'},{s:8,q:'M7',r:'♭VImaj7'},
+            {s:2,q:'dim',r:'ii°7'},{s:7,q:'7',r:'V7'},{s:0,q:'m7',r:'im7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mb-memphis',     name:'Memphis Minor Blues',        mood:['blues','sad'],          genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:3,q:'7',r:'♭III7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},
+            {s:8,q:'M',r:'♭VI'},{s:7,q:'7',r:'V7'},{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'}] },
+  { id:'mb-8bar',        name:'8-Bar Minor Blues',          mood:['blues','sad'],          genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},{s:7,q:'7',r:'V7'},
+            {s:5,q:'m7',r:'ivm7'},{s:5,q:'m7',r:'ivm7'},{s:0,q:'m7',r:'im7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mb-ii7-sub',     name:'Minor Blues ii° Substitution', mood:['blues','jazz','sad'], genre:'Blues',
+    chords:[{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'},{s:5,q:'m7',r:'ivm7'},{s:5,q:'m7',r:'ivm7'},
+            {s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'},{s:2,q:'dim',r:'ii°7'},{s:7,q:'7',r:'V7'}] },
+
+  // ── Minor Jazz (6) ────────────────────────────────────
+  { id:'mj-ii-V-i',      name:'Minor ii° – V – i',         mood:['jazz','sad'],           genre:'Jazz',
+    chords:[{s:2,q:'dim',r:'ii°7'},{s:7,q:'7',r:'V7'},{s:0,q:'m7',r:'im7'},{s:0,q:'m7',r:'im7'}] },
+  { id:'mj-i-iv-V-i',    name:'i – iv – V – i (Minor)',    mood:['jazz','sad'],           genre:'Jazz',
+    chords:[{s:0,q:'m7',r:'im7'},{s:5,q:'m7',r:'ivm7'},{s:7,q:'7',r:'V7'},{s:0,q:'m7',r:'im7'}] },
+  { id:'mj-i-VI-ii-V',   name:'i – ♭VI – ii° – V',        mood:['jazz','sad','dark'],    genre:'Jazz',
+    chords:[{s:0,q:'m7',r:'im7'},{s:8,q:'M7',r:'♭VImaj7'},{s:2,q:'dim',r:'ii°7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mj-i-VII-VI-V',  name:'i – ♭VII – ♭VI – V (Descending)', mood:['jazz','sad','dark'], genre:'Jazz',
+    chords:[{s:0,q:'m7',r:'im7'},{s:10,q:'7',r:'♭VII7'},{s:8,q:'M7',r:'♭VImaj7'},{s:7,q:'7',r:'V7'}] },
+  { id:'mj-i-III-VII-iv',name:'i – ♭III – ♭VII – iv (Modal Minor)', mood:['jazz','dark','emotional'], genre:'Jazz',
+    chords:[{s:0,q:'m7',r:'im7'},{s:3,q:'M7',r:'♭IIImaj7'},{s:10,q:'7',r:'♭VII7'},{s:5,q:'m7',r:'ivm7'}] },
+  { id:'mj-i-VI7-ii-V',  name:'i – VI7 – ii° – V (Minor Turnaround)', mood:['jazz','sad'], genre:'Jazz',
+    chords:[{s:0,q:'m7',r:'im7'},{s:9,q:'7',r:'VI7'},{s:2,q:'dim',r:'ii°7'},{s:7,q:'7',r:'V7'}] },
 ];
+
+// ── Progressions Favourites ─────────────────────────────────────
+const getFavProgs = () => { try { return new Set(JSON.parse(localStorage.getItem('favProgs')||'[]')); } catch { return new Set(); } };
+const setFavProgs = (s) => { try { localStorage.setItem('favProgs', JSON.stringify([...s])); } catch {} };
+const toggleFavProg = (id) => { const f = getFavProgs(); f.has(id) ? f.delete(id) : f.add(id); setFavProgs(f); };
 
 // ── Progressions Hub ───────────────────────────────────────────
 views.progressions = (params) => {
   setNav('practice');
   const mood = params?.get('mood') || 'all';
   const scale = params?.get('scale') || 'all'; // 'all' | 'major' | 'minor'
+  const showFavs = params?.get('favs') === '1';
   const isProgMinor = (p) => /^i[^I]|^i$/.test(p.chords[0]?.r || '') || p.mood.some(m => /sad|dark/.test(m));
   let filtered = mood === 'all' ? PROGRESSIONS_DB : PROGRESSIONS_DB.filter(p => p.mood.includes(mood));
   if (scale === 'major') filtered = filtered.filter(p => !isProgMinor(p));
   if (scale === 'minor') filtered = filtered.filter(p => isProgMinor(p));
+  const favs = getFavProgs();
+  if (showFavs) filtered = filtered.filter(p => favs.has(p.id));
   const MOOD_COLORS = {
     happy:'#f59e0b',sad:'#6366f1',emotional:'#8b5cf6',epic:'#ef4444',
     jazz:'#d97706',blues:'#1d4ed8',pop:'#ec4899',rock:'#dc2626',hiphop:'#7c3aed',edm:'#0891b2',
@@ -1446,12 +1502,15 @@ views.progressions = (params) => {
     <div class="chips" style="padding-top:0;overflow-x:auto;flex-wrap:nowrap" id="moodChips">
       ${PROG_MOODS.map(m=>`<button class="chip ${MOOD_KEY[m]===mood?'on':''}" data-mood="${MOOD_KEY[m]}">${m}</button>`).join('')}
     </div>
-    <div class="chips" style="padding-top:0" id="scaleChips">
-      ${['all','major','minor'].map(s=>`<button class="chip ${s===scale?'on':''}" data-scale="${s}">${s==='all'?'🎼 All':s==='major'?'☀️ Major':'🌙 Minor'}</button>`).join('')}
+    <div class="chips" style="padding-top:0;gap:6px" id="scaleChips">
+      ${['all','major','minor'].map(s=>`<button class="chip ${s===scale&&!showFavs?'on':''}" data-scale="${s}">${s==='all'?'🎼 All':s==='major'?'☀️ Major':'🌙 Minor'}</button>`).join('')}
+      <button class="chip ${showFavs?'on':''}" data-favs="1" style="${showFavs?'':''}">❤️ Favs</button>
     </div>
     <div class="list" id="plist">
-      ${filtered.map(p=>`
-        <a class="song" href="#/progressionPlay/${p.id}">
+      ${filtered.length === 0 ? `<div style="padding:32px;text-align:center;color:var(--muted);font-size:14px">No favourites yet.<br>Tap ❤️ on any progression to save it.</div>` :
+      filtered.map(p=>`
+        <div class="song" data-prog-id="${p.id}" style="cursor:default">
+          <a href="#/progressionPlay/${p.id}" style="display:contents">
           <div class="thumb" style="background:linear-gradient(135deg,${MOOD_COLORS[p.mood[0]]||'#6d5dfc'},${MOOD_COLORS[p.mood[1]]||'#22c55e'});font-size:28px;display:flex;align-items:center;justify-content:center">
             ${{happy:'😊',sad:'😢',emotional:'💫',epic:'🔥',jazz:'🎷',blues:'🎸',romantic:'💕',dark:'🌙'}[p.mood[0]]||'🎼'}
           </div>
@@ -1460,17 +1519,30 @@ views.progressions = (params) => {
             <div class="s">${p.genre} · ${p.chords.length} chords</div>
             <div class="tags" style="gap:4px">${p.mood.slice(0,3).map(moodBadge).join('')}</div>
           </div>
-          <span class="play">${icon('play')}</span>
-        </a>`).join('')}
+          </a>
+          <button class="fav-btn" data-fav-id="${p.id}" style="background:none;border:none;cursor:pointer;font-size:20px;padding:8px;flex-shrink:0" title="Favourite">${favs.has(p.id)?'❤️':'🤍'}</button>
+          <a class="play" href="#/progressionPlay/${p.id}">${icon('play')}</a>
+        </div>`).join('')}
     </div>
   </section>`;
   app.querySelector('#moodChips').onclick = (e) => {
     const m = e.target.closest('[data-mood]')?.dataset.mood;
-    if (m) location.hash = `#/progressions?mood=${m}&scale=${scale}`;
+    if (m) location.hash = `#/progressions?mood=${m}&scale=${scale}&favs=${showFavs?1:0}`;
   };
   app.querySelector('#scaleChips').onclick = (e) => {
     const s = e.target.closest('[data-scale]')?.dataset.scale;
-    if (s) location.hash = `#/progressions?mood=${mood}&scale=${s}`;
+    if (s) { location.hash = `#/progressions?mood=${mood}&scale=${s}&favs=0`; return; }
+    if (e.target.closest('[data-favs]')) location.hash = `#/progressions?mood=${mood}&scale=${scale}&favs=${showFavs?0:1}`;
+  };
+  app.querySelector('#plist').onclick = (e) => {
+    const btn = e.target.closest('.fav-btn');
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    const id = btn.dataset.favId;
+    toggleFavProg(id);
+    const newFavs = getFavProgs();
+    btn.textContent = newFavs.has(id) ? '❤️' : '🤍';
+    if (showFavs && !newFavs.has(id)) btn.closest('.song')?.remove();
   };
 };
 
@@ -1923,10 +1995,21 @@ views.progressionPlay = (params, progId) => {
     // Patterns list
     const patList = (t.patterns||[]).map(p=>`<li style="margin-bottom:4px;font-size:12.5px">${p}</li>`).join('');
 
+    // Mini one-octave keyboard showing chord tones
+    const chordPcs = new Set((currentChordMidis||[]).map(m => m % 12));
+    const wKeys = [{m:0,i:0},{m:2,i:1},{m:4,i:2},{m:5,i:3},{m:7,i:4},{m:9,i:5},{m:11,i:6}];
+    const bKeys = [{m:1,x:13},{m:3,x:31},{m:6,x:67},{m:8,x:85},{m:10,x:103}];
+    const mkW = (m,i) => `<rect x="${i*18+1}" y="1" width="16" height="57" rx="2" fill="${chordPcs.has(m)?'var(--p)':'white'}" stroke="#ccc" stroke-width="0.5"/>`;
+    const mkB = ({m,x}) => `<rect x="${x}" y="1" width="11" height="38" rx="1.5" fill="${chordPcs.has(m)?'#0d9488':'#222'}"/>`;
+    const miniKb = `<svg width="126" height="60" viewBox="0 0 126 60" style="border-radius:6px;overflow:hidden;border:1px solid #ddd;flex-shrink:0">${wKeys.map(({m,i})=>mkW(m,i)).join('')}${bKeys.map(mkB).join('')}</svg>`;
+
     npanel.innerHTML = `<div class="card pad" style="padding:14px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="font-size:20px">🎹</span>
-        <div><b style="font-size:14px;display:block">Improvisation Guide</b><span style="font-size:11px;color:var(--muted)">${t.name} · Key of ${keyName}</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:20px">🎹</span>
+          <div><b style="font-size:14px;display:block">Improvisation Guide</b><span style="font-size:11px;color:var(--muted)">${t.name} · Key of ${keyName}</span></div>
+        </div>
+        ${miniKb}
       </div>
 
       <div style="margin-bottom:12px;padding:10px;background:var(--p)11;border-radius:10px;border:1.5px solid var(--p)33">

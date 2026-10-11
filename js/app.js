@@ -2268,9 +2268,6 @@ views.scan = () => {
     progLabel.textContent = label;
   };
 
-  const dz = $('#dropzone');
-  const fileInput = $('#file');
-  const cameraInput = $('#fileCamera');
 
   const processFile = async (file) => {
     const url = ($('#srv').value.trim()).replace(/\/$/, '');

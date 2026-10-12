@@ -190,6 +190,7 @@ export const renderScore = (container, parsed, opts) => {
     rect.setAttribute('fill', '#e11d4810');
     rect.setAttribute('stroke', '#e11d4828');
     rect.setAttribute('stroke-width', '1');
+    rect.setAttribute('class', 'chord-rgn');
     svg.insertBefore(rect, svg.firstChild);
   });
   chordLabels.forEach((c) => {

@@ -6,6 +6,7 @@ let TREBLE_Y = 20;
 const LINE_H = 12;
 let SYSTEM_H = 250;
 let BASS_Y = 128;
+const mobile = () => window.innerWidth < 500;
 
 const maxChord = (hand) => Math.max(1, ...hand.flat().map((n) => n.pitches.length));
 
@@ -48,7 +49,7 @@ const buildNotes = (bar, clef, hand, b, keySig, opts) => {
 // Each note needs room for its name (e.g. "D#5") so names never touch.
 const minBarWidth = (parsed, b, names = true) => {
   const count = Math.max(parsed.rh[b]?.length || 0, parsed.lh[b]?.length || 0);
-  return 34 + count * (names ? 34 : 27);
+  return 30 + count * (names ? (mobile() ? 26 : 34) : 22);
 };
 
 const layoutSystems = (parsed, width) => {
@@ -81,9 +82,10 @@ export const renderScore = (container, parsed, opts) => {
   const harmony = hasChords ? analyzeHarmony(parsed) : [];
   const scaleName = hasChords ? detectScale(parsed) : '';
   const top = hasChords ? 44 : 0;
-  TREBLE_Y = 20 + top;
-  BASS_Y = 128 + extraT + top;
-  SYSTEM_H = 250 + extraT + extraB + top;
+  const mob = mobile();
+  TREBLE_Y = (mob ? 14 : 20) + top;
+  BASS_Y = (mob ? 96 : 128) + extraT + top;
+  SYSTEM_H = (mob ? 190 : 250) + extraT + extraB + top;
   const chordLabels = [];
   const width = Math.max(320, container.clientWidth);
   const usable = width - 30;

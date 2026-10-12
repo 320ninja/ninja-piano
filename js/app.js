@@ -281,6 +281,21 @@ const sustainBtn = () => `<button id="sustainBtn" class="iconbtn${getSustain()?'
 const NOTE_COLORS = { C:'#ef4444', D:'#f97316', E:'#eab308', F:'#22c55e', G:'#06b6d4', A:'#3b82f6', B:'#8b5cf6' };
 // Matches note name text like "F4", "G#3", "Bb2", "A", "C#" etc.
 const NOTE_TEXT_RE = /^([A-G][b#♭♯]?)\d?$/;
+const ZOOM_LEVELS = [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.15, 1.3, 1.5];
+const attachZoom = (wrap) => {
+  if (!wrap) return;
+  const scoreEl = wrap.querySelector('.score');
+  if (!scoreEl) return;
+  let zi = parseInt(localStorage.getItem('scoreZoom') || '5', 10);
+  const apply = () => { const z = ZOOM_LEVELS[zi]; scoreEl.style.transform = `scale(${z})`; scoreEl.style.transformOrigin = 'top left'; scoreEl.style.width = `${100 / z}%`; };
+  apply();
+  wrap.querySelectorAll('.zoom-btn').forEach((btn) => btn.addEventListener('click', () => {
+    zi = Math.max(0, Math.min(ZOOM_LEVELS.length - 1, zi + Number(btn.dataset.zoom)));
+    localStorage.setItem('scoreZoom', zi);
+    apply();
+  }));
+};
+
 const colorizeScore = (container) => {
   if (!container) return;
   container.querySelectorAll('text').forEach(el => {
@@ -665,7 +680,7 @@ views.song = (params, id) => {
     </div>
     <div class="seg" id="tabs"><button data-t="sheet" class="on">Sheet Music</button><button data-t="hands">Hands</button></div>
     <div class="seg" id="hands" style="display:none;margin-top:8px"><button data-h="both" class="on">Both hands</button><button data-h="rh">Right hand</button><button data-h="lh">Left hand</button></div>
-    <div class="card score-wrap"><h4>${esc(song.title)}</h4><div class="by">${esc(song.composer || 'Traditional')}</div><div class="score" id="score"></div></div>
+    <div class="card score-wrap"><div class="score-toolbar"><h4 style="margin:0">${esc(song.title)}</h4><div class="zoom-btns"><button class="zoom-btn" data-zoom="-1">−</button><button class="zoom-btn" data-zoom="1">+</button></div></div><div class="by">${esc(song.composer || 'Traditional')}</div><div class="score" id="score"></div></div>
     <div style="display:flex;gap:8px;margin-top:14px">
       <a class="btn block ok" href="#/practice/${id}" style="flex:1">${icon('practice')} Practice</a>
       <a class="btn block" href="#/practice/${id}" id="fallingBtn" style="flex:1;background:linear-gradient(135deg,#6d5dfc,#4f8ef7);color:#fff">🎹 Falling Notes</a>
@@ -698,6 +713,7 @@ views.song = (params, id) => {
   let score;
   const draw = () => { score = renderScore($('#score'), parsed, { ...scoreOpts(), showChords: true }); colorizeScore($('#score')); };
   draw();
+  attachZoom($('.score-wrap'));
   const { low, high } = keyRange(parsed);
   const kb = createKeyboard($('#kb'), { low, high, labels: settings.keyLabels, nameSystem: settings.nameSystem,
     onPress: (m) => { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); } });
@@ -1085,7 +1101,7 @@ views.practice = (params, id) => {
       <div class="row"><span>Speed</span><select id="spd">${[0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.25].map((v) => `<option value="${v}" ${v === cfg.speed ? 'selected' : ''}>${Math.round(v * 100)}%</option>`).join('')}</select></div>
       <div class="row"><span></span><button class="btn sm" id="apply">Apply</button></div>
     </details>
-    <div class="card score-wrap"><div class="score" id="score"></div></div>
+    <div class="card score-wrap"><div class="score-toolbar"><span></span><div class="zoom-btns"><button class="zoom-btn" data-zoom="-1">−</button><button class="zoom-btn" data-zoom="1">+</button></div></div><div class="score" id="score"></div></div>
     <div class="kb-dock">
       <div class="card kb-info">
         <div class="mini-score-wrap"><div id="miniScore" class="mini-score"></div></div>
@@ -1100,6 +1116,7 @@ views.practice = (params, id) => {
   const $ = (s) => app.querySelector(s);
   $('#hands').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.h === cfg.hands));
   const score = renderScore($('#score'), parsed, { ...scoreOpts(), showNames: settings.showNames && !hidden, showChords: !hidden }); colorizeScore($('#score'));
+  attachZoom($('.score-wrap'));
   const { low, high } = keyRange(parsed);
   const names = (midis) => midis.map((m) => labelFor(midiName(m), settings.nameSystem)).join(' ');
   const PRAISE = ['Good!', 'Great!', 'Nice!', 'Perfect!', 'Awesome!', 'Well done!'];

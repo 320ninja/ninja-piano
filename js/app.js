@@ -2172,6 +2172,7 @@ views.progressionPlay = (params, progId) => {
       <button class="btn sm" id="prevBtn">${icon('arrowL')} Prev</button>
       <button class="btn" id="autoBtn" style="flex:1">${icon('play')} Auto</button>
       <button class="btn sm" id="nextBtn">Next ${icon('arrowR')}</button>
+      <button id="progFavBtn2" class="btn sm${progFavs.has(progId)?' on':''}" style="flex-shrink:0;background:${progFavs.has(progId)?'#ef4444':'var(--card)'};color:${progFavs.has(progId)?'#fff':'var(--ink)'};border:2px solid ${progFavs.has(progId)?'#ef4444':'var(--border)'}" title="Save to favourites">${icon('heart')}</button>
     </div>
 
     <div class="card pad" style="display:flex;align-items:center;gap:12px;padding:10px 14px">
@@ -2354,12 +2355,20 @@ views.progressionPlay = (params, progId) => {
   app.querySelector('#kbProgPills').onclick = pillClickHandler;
 
   // Favourite progression toggle
-  app.querySelector('#progFavBtn').onclick = () => {
+  const toggleProgFav = () => {
     if (progFavs.has(progId)) progFavs.delete(progId); else progFavs.add(progId);
     save('np.prog-favs', [...progFavs]);
-    const btn = app.querySelector('#progFavBtn');
-    if (btn) btn.classList.toggle('on', progFavs.has(progId));
+    const isFavNow = progFavs.has(progId);
+    [app.querySelector('#progFavBtn'), app.querySelector('#progFavBtn2')].forEach(btn => {
+      if (!btn) return;
+      btn.classList.toggle('on', isFavNow);
+      btn.style.background = isFavNow ? '#ef4444' : 'var(--card)';
+      btn.style.color = isFavNow ? '#fff' : 'var(--ink)';
+      btn.style.borderColor = isFavNow ? '#ef4444' : 'var(--border)';
+    });
   };
+  app.querySelector('#progFavBtn')?.addEventListener('click', toggleProgFav);
+  app.querySelector('#progFavBtn2')?.addEventListener('click', toggleProgFav);
 
   // Auto advance also re-renders improv panel
   const origAdvance = advance;

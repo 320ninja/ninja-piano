@@ -1975,10 +1975,12 @@ const chordNotationSVG = (midis) => {
   midis.forEach(m=>{ const y=noteStaffY(normOct(m)); if(y>lineY[4]) for(let l=lineY[4]+LG;l<=y+3;l+=LG) ledgers.add(l); if(y<lineY[0]) for(let l=lineY[0]-LG;l>=y-3;l-=LG) ledgers.add(l); });
   const NX = 70; // x position of noteheads
   const ledgerSvg = [...ledgers].map(y=>`<line x1="${NX-10}" y1="${y}" x2="${NX+10}" y2="${y}" stroke="currentColor" stroke-width="1.5" opacity=".7"/>`).join('');
+  const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   const notes = [...midis].sort((a,b)=>a-b).map(m=>{
     const mn=normOct(m), y=noteStaffY(mn), pc=mn%12, sharp=ACC[pc];
     const nx=NX+(sharp?5:0);
-    return `${sharp?`<text x="${nx-12}" y="${y+4}" font-size="13" font-weight="bold" fill="currentColor">#</text>`:''}<ellipse cx="${nx}" cy="${y}" rx="7.5" ry="5.2" fill="currentColor" transform="rotate(-12,${nx},${y})"/>`;
+    const name=NOTE_NAMES[pc];
+    return `${sharp?`<text x="${nx-12}" y="${y+4}" font-size="13" font-weight="bold" fill="currentColor">#</text>`:''}<ellipse cx="${nx}" cy="${y}" rx="7.5" ry="5.2" fill="currentColor" transform="rotate(-12,${nx},${y})"/><text x="${nx}" y="${y+18}" font-size="9" font-weight="700" fill="#ef4444" text-anchor="middle">${name}</text>`;
   }).join('');
   return `<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg" style="color:var(--ink);opacity:.85;width:100px;height:75px"><text x="0" y="70" font-size="60" font-family="serif" fill="currentColor" style="font-style:italic">𝄞</text>${staffLines}${ledgerSvg}${notes}</svg>`;
 };

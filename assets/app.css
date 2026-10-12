@@ -185,12 +185,12 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .score svg path,.score svg g rect{fill:var(--staff);stroke:var(--staff)}
 .score svg rect.chord-rgn{fill:#e11d4810!important;stroke:#e11d4828!important}
 .score svg text{fill:var(--staff)}
-.score svg .vf-stavenote.cur path,.score svg .vf-stavenote.cur text{fill:var(--p)!important;stroke:var(--p)!important}
+.score svg .vf-stavenote.cur path,.score svg .vf-stavenote.cur text{fill:#facc15!important;stroke:#facc15!important;filter:drop-shadow(0 0 6px #facc1599)}
 .score svg .vf-stavenote.hit path,.score svg .vf-stavenote.hit text{fill:var(--ok)!important;stroke:var(--ok)!important}
 .score svg .vf-stavenote.miss path{fill:var(--bad)!important;stroke:var(--bad)!important}
 .score svg text.nn{font-family:'Plus Jakarta Sans',sans-serif!important;font-weight:700;fill:#ef4444;opacity:.45}
 .score svg .vf-stavenote.cur text.nn{fill:#facc15!important;opacity:1!important;font-size:14px!important;filter:drop-shadow(0 0 4px #facc15)}
-.score .cursor{fill:color-mix(in srgb,var(--p) 18%,transparent)!important;stroke:none!important}
+.score .cursor{fill:#facc1530!important;stroke:none!important}
 
 /* Piano keyboard */
 .kb-dock{position:sticky;bottom:0;z-index:30;margin:14px -16px 0;padding:14px 16px calc(8px + var(--safe-b));background:linear-gradient(transparent,var(--bg) 16px)}

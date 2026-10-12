@@ -631,8 +631,15 @@ const scrollScoreTo = (scoreEl, y) => {
   if (y == null) return;
   const svg = scoreEl.querySelector('svg');
   const scale = svg.clientWidth / svg.viewBox.baseVal.width;
-  const top = svg.getBoundingClientRect().top + scrollY + y * scale - 90;
-  if (Math.abs(top - scrollY) > 40) scrollTo({ top, behavior: 'smooth' });
+  const wrap = scoreEl.closest('.score-wrap');
+  if (wrap && wrap.scrollHeight > wrap.clientHeight) {
+    // score-wrap has internal scroll — scroll within it
+    const svgTop = svg.getBoundingClientRect().top - wrap.getBoundingClientRect().top + wrap.scrollTop;
+    wrap.scrollTo({ top: svgTop + y * scale - 40, behavior: 'smooth' });
+  } else {
+    const top = svg.getBoundingClientRect().top + scrollY + y * scale - 120;
+    if (Math.abs(top - scrollY) > 40) scrollTo({ top, behavior: 'smooth' });
+  }
 };
 
 views.song = (params, id) => {

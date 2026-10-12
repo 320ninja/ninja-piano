@@ -2059,15 +2059,7 @@ views.progressionPlay = (params, progId) => {
     if (notEl) notEl.innerHTML = chordNotationSVG(midis);
     [pillsEl, kbPillsEl].forEach(container => {
       if (!container) return;
-      container.querySelectorAll('.pp').forEach((el,i) => {
-        const col = pillColor(prog.chords[i].r);
-        const active = i===curIdx;
-        el.style.background = active ? col+'22' : '';
-        el.style.color = col;
-        el.style.border = `2px solid ${active ? col : col+'66'}`;
-        el.style.boxShadow = active ? `0 0 0 3px ${col}44` : '';
-        el.style.fontWeight = '800';
-      });
+      container.innerHTML = buildChordList();
     });
     if (kb) {
       kb.setTargets([]);
@@ -2123,7 +2115,13 @@ views.progressionPlay = (params, progId) => {
   const buildChordList = () => prog.chords.map((c,i)=>{
     const col = pillColor(c.r);
     const active = i===curIdx;
-    return `<button class="pp chip" data-i="${i}" style="background:${active?col:''}22;color:${col};border:2px solid ${active?col:col+'66'};font-weight:800;${active?'box-shadow:0 0 0 3px '+col+'44':''}">${c.r}</button>`;
+    const label = progChordLabel(keyMidi, c.s, c.q);
+    const chordName = progChordInversion(label, c.q);
+    const midis = progChordMidis(keyMidi, c.s, c.q);
+    const invFull = getChordInversionName(label, c.q, midis);
+    const invPart = invFull.split('–')[1]?.trim() || '';
+    const invLine = invPart && invPart !== 'Root position' ? `<span style="font-size:8px;opacity:.65;line-height:1;white-space:nowrap">${invPart}</span>` : '';
+    return `<button class="pp chip" data-i="${i}" style="background:${active?col+'22':''};color:${col};border:2px solid ${active?col:col+'66'};font-weight:800;${active?'box-shadow:0 0 0 3px '+col+'44;':''}display:flex;flex-direction:column;align-items:center;gap:1px;height:auto;padding:5px 8px;line-height:1.2"><span>${c.r}</span><span style="font-size:9px;font-weight:600;opacity:.8;line-height:1.1;white-space:nowrap">${chordName}</span>${invLine}</button>`;
   }).join('');
 
   app.innerHTML = `<section class="view">

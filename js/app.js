@@ -2058,6 +2058,8 @@ views.progressionPlay = (params, progId) => {
     if (infoEl) infoEl.textContent = midis.map(m => midiName(m).replace(/\d+/,'')).join(' – ');
     const notEl = app.querySelector('#chordNotation');
     if (notEl) notEl.innerHTML = chordNotationSVG(midis);
+    const kbNotEl = app.querySelector('#kbNotation');
+    if (kbNotEl) kbNotEl.innerHTML = chordNotationSVG(midis);
     [pillsEl, kbPillsEl].forEach(container => {
       if (!container) return;
       container.innerHTML = buildChordList();
@@ -2179,7 +2181,10 @@ views.progressionPlay = (params, progId) => {
     <div id="improvPanel" style="margin:10px 0"></div>
     <div class="kb-dock">
       <div style="display:flex;align-items:center;gap:8px;padding:4px 8px 2px;flex-wrap:wrap">
-        <div id="kbChordLabel" style="font-size:14px;font-weight:800;color:${pillColor(prog.chords[0].r)};letter-spacing:.2px;white-space:nowrap;flex-shrink:0">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <div id="kbNotation" style="flex-shrink:0">${chordNotationSVG(progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+          <div id="kbChordLabel" style="font-size:13px;font-weight:800;color:${pillColor(prog.chords[0].r)};letter-spacing:.2px;white-space:nowrap">${getChordInversionName(progChordLabel(keyMidi,prog.chords[0].s,prog.chords[0].q),prog.chords[0].q,progChordMidis(keyMidi,prog.chords[0].s,prog.chords[0].q))}</div>
+        </div>
         <div class="chips" id="kbProgPills" style="flex:1;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding:0;margin:0;gap:5px">${buildChordList()}</div>
         <div style="display:flex;gap:4px;flex-shrink:0">
           <button id="kbPrev" style="background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;color:var(--ink)" title="Prev">◀</button>

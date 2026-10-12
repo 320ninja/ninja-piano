@@ -220,6 +220,15 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 @keyframes pulse{50%{opacity:.25}}
 @keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 .key .c4{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--p)}
+@media (max-width:480px){
+  .kb{height:68px;border-radius:12px;padding:4px 5px 3px}
+  .kb-dock{padding:8px 16px calc(6px + var(--safe-b))}
+  .kb-info{padding:4px 10px;margin-bottom:4px}
+  .kb-info .cn b{font-size:16px}
+  .key{border-radius:0 0 7px 7px;padding-bottom:5px}
+  .key.b{font-size:8px;padding-bottom:4px}
+  .score-wrap{margin-top:8px;padding:10px 6px}
+}
 @media (min-width:760px){.kb{height:120px}}
 .kb.tight .key{font-size:8px;padding-bottom:4px;color:#7070a0;letter-spacing:-.02em}
 

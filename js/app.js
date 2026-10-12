@@ -2216,9 +2216,10 @@ views.progressionPlay = (params, progId) => {
     const TOTAL_W = 2 * octW + 1;
     const whitePC = [0,2,4,5,7,9,11];
     const blackDef = [{pc:1,ox:9},{pc:3,ox:21},{pc:6,ox:45},{pc:8,ox:57},{pc:10,ox:69}];
+    const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     const makeKb = (highlightMidis, isActive) => {
       const highSet = new Set(highlightMidis);
-      let wkeys = '', bkeys = '';
+      let wkeys = '', bkeys = '', labels = '';
       for (let oct = 0; oct < 2; oct++) {
         const octX = oct * octW;
         const base = 60 + oct * 12;
@@ -2227,17 +2228,19 @@ views.progressionPlay = (params, progId) => {
           const x = octX + wi * KW + 1;
           const isH = highSet.has(midi);
           wkeys += `<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${isH?chordCol:'white'}" stroke="${isH?chordCol:'#ccc'}" stroke-width="${isH?1.5:0.5}"/>`;
+          if (isH) labels += `<text x="${x+(KW-1)/2}" y="${KH-4}" font-size="7" font-weight="900" fill="white" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES[pc]}</text>`;
         });
         blackDef.forEach(({pc, ox}) => {
           const midi = base + pc;
           const isH = highSet.has(midi);
           bkeys += `<rect x="${octX+ox}" y="1" width="${BW}" height="${BH}" rx="1" fill="${isH?chordCol:'#222'}"/>`;
+          if (isH) labels += `<text x="${octX+ox+BW/2}" y="${BH-3}" font-size="6" font-weight="900" fill="white" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES[pc]}</text>`;
         });
       }
       const border = isActive ? `2px solid ${chordCol}` : '1.5px solid #e5e7eb';
       const shadow = isActive ? `0 0 0 3px ${chordCol}44` : 'none';
       const opacity = isActive ? 1 : 0.75;
-      return `<svg width="170" height="58" viewBox="0 0 ${TOTAL_W} ${KH+2}" style="border-radius:8px;overflow:hidden;border:${border};box-shadow:${shadow};display:block;opacity:${opacity}"><rect width="${TOTAL_W}" height="${KH+2}" fill="#ddd"/>${wkeys}${bkeys}</svg>`;
+      return `<svg width="170" height="58" viewBox="0 0 ${TOTAL_W} ${KH+2}" style="border-radius:8px;overflow:hidden;border:${border};box-shadow:${shadow};display:block;opacity:${opacity}"><rect width="${TOTAL_W}" height="${KH+2}" fill="#ddd"/>${wkeys}${bkeys}${labels}</svg>`;
     };
     return intervals.map((_, inv) => {
       const invNotes = [...rootNotes];

@@ -17,6 +17,7 @@ const DEFAULTS = {
 const settings = { ...DEFAULTS, ...load('np.settings', {}) };
 const progress = load('np.progress', {});   // id -> { best, plays, done, last }
 let favs = new Set(load('np.favs', []));
+let progFavs = new Set(load('np.prog-favs', []));
 const setSetting = (k, v) => { settings[k] = v; save('np.settings', settings); };
 const saveProgress = () => save('np.progress', progress);
 
@@ -2124,8 +2125,23 @@ views.progressionPlay = (params, progId) => {
     return `<button class="pp chip" data-i="${i}" style="background:${active?col+'22':''};color:${col};border:2px solid ${active?col:col+'66'};font-weight:800;${active?'box-shadow:0 0 0 3px '+col+'44;':''}display:flex;flex-direction:column;align-items:center;gap:1px;height:auto;padding:5px 8px;line-height:1.2"><span>${c.r}</span><span style="font-size:9px;font-weight:600;opacity:.8;line-height:1.1;white-space:nowrap">${chordName}</span>${invLine}</button>`;
   }).join('');
 
+  const progIdx = PROGRESSIONS_DB.findIndex(p => p.id === progId);
+  const prevProgId = PROGRESSIONS_DB[(progIdx - 1 + PROGRESSIONS_DB.length) % PROGRESSIONS_DB.length]?.id;
+  const nextProgId = PROGRESSIONS_DB[(progIdx + 1) % PROGRESSIONS_DB.length]?.id;
+
   app.innerHTML = `<section class="view">
-    <div class="top"><a class="iconbtn" href="#/progressions">${icon('back')}</a><h1 style="font-size:15px">${prog.name}</h1><div style="display:flex;gap:4px;align-items:center">${voicePicker()}${sustainBtn()}</div></div>
+    <div class="top">
+      <a class="iconbtn" href="#/progressions">${icon('back')}</a>
+      <div style="display:flex;align-items:center;gap:4px;flex:1;justify-content:center;overflow:hidden">
+        <a class="iconbtn" href="#/progressionPlay/${prevProgId}?key=${keyName}&bpm=${bpm}" title="Previous progression" style="flex-shrink:0">${icon('arrowL')}</a>
+        <h1 style="font-size:13px;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center">${prog.name}</h1>
+        <a class="iconbtn" href="#/progressionPlay/${nextProgId}?key=${keyName}&bpm=${bpm}" title="Next progression" style="flex-shrink:0">${icon('arrowR')}</a>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center">
+        ${voicePicker()}${sustainBtn()}
+        <button id="progFavBtn" class="iconbtn${progFavs.has(progId)?' on':''}" title="Favourite progression">${icon('heart')}</button>
+      </div>
+    </div>
 
     <div class="card pad" style="display:flex;align-items:center;gap:10px;padding:10px 14px">
       <div style="font-size:11px;font-weight:700;opacity:.6;text-transform:uppercase;letter-spacing:.5px;flex:none">Key</div>
@@ -2326,6 +2342,14 @@ views.progressionPlay = (params, progId) => {
   };
   app.querySelector('#progPills').onclick = pillClickHandler;
   app.querySelector('#kbProgPills').onclick = pillClickHandler;
+
+  // Favourite progression toggle
+  app.querySelector('#progFavBtn').onclick = () => {
+    if (progFavs.has(progId)) progFavs.delete(progId); else progFavs.add(progId);
+    save('np.prog-favs', [...progFavs]);
+    const btn = app.querySelector('#progFavBtn');
+    if (btn) btn.classList.toggle('on', progFavs.has(progId));
+  };
 
   // Auto advance also re-renders improv panel
   const origAdvance = advance;

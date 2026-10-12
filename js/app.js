@@ -1980,7 +1980,7 @@ const chordNotationSVG = (midis) => {
     const mn=normOct(m), y=noteStaffY(mn), pc=mn%12, sharp=ACC[pc];
     const nx=NX+(sharp?5:0);
     const name=NOTE_NAMES[pc];
-    return `${sharp?`<text x="${nx-12}" y="${y+4}" font-size="13" font-weight="bold" fill="currentColor">#</text>`:''}<text x="${nx}" y="${y-9}" font-size="10" font-weight="900" fill="#ef4444" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${name}</text><ellipse cx="${nx}" cy="${y}" rx="7.5" ry="5.2" fill="currentColor" transform="rotate(-12,${nx},${y})"/>`;
+    return `${sharp?`<text x="${nx-12}" y="${y+4}" font-size="13" font-weight="bold" fill="currentColor">#</text>`:''}<ellipse cx="${nx}" cy="${y}" rx="8" ry="5.5" fill="currentColor" transform="rotate(-12,${nx},${y})"/><text x="${nx}" y="${y+1}" font-size="${name.length>2?7:8}" font-weight="900" fill="#ef4444" text-anchor="middle" dominant-baseline="middle" font-family="Plus Jakarta Sans,sans-serif">${name}</text>`;
   }).join('');
   return `<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg" style="color:var(--ink);opacity:.85;width:100px;height:75px"><text x="0" y="70" font-size="60" font-family="serif" fill="currentColor" style="font-style:italic">𝄞</text>${staffLines}${ledgerSvg}${notes}</svg>`;
 };

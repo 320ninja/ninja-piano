@@ -148,8 +148,7 @@ export const renderScore = (container, parsed, opts) => {
   const svg = container.querySelector('svg');
   svg.removeAttribute('height');
   svg.setAttribute('viewBox', `0 0 ${width} ${systems.length * SYSTEM_H + 10}`);
-  // Remove VexFlow's white background rect — score-wrap provides the background
-  svg.querySelectorAll(':scope > rect').forEach(r => r.remove());
+
   const NS = 'http://www.w3.org/2000/svg';
   // Fast runs on narrow screens: when two note names would touch, drop the second half a line.
   const rows = new Map();

@@ -172,7 +172,6 @@ h3 a{font-size:13px;color:var(--p);font-weight:600}
 .score-wrap .by{text-align:center;font-size:12px;color:var(--muted);margin-bottom:4px}
 .score svg{display:block;width:100%;height:auto}
 .score svg path,.score svg g rect{fill:var(--staff);stroke:var(--staff)}
-.score svg>rect{display:none}
 .score svg text{fill:var(--staff)}
 .score svg .vf-stavenote.cur path,.score svg .vf-stavenote.cur text{fill:var(--p)!important;stroke:var(--p)!important}
 .score svg .vf-stavenote.hit path,.score svg .vf-stavenote.hit text{fill:var(--ok)!important;stroke:var(--ok)!important}

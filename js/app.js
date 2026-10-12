@@ -3128,3 +3128,16 @@ if ('serviceWorker' in navigator && !['localhost', '127.0.0.1'].includes(locatio
   navigator.serviceWorker.register('sw.js').catch(() => {});
   navigator.serviceWorker.addEventListener('message', (e) => { if (e.data?.type === 'SW_UPDATED') location.reload(); });
 }
+
+/* ---------- global page zoom ---------- */
+const PAGE_ZOOMS = [0.6, 0.7, 0.75, 0.8, 0.85, 0.9, 1, 1.1, 1.2];
+const DEFAULT_PZ = window.innerWidth < 500 ? 5 : 6; // index into PAGE_ZOOMS (0.9 mobile, 1.0 desktop)
+let pzi = parseInt(localStorage.getItem('np.pz') ?? DEFAULT_PZ, 10);
+const applyPageZoom = () => { document.documentElement.style.zoom = PAGE_ZOOMS[pzi]; };
+applyPageZoom();
+const pzEl = document.createElement('div');
+pzEl.id = 'pz';
+pzEl.innerHTML = '<button id="pzOut">−</button><button id="pzIn">+</button>';
+document.body.appendChild(pzEl);
+document.getElementById('pzOut').addEventListener('click', () => { pzi = Math.max(0, pzi - 1); localStorage.setItem('np.pz', pzi); applyPageZoom(); });
+document.getElementById('pzIn').addEventListener('click',  () => { pzi = Math.min(PAGE_ZOOMS.length - 1, pzi + 1); localStorage.setItem('np.pz', pzi); applyPageZoom(); });

@@ -3115,6 +3115,7 @@ views.chordsPractice = () => {
   const saved = JSON.parse(localStorage.getItem('np.cpractice') || '{}');
   let selRoot = saved.root||0, selScale = (saved.scale && SCALE_DEFS[saved.scale]) ? saved.scale : 'Major';
   let selChordIdx = -1, playTimer = null, playIdx = 0;
+  let showScale = saved.showScale !== false;
 
   const KW=14, KH=58, BW=9, BH=36, octW=7*KW, nOcts=3, KB0=48;
   const TW = nOcts*octW+1;
@@ -3122,7 +3123,7 @@ views.chordsPractice = () => {
   const bDef=[{pc:1,ox:10},{pc:3,ox:24},{pc:6,ox:52},{pc:8,ox:66},{pc:10,ox:80}];
 
   const buildKb = (scalePCs, chordMidis, chordColor) => {
-    const scSet=new Set(scalePCs), chSet=new Set(chordMidis||[]);
+    const scSet=new Set(showScale?scalePCs:[]), chSet=new Set(chordMidis||[]);
     const cCol=chordColor||'var(--p)';
     let wk='', bk='', lb='';
     for(let o=0;o<nOcts;o++){
@@ -3130,15 +3131,15 @@ views.chordsPractice = () => {
       wPC.forEach((pc,wi)=>{
         const midi=base+pc, gpc=midi%12, x=ox+wi*KW+1;
         const isCh=chSet.has(midi), isSc=scSet.has(gpc);
-        const fill=isCh?cCol:isSc?'#fecaca':'white';
-        const stroke=isSc||isCh?'#ef4444':'#ddd', sw=isSc||isCh?1.5:0.5;
+        const fill=isCh?cCol:isSc?'#bbf7d0':'white';
+        const stroke=isSc||isCh?'#22c55e':'#ddd', sw=isSc||isCh?1.5:0.5;
         wk+=`<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${fill}" stroke="${isCh?cCol:stroke}" stroke-width="${sw}"/>`;
-        if(isSc||isCh) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh?'#fff':'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
+        if(isSc||isCh) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh?'#fff':'#16a34a'}" font-weight="800">${nn(gpc)}</text>`;
       });
       bDef.forEach(({pc,ox:bx})=>{
         const midi=base+pc, gpc=midi%12;
         const isCh=chSet.has(midi), isSc=scSet.has(gpc);
-        const fill=isCh?cCol:isSc?'#ef4444':'#1a1a1a';
+        const fill=isCh?cCol:isSc?'#22c55e':'#1a1a1a';
         bk+=`<rect x="${ox+bx}" y="1" width="${BW}" height="${BH}" rx="1" fill="${fill}"/>`;
         if(isSc||isCh) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="#fff" font-weight="800">${nn(gpc)}</text>`;
       });
@@ -3193,7 +3194,7 @@ views.chordsPractice = () => {
       return `<button data-cpscale="${name}" style="flex:0 0 auto;padding:6px 12px;border-radius:10px;font-weight:${on?700:500};font-size:12px;background:${on?'var(--p)':'var(--card)'};color:${on?'#fff':'var(--fg)'};border:1.5px solid ${on?'var(--p)':'var(--line)'};cursor:pointer">${name}</button>`;
     }).join('');
 
-    const noteChips=scaleNotes.map(n=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#ef444420;color:#ef4444;font-weight:800;font-size:12px;border:2px solid #ef444460">${n}</span>`).join('');
+    const noteChips=scaleNotes.map(n=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#22c55e20;color:#22c55e;font-weight:800;font-size:12px;border:2px solid #22c55e60">${n}</span>`).join('');
 
     const chordCards=chords.map((ch,i)=>{
       const on=i===selChordIdx;
@@ -3215,7 +3216,10 @@ views.chordsPractice = () => {
       <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch">${rootBtns}</div>
       <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">${scaleBtns}</div>
       <div style="margin-bottom:10px">${kbSvg}</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center">${noteChips}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
+        ${noteChips}
+        <button id="cpToggleScale" style="margin-left:auto;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid #22c55e60;background:${showScale?'#22c55e20':'var(--card)'};color:${showScale?'#22c55e':'var(--muted)'}">${showScale?'Scale ✓':'Scale'}</button>
+      </div>
       ${chords.length?`
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)">Diatonic Chords — tap to hear & highlight</span>
@@ -3225,8 +3229,8 @@ views.chordsPractice = () => {
       `:''}
     `;
 
-    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale})); render(); }));
-    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale})); render(); }));
+    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); }));
+    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); }));
     panel.querySelectorAll('[data-cpchord]').forEach(b=>b.addEventListener('click',()=>{
       const i=+b.dataset.cpchord;
       stopPlay();
@@ -3234,6 +3238,7 @@ views.chordsPractice = () => {
       if(selChordIdx>=0){ unlockAudio(); chords[i].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),j*40)); }
       render();
     }));
+    panel.querySelector('#cpToggleScale')?.addEventListener('click',()=>{ showScale=!showScale; localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); });
     panel.querySelector('#cpPlayAll')?.addEventListener('click',()=>{
       unlockAudio();
       if(playTimer){ stopPlay(); selChordIdx=-1; render(); return; }

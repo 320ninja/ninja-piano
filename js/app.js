@@ -531,6 +531,14 @@ views.practiceHub = () => {
         <div class="tags"><span class="tag cat">7 scales</span><span class="tag cat">All 12 keys</span><span class="tag cat">Chords</span></div>
       </div><span class="play">${icon('arrowR')}</span>
     </a>
+    ${heading('🎹', 'Chords Practice')}
+    <a class="song" href="#/chordsPractice">
+      <div class="thumb" style="background:linear-gradient(135deg,#ec4899,#be185d)"><svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="28" width="8" height="20" rx="2" fill="#fff" opacity=".9"/><rect x="16" y="28" width="8" height="20" rx="2" fill="#fff" opacity=".9"/><rect x="26" y="28" width="8" height="20" rx="2" fill="#fff" opacity=".9"/><rect x="36" y="28" width="8" height="20" rx="2" fill="#fff" opacity=".9"/><rect x="46" y="28" width="8" height="20" rx="2" fill="#fff" opacity=".9"/><rect x="12" y="28" width="5" height="12" rx="1" fill="rgba(0,0,0,.7)"/><rect x="22" y="28" width="5" height="12" rx="1" fill="rgba(0,0,0,.7)"/><rect x="38" y="28" width="5" height="12" rx="1" fill="rgba(0,0,0,.7)"/><text x="29" y="18" text-anchor="middle" font-size="11" fill="#fff" font-weight="800">I IV V</text><text x="29" y="55" text-anchor="middle" font-size="7" fill="#fff" font-weight="700" opacity=".85">CHORDS</text></svg></div>
+      <div class="meta"><div class="t">Chords Practice</div>
+        <div class="s">Practice diatonic chords in any key · All scale types</div>
+        <div class="tags"><span class="tag cat">12 keys</span><span class="tag cat">12 scales</span><span class="tag cat">Play All</span></div>
+      </div><span class="play">${icon('play')}</span>
+    </a>
     ${heading('🎼', 'Chord Progressions')}
     <a class="song" href="#/progressions">
       <div class="thumb" style="background:linear-gradient(135deg,#6d28d9,#3b82f6)"><svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg"><line x1="6" y1="14" x2="52" y2="14" stroke="#fff" stroke-width="1.2" opacity=".5"/><line x1="6" y1="22" x2="52" y2="22" stroke="#fff" stroke-width="1.2" opacity=".5"/><line x1="6" y1="30" x2="52" y2="30" stroke="#fff" stroke-width="1.2" opacity=".5"/><line x1="6" y1="38" x2="52" y2="38" stroke="#fff" stroke-width="1.2" opacity=".5"/><ellipse cx="13" cy="38" rx="5" ry="3.5" fill="#ef4444"/><line x1="18" y1="38" x2="18" y2="10" stroke="#ef4444" stroke-width="1.5"/><ellipse cx="26" cy="30" rx="5" ry="3.5" fill="#eab308"/><line x1="31" y1="30" x2="31" y2="6" stroke="#eab308" stroke-width="1.5"/><ellipse cx="39" cy="22" rx="5" ry="3.5" fill="#22c55e"/><line x1="44" y1="22" x2="44" y2="4" stroke="#22c55e" stroke-width="1.5"/><ellipse cx="50" cy="30" rx="5" ry="3.5" fill="#3b82f6"/><line x1="55" y1="30" x2="55" y2="8" stroke="#3b82f6" stroke-width="1.5"/><text x="29" y="54" text-anchor="middle" font-size="8" fill="#fff" font-weight="700" opacity=".85">I – IV – V – I</text></svg></div>
@@ -3023,6 +3031,175 @@ views.scales = () => {
   render();
 };
 
+// ── Chords Practice ──────────────────────────────────────────────────────
+views.chordsPractice = () => {
+  setNav('practice');
+  const SCALE_DEFS = {
+    'Major':           { intervals:[0,2,4,5,7,9,11] },
+    'Minor':           { intervals:[0,2,3,5,7,8,10] },
+    'Harmonic Minor':  { intervals:[0,2,3,5,7,8,11] },
+    'Melodic Minor':   { intervals:[0,2,3,5,7,9,11] },
+    'Dorian':          { intervals:[0,2,3,5,7,9,10] },
+    'Mixolydian':      { intervals:[0,2,4,5,7,9,10] },
+    'Phrygian':        { intervals:[0,1,3,5,7,8,10] },
+    'Lydian':          { intervals:[0,2,4,6,7,9,11] },
+    'Major Blues':     { intervals:[0,2,3,4,7,9] },
+    'Minor Blues':     { intervals:[0,3,5,6,7,10] },
+    'Major Penta':     { intervals:[0,2,4,7,9] },
+    'Minor Penta':     { intervals:[0,3,5,7,10] },
+  };
+  const NMS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const NMF = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+  const USE_FLAT = new Set([1,3,5,8,10]);
+  const nn = (pc) => USE_FLAT.has(pc%12) ? NMF[pc%12] : NMS[pc%12];
+  const CHORD_COLORS=['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#8b5cf6','#ec4899','#10b981','#3b82f6','#f43f5e','#14b8a6','#a855f7'];
+
+  const saved = JSON.parse(localStorage.getItem('np.cpractice') || '{}');
+  let selRoot = saved.root||0, selScale = (saved.scale && SCALE_DEFS[saved.scale]) ? saved.scale : 'Major';
+  let selChordIdx = -1, playTimer = null, playIdx = 0;
+
+  const KW=14, KH=58, BW=9, BH=36, octW=7*KW, nOcts=3, KB0=48;
+  const TW = nOcts*octW+1;
+  const wPC=[0,2,4,5,7,9,11];
+  const bDef=[{pc:1,ox:10},{pc:3,ox:24},{pc:6,ox:52},{pc:8,ox:66},{pc:10,ox:80}];
+
+  const buildKb = (scalePCs, chordMidis, chordColor) => {
+    const scSet=new Set(scalePCs), chSet=new Set(chordMidis||[]);
+    const cCol=chordColor||'var(--p)';
+    let wk='', bk='', lb='';
+    for(let o=0;o<nOcts;o++){
+      const ox=o*octW, base=KB0+o*12;
+      wPC.forEach((pc,wi)=>{
+        const midi=base+pc, gpc=midi%12, x=ox+wi*KW+1;
+        const isCh=chSet.has(midi), isSc=scSet.has(gpc);
+        const fill=isCh?cCol:isSc?'#fecaca':'white';
+        const stroke=isSc||isCh?'#ef4444':'#ddd', sw=isSc||isCh?1.5:0.5;
+        wk+=`<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${fill}" stroke="${isCh?cCol:stroke}" stroke-width="${sw}"/>`;
+        if(isSc||isCh) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh?'#fff':'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
+      });
+      bDef.forEach(({pc,ox:bx})=>{
+        const midi=base+pc, gpc=midi%12;
+        const isCh=chSet.has(midi), isSc=scSet.has(gpc);
+        const fill=isCh?cCol:isSc?'#ef4444':'#1a1a1a';
+        bk+=`<rect x="${ox+bx}" y="1" width="${BW}" height="${BH}" rx="1" fill="${fill}"/>`;
+        if(isSc||isCh) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="#fff" font-weight="800">${nn(gpc)}</text>`;
+      });
+    }
+    return `<svg width="100%" viewBox="0 0 ${TW} ${KH+2}" style="border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;display:block"><rect width="${TW}" height="${KH+2}" fill="#c8c8c8"/>${wk}${bk}${lb}</svg>`;
+  };
+
+  const getDiatonic = (root, intervals) => {
+    const len=intervals.length;
+    if(len<3) return [];
+    return intervals.map((iv,deg)=>{
+      const cRoot=(root+iv)%12;
+      const t3Int=(intervals[(deg+2)%len]-iv+12)%12 || 12;
+      let t5Int=(intervals[(deg+4)%len]-iv+12)%12;
+      if(t5Int<=t3Int) t5Int+=12;
+      let sym='',typeName='Major';
+      if(t3Int===4&&t5Int===7){sym='';typeName='Major';}
+      else if(t3Int===3&&t5Int===7){sym='m';typeName='minor';}
+      else if(t3Int===3&&t5Int===6){sym='°';typeName='dim';}
+      else if(t3Int===4&&t5Int===8){sym='+';typeName='aug';}
+      else{sym='';typeName='Major';}
+      const RNUMS=['I','II','III','IV','V','VI','VII','VIII'].slice(0,len);
+      const deg_label=(typeName==='minor'||typeName==='dim')?RNUMS[deg].toLowerCase()+sym:RNUMS[deg]+sym;
+      const rm=60+(cRoot+12)%12;
+      let midis=[rm, rm+t3Int, rm+t5Int];
+      midis=midis.map(m=>{ while(m<KB0)m+=12; while(m>KB0+nOcts*12-1)m-=12; return m; });
+      const noteNames=midis.map(m=>nn(m)).join(' · ');
+      return {name:nn(cRoot)+sym, deg_label, midis, typeName, noteNames};
+    });
+  };
+
+  const stopPlay = () => { if(playTimer){clearInterval(playTimer);playTimer=null;} };
+
+  const render = () => {
+    const def=SCALE_DEFS[selScale];
+    const ivs=def.intervals;
+    const scalePCs=ivs.map(i=>(selRoot+i)%12);
+    const chords=getDiatonic(selRoot,ivs);
+    const chord=chords[selChordIdx];
+    const chordKbColor=selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:null;
+    const kbSvg=buildKb(scalePCs, chord?.midis||null, chordKbColor);
+    const scaleNotes=scalePCs.map(pc=>nn(pc));
+
+    const rootBtns=NMS.map((_,i)=>{
+      const lbl=USE_FLAT.has(i)?NMF[i]:NMS[i];
+      const on=i===selRoot;
+      return `<button data-cproot="${i}" style="flex:0 0 auto;padding:7px 12px;border-radius:10px;font-weight:${on?800:500};font-size:13px;background:${on?'var(--p)':'var(--card)'};color:${on?'#fff':'var(--fg)'};border:1.5px solid ${on?'var(--p)':'var(--line)'};cursor:pointer">${lbl}</button>`;
+    }).join('');
+
+    const scaleBtns=Object.entries(SCALE_DEFS).map(([name])=>{
+      const on=name===selScale;
+      return `<button data-cpscale="${name}" style="flex:0 0 auto;padding:6px 12px;border-radius:10px;font-weight:${on?700:500};font-size:12px;background:${on?'var(--p)':'var(--card)'};color:${on?'#fff':'var(--fg)'};border:1.5px solid ${on?'var(--p)':'var(--line)'};cursor:pointer">${name}</button>`;
+    }).join('');
+
+    const noteChips=scaleNotes.map(n=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#ef444420;color:#ef4444;font-weight:800;font-size:12px;border:2px solid #ef444460">${n}</span>`).join('');
+
+    const chordCards=chords.map((ch,i)=>{
+      const on=i===selChordIdx;
+      const col=CHORD_COLORS[i%CHORD_COLORS.length];
+      const bg=on?col:`${col}18`, fg=on?'#fff':col, bd=on?col:`${col}55`;
+      return `<button data-cpchord="${i}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 14px;border-radius:16px;background:${bg};color:${fg};border:2.5px solid ${bd};cursor:pointer;min-width:68px;text-align:center;transition:all .18s;${on?'transform:scale(1.05);box-shadow:0 4px 18px '+col+'55':''}">
+        <span style="font-size:10px;font-weight:700;opacity:.85">${ch.deg_label}</span>
+        <span style="font-weight:900;font-size:18px;line-height:1">${ch.name.replace(/[°+]/,'')}</span>
+        <span style="font-size:10.5px;font-weight:600;opacity:.9">${ch.typeName}</span>
+        <span style="font-size:9px;opacity:.7;margin-top:2px">${ch.noteNames}</span>
+      </button>`;
+    }).join('');
+
+    const isPlaying = playTimer !== null;
+    const panel=app.querySelector('#cp-panel');
+    if(!panel) return;
+    panel.innerHTML=`
+      <div style="font-size:20px;font-weight:900;color:var(--p);margin-bottom:12px">${nn(selRoot)} ${selScale}</div>
+      <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch">${rootBtns}</div>
+      <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">${scaleBtns}</div>
+      <div style="margin-bottom:10px">${kbSvg}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center">${noteChips}</div>
+      ${chords.length?`
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)">Diatonic Chords — tap to hear & highlight</span>
+          <button id="cpPlayAll" style="padding:6px 14px;border-radius:10px;font-size:12px;font-weight:700;border:1.5px solid var(--p);background:${isPlaying?'var(--p)':'var(--card)'};color:${isPlaying?'#fff':'var(--p)'};cursor:pointer">${isPlaying?'⏹ Stop':'▶ Play All'}</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${chordCards}</div>
+      `:''}
+    `;
+
+    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale})); render(); }));
+    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale})); render(); }));
+    panel.querySelectorAll('[data-cpchord]').forEach(b=>b.addEventListener('click',()=>{
+      const i=+b.dataset.cpchord;
+      stopPlay();
+      selChordIdx=selChordIdx===i?-1:i;
+      if(selChordIdx>=0){ unlockAudio(); chords[i].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),j*40)); }
+      render();
+    }));
+    panel.querySelector('#cpPlayAll')?.addEventListener('click',()=>{
+      unlockAudio();
+      if(playTimer){ stopPlay(); selChordIdx=-1; render(); return; }
+      playIdx=0;
+      const playNext=()=>{
+        if(playIdx>=chords.length){ stopPlay(); selChordIdx=-1; render(); return; }
+        selChordIdx=playIdx;
+        chords[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100,duration:1.2}),j*40));
+        playIdx++;
+        render();
+      };
+      playNext();
+      playTimer=setInterval(playNext, 1400);
+    });
+  };
+
+  app.innerHTML=`<section class="view">
+    <div class="top"><a class="iconbtn" href="#/practice">${icon('back')}</a><h1>Chords Practice</h1><span style="width:42px"></span></div>
+    <div class="card pad" id="cp-panel" style="padding:16px"></div>
+  </section>`;
+  render();
+  addEventListener('hashchange', stopPlay, { once: true });
+};
+
 views.done = (params, id) => {
   const song = songById(id);
   const r = JSON.parse(sessionStorage.getItem('np.result') || 'null');
@@ -4057,6 +4234,7 @@ const route = async () => {
   if (name === 'quiz' && id === 'interval') return views.quizInterval(params);
   if (name === 'quiz' && id === 'black') return views.quizBlack(params);
   if (name === 'scales') return views.scales(params);
+  if (name === 'chordsPractice') return views.chordsPractice(params);
   if (name === 'progressions') return views.progressions(params);
   if (name === 'progressionPlay') return views.progressionPlay(params, id && decodeURIComponent(id));
   if (name === 'chordsLibrary' && id) return views.chordsLibrarySong(params, decodeURIComponent(id));

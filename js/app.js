@@ -5,7 +5,7 @@ import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllA
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
-import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=4';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=5';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -3317,7 +3317,7 @@ views.chordsLibrarySong = (params, songId) => {
       WHITE_PCS_CL.forEach((pc,wi) => {
         const on = highSet.has(base+pc); const x = octX+wi*WW+1;
         wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${on?activeColor:'#f7f7fa'}" stroke="#c8c8c8" stroke-width="1"/>`;
-        labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="${on?900:600}" fill="${on?'#fff':'#9aa'}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="${on?900:600}" fill="${on?'#fff':'#c43'}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
         const on = highSet.has(base+pc); const x = octX+ox*WW-Math.floor(BW/2)+1;
@@ -3325,7 +3325,7 @@ views.chordsLibrarySong = (params, songId) => {
         if (on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
     }
-    const sizing = big ? 'width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto"' : `width="100%" height="${svgH}" preserveAspectRatio="xMidYMid meet"`;
+    const sizing = big ? 'width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;width:92%;height:auto;margin:0 auto"' : `width="100%" height="${svgH}" preserveAspectRatio="xMidYMid meet"`;
     return `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" ${sizing}>${wkeys}${bkeys}${labels}</svg>`;
   };
 
@@ -3635,10 +3635,21 @@ views.chordsLibrarySong = (params, songId) => {
     btn.addEventListener('click', () => {
       unlockAudio();
       const si = parseInt(btn.dataset.si);
-      if (activeSi === si && !fullSong) {
-        stopSection(si);
+      if (activeSi === si && !fullSong && !clPaused) {
+        // pause section: keep bars visible
+        stopClPlayer();
+        clPaused = true;
+        btn.textContent = '▶';
+      } else if (activeSi === si && clPaused && !fullSong) {
+        // resume section
+        clPaused = false;
+        btn.textContent = '⏸';
+        tick();
+        const ms = (60000/bpm) * speeds[currentSpeed];
+        _clPlayerTimer = setInterval(tick, ms);
       } else {
         if (activeSi !== -1) stopSection(activeSi);
+        clPaused = false;
         fullSong = false;
         activeSi = si;
         sectionPlayerIdx = 0;
@@ -3652,14 +3663,27 @@ views.chordsLibrarySong = (params, songId) => {
 
   // ── Master play/pause (whole song) — top + Currently Playing bar in sync ──
   const setMasterBtns = (ch) => app.querySelectorAll('.cl-master-play').forEach(b => b.textContent = ch);
+  let clPaused = false;
   app.querySelectorAll('.cl-master-play').forEach(mp => {
     mp.addEventListener('click', () => {
       unlockAudio();
-      if (fullSong) {
-        stopSection(activeSi);
+      if (fullSong && !clPaused) {
+        // pause: stop timer but keep bars visible
+        stopClPlayer();
+        clPaused = true;
         setMasterBtns('▶');
+        setSecBtn(activeSi, '▶');
+      } else if (clPaused && activeSi !== -1) {
+        // resume from paused state
+        clPaused = false;
+        setMasterBtns('⏸');
+        setSecBtn(activeSi, '⏸');
+        tick();
+        const ms = (60000/bpm) * speeds[currentSpeed];
+        _clPlayerTimer = setInterval(tick, ms);
       } else {
         if (activeSi !== -1) stopSection(activeSi);
+        clPaused = false;
         fullSong = true;
         activeSi = 0;
         sectionPlayerIdx = 0;

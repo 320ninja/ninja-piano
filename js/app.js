@@ -3115,7 +3115,7 @@ views.chordsPractice = () => {
   const saved = JSON.parse(localStorage.getItem('np.cpractice') || '{}');
   let selRoot = saved.root||0, selScale = (saved.scale && SCALE_DEFS[saved.scale]) ? saved.scale : 'Major';
   let selChordIdx = -1, selAdvIdx = -1, playTimer = null, playIdx = 0;
-  let showScale = false;
+  let showScale = true;
   let cpLoop = saved.loop || false;
   let cpShuffle = saved.shuffle || false;
   let cpInversion = saved.inversion || 0;

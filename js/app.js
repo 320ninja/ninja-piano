@@ -5,6 +5,7 @@ import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllA
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -537,6 +538,14 @@ views.practiceHub = () => {
         <div class="s">Play by mood · Transpose to any key</div>
         <div class="tags"><span class="tag cat">😊 Happy</span><span class="tag cat">🎸 Rock</span><span class="tag cat">🎷 Jazz</span><span class="tag cat">${PROGRESSIONS_DB.length} progressions</span></div>
       </div><span class="play">${icon('play')}</span>
+    </a>
+    ${heading('🎵', 'Chords Library')}
+    <a class="song" href="#/chordsLibrary">
+      <div class="thumb" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="14" width="42" height="5" rx="2.5" fill="rgba(255,255,255,.9)"/><rect x="8" y="24" width="34" height="5" rx="2.5" fill="rgba(255,255,255,.7)"/><rect x="8" y="34" width="38" height="5" rx="2.5" fill="rgba(255,255,255,.7)"/><rect x="8" y="44" width="28" height="5" rx="2.5" fill="rgba(255,255,255,.5)"/><text x="50" y="52" text-anchor="middle" font-size="10" fill="#fff" font-weight="800" opacity=".9">♪</text></svg></div>
+      <div class="meta"><div class="t">Chords Library</div>
+        <div class="s">Search chords for top hit songs · All genres</div>
+        <div class="tags"><span class="tag cat">${CHORDS_LIBRARY.length} songs</span><span class="tag cat">Pop · Rock · Jazz</span><span class="tag cat">All genres</span></div>
+      </div><span class="play">${icon('arrowR')}</span>
     </a>
     ${heading('📷', 'Scan sheet music')}
     <a class="song" href="#/scan">
@@ -3038,6 +3047,184 @@ views.done = (params, id) => {
   [72, 76, 79, 84].forEach((m, i) => playNote(m, { when: i * 0.12, voice: settings.voice, volume: settings.volume / 100 }));
 };
 
+/* ── Chords Library ─────────────────────────────────────────────────────── */
+views.chordsLibrary = (params) => {
+  setNav('practice');
+  const q = (params?.get('q') || '').toLowerCase();
+  const g = params?.get('g') || 'All';
+  const page = parseInt(params?.get('p') || '1', 10);
+  const PER = 18;
+
+  let filtered = CHORDS_LIBRARY;
+  if (g !== 'All') filtered = filtered.filter(s => s.genre === g);
+  if (q) filtered = filtered.filter(s =>
+    s.title.toLowerCase().includes(q) ||
+    s.artist.toLowerCase().includes(q) ||
+    s.chords.some(c => c.toLowerCase().includes(q))
+  );
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / PER));
+  const shown = filtered.slice((page - 1) * PER, page * PER);
+
+  const DIFF_COLOR = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444' };
+  const genreChips = CL_GENRES.map(genre => {
+    const on = genre === g;
+    return `<button class="chip cc ${on ? 'on' : ''}" data-clg="${genre}" style="--c1:#f59e0b;--c2:#d97706">${genre}</button>`;
+  }).join('');
+
+  const songRows = shown.map(s => `
+    <a class="song" href="#/chordsLibrary/${encodeURIComponent(s.id)}" style="text-decoration:none">
+      <div class="thumb" style="background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+        <div style="font-size:10px;font-weight:800;color:#fff;opacity:.9;text-align:center;padding:0 4px;line-height:1.2;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.key)}</div>
+        <div style="font-size:7px;color:rgba(255,255,255,.75);font-weight:600">${esc(s.genre)}</div>
+      </div>
+      <div class="meta">
+        <div class="t">${esc(s.title)}</div>
+        <div class="s">${esc(s.artist)} · ${s.year}</div>
+        <div class="tags">
+          <span class="tag cat" style="background:${DIFF_COLOR[s.difficulty]}22;color:${DIFF_COLOR[s.difficulty]}">${s.difficulty}</span>
+          ${s.chords.slice(0, 4).map(c => `<span class="tag cat">${esc(c)}</span>`).join('')}
+          ${s.chords.length > 4 ? `<span class="tag cat">+${s.chords.length - 4}</span>` : ''}
+        </div>
+      </div>
+      <span class="play">${icon('arrowR')}</span>
+    </a>`).join('');
+
+  app.innerHTML = `<section class="view">
+    <div class="top">
+      <a class="iconbtn" href="#/practice">${icon('back')}</a>
+      <h1>Chords Library</h1>
+      <span style="width:42px"></span>
+    </div>
+    <div style="position:relative;margin:0 0 10px">
+      <input id="clSearch" type="search" placeholder="Search song, artist or chord…"
+        value="${esc(q)}"
+        style="width:100%;box-sizing:border-box;padding:10px 14px 10px 40px;border:1.5px solid var(--line);border-radius:14px;background:var(--solid);font-size:15px;font-family:inherit;color:var(--fg);outline:none">
+      <svg style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <div class="chips" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none">${genreChips}</div>
+    <div style="font-size:12.5px;color:var(--muted);margin:6px 2px 8px">${total} song${total !== 1 ? 's' : ''} found</div>
+    <div class="list">${songRows || '<div class="empty" style="padding:32px;text-align:center;color:var(--muted)">No songs match — try a different search.</div>'}</div>
+    ${pagerHtml(page, pages, total, PER)}
+  </section>`;
+
+  const input = app.querySelector('#clSearch');
+  let debounce;
+  input?.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const newQ = input.value;
+      location.hash = `#/chordsLibrary?q=${encodeURIComponent(newQ)}&g=${encodeURIComponent(g)}`;
+    }, 280);
+  });
+
+  app.querySelectorAll('[data-clg]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      location.hash = `#/chordsLibrary?q=${encodeURIComponent(q)}&g=${encodeURIComponent(btn.dataset.clg)}`;
+    })
+  );
+
+  app.querySelectorAll('.pager-row button[data-p], .pager-row button.pnav[data-p]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return;
+      location.hash = `#/chordsLibrary?q=${encodeURIComponent(q)}&g=${encodeURIComponent(g)}&p=${btn.dataset.p}`;
+    })
+  );
+};
+
+views.chordsLibrarySong = (params, songId) => {
+  setNav('practice');
+  const song = CHORDS_LIBRARY.find(s => s.id === songId);
+  if (!song) { location.hash = '#/chordsLibrary'; return; }
+
+  const PILL_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f43f5e'];
+  const chordPill = (c, i) => {
+    const col = PILL_COLORS[i % PILL_COLORS.length];
+    return `<span class="chord-pill" data-chord="${esc(c)}" style="background:${col}22;color:${col};border:1.5px solid ${col}44;border-radius:10px;padding:6px 14px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s" title="Play ${esc(c)}">${esc(c)}</span>`;
+  };
+
+  const uniqueChords = [...new Set(song.chords)];
+  const DIFF_COLOR = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444' };
+
+  const sectionsHtml = song.sections.map(sec => `
+    <div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">${esc(sec.name)}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">${sec.chords.map((c, i) => chordPill(c, uniqueChords.indexOf(c))).join('')}</div>
+    </div>`).join('');
+
+  const allChordsHtml = `<div style="display:flex;flex-wrap:wrap;gap:8px">${uniqueChords.map((c, i) => chordPill(c, i)).join('')}</div>`;
+
+  app.innerHTML = `<section class="view">
+    <div class="top">
+      <a class="iconbtn" href="#/chordsLibrary">${icon('back')}</a>
+      <h1 style="font-size:17px;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(song.title)}</h1>
+      <span style="width:42px"></span>
+    </div>
+
+    <div class="card pad" style="display:flex;gap:14px;align-items:flex-start">
+      <div style="width:62px;height:62px;flex-shrink:0;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="font-size:16px;font-weight:900;color:#fff">${esc(song.key)}</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.8);font-weight:600">KEY</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;font-size:18px;margin-bottom:2px">${esc(song.title)}</div>
+        <div style="color:var(--muted);font-size:14px;margin-bottom:8px">${esc(song.artist)} · ${song.year}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span class="tag cat" style="background:${DIFF_COLOR[song.difficulty]}22;color:${DIFF_COLOR[song.difficulty]}">${song.difficulty}</span>
+          <span class="tag cat">${esc(song.genre)}</span>
+          <span class="tag cat">🎵 ${esc(song.key)}</span>
+          <span class="tag cat">⏱ ${esc(song.tempo)}</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sec"><span class="badge">🎹</span><span class="gt">All Chords Used</span></h3>
+    <div class="card pad" id="clAllChords">${allChordsHtml}</div>
+    <div style="font-size:12.5px;color:var(--muted);margin:4px 2px 10px">Tap any chord to hear it on the piano</div>
+
+    <h3 class="sec"><span class="badge">📋</span><span class="gt">Song Sections</span></h3>
+    <div class="card pad">${sectionsHtml}</div>
+
+    <div class="card pad" style="margin-top:10px">
+      <div style="font-weight:700;margin-bottom:4px">Chord Progression</div>
+      <div style="font-size:15px;color:var(--muted)">${song.chords.join(' – ')}</div>
+    </div>
+
+    <a class="hero-card" href="#/progressions" style="text-decoration:none;margin-top:14px">
+      <div style="background:linear-gradient(135deg,#6d28d9,#3b82f6);border-radius:14px;width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">🎼</div>
+      <div style="flex:1"><div style="font-weight:800">Practice a progression</div><div style="opacity:.7;font-size:13px">Find similar patterns in Chord Progressions</div></div>
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff">${icon('arrowR')}</div>
+    </a>
+  </section>`;
+
+  // Play chord on tap
+  app.querySelectorAll('.chord-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      unlockAudio();
+      const name = pill.dataset.chord;
+      // Map chord name to MIDI notes (root position, octave 4)
+      const NOTE_MAP = { C:60,D:62,E:64,F:65,G:67,A:69,B:71 };
+      const QUALITY_INTERVALS = {
+        '':   [0,4,7],   'm':  [0,3,7],   '7':  [0,4,7,10],
+        'maj7':[0,4,7,11],'m7': [0,3,7,10],'dim':[0,3,6],
+        'aug': [0,4,8],  'sus4':[0,5,7],  'sus2':[0,2,7],
+        '9':  [0,4,7,10,14],'m9':[0,3,7,10,14],'7sus4':[0,5,7,10],
+        'b5': [0,4,6],   '7b5':[0,4,6,10],'m7b5':[0,3,6,10],
+        'dim7':[0,3,6,9],'maj9':[0,4,7,11,14],'add9':[0,4,7,14],
+        '6':  [0,4,7,9], 'm6': [0,3,7,9], '11': [0,4,7,10,14,17],
+      };
+      const m = name.match(/^([A-G][b#♭♯]?)(.*)$/);
+      if (!m) return;
+      let root = m[1], qual = m[2] || '';
+      const acc = root.length > 1 ? root[1] : '';
+      let midi = (NOTE_MAP[root[0]] ?? 60) + (acc === '#' ? 1 : acc === 'b' ? -1 : 0);
+      const intervals = QUALITY_INTERVALS[qual] || QUALITY_INTERVALS[''];
+      const opts = { voice: settings.voice, volume: settings.volume / 100, duration: 1.2 };
+      intervals.forEach((iv, i) => setTimeout(() => playNote(midi + iv, opts), i * 30));
+    });
+  });
+};
+
 views.settings = () => {
   setNav('settings');
   const sw = (k, label) => `<label class="row"><span>${label}</span><span class="sw"><input type="checkbox" data-k="${k}" ${settings[k] ? 'checked' : ''}><span></span></span></label>`;
@@ -3141,6 +3328,8 @@ const route = async () => {
   if (name === 'scales') return views.scales(params);
   if (name === 'progressions') return views.progressions(params);
   if (name === 'progressionPlay') return views.progressionPlay(params, id && decodeURIComponent(id));
+  if (name === 'chordsLibrary' && id) return views.chordsLibrarySong(params, decodeURIComponent(id));
+  if (name === 'chordsLibrary') return views.chordsLibrary(params);
   if (name === 'favs') return views.favs(params);
   (map[name] || views.home)(params, id && decodeURIComponent(id));
 };

@@ -3116,6 +3116,11 @@ views.chordsPractice = () => {
   let selRoot = saved.root||0, selScale = (saved.scale && SCALE_DEFS[saved.scale]) ? saved.scale : 'Major';
   let selChordIdx = -1, selAdvIdx = -1, playTimer = null, playIdx = 0;
   let showScale = saved.showScale !== false;
+  let cpLoop = saved.loop || false;
+  let cpVoice = saved.voice || 'grand';
+  let cpTempo = saved.tempo || 100;
+  const CP_VOICES = {grand:'Grand Piano',bright:'Bright',electric:'Electric',soft:'Soft',synth:'Synth',organ:'Organ',edm:'EDM'};
+  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,voice:cpVoice,tempo:cpTempo}));
 
   const KW=14, KH=58, BW=9, BH=36, octW=7*KW, nOcts=3, KB0=48;
   const TW = nOcts*octW+1;
@@ -3262,10 +3267,22 @@ views.chordsPractice = () => {
         ${noteChips}
         <button id="cpToggleScale" style="margin-left:auto;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid #22c55e60;background:${showScale?'#22c55e20':'var(--card)'};color:${showScale?'#22c55e':'var(--muted)'}">${showScale?'Scale ✓':'Scale'}</button>
       </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+        <button id="cpLoopBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpLoop?'var(--p)':'var(--line)'};background:${cpLoop?'var(--p)':'transparent'};color:${cpLoop?'#fff':'var(--muted)'}">🔁 Loop</button>
+        <select id="cpVoiceSel" style="padding:4px 8px;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer">
+          ${Object.entries(CP_VOICES).map(([k,v])=>`<option value="${k}"${k===cpVoice?' selected':''}>${v}</option>`).join('')}
+        </select>
+        <div style="display:flex;align-items:center;gap:4px;margin-left:auto">
+          <span style="font-size:10px;font-weight:700;color:var(--muted)">BPM</span>
+          <button id="cpTempoDown" style="width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">−</button>
+          <span id="cpTempoVal" style="font-size:13px;font-weight:800;min-width:32px;text-align:center">${cpTempo}</span>
+          <button id="cpTempoUp" style="width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">+</button>
+        </div>
+      </div>
       ${chords.length?`
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)">Diatonic Chords — tap to hear & highlight</span>
-          <button id="cpPlayAll" style="padding:6px 14px;border-radius:10px;font-size:12px;font-weight:700;border:1.5px solid var(--p);background:${isPlaying?'var(--p)':'var(--card)'};color:${isPlaying?'#fff':'var(--p)'};cursor:pointer">${isPlaying?'⏹ Stop':'▶ Play All'}</button>
+          <button id="cpPlayAll" style="padding:6px 14px;border-radius:10px;font-size:12px;font-weight:700;border:1.5px solid var(--p);background:${isPlaying&&selChordIdx>=0?'var(--p)':'var(--card)'};color:${isPlaying&&selChordIdx>=0?'#fff':'var(--p)'};cursor:pointer">${isPlaying&&selChordIdx>=0?'⏹ Stop':'▶ Play All'}</button>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${chordCards}</div>
       `:''}
@@ -3278,50 +3295,58 @@ views.chordsPractice = () => {
       `:''}
     `;
 
-    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; selAdvIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); }));
-    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; selAdvIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); }));
+    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; selAdvIdx=-1; stopPlay(); saveCp(); render(); }));
+    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; selAdvIdx=-1; stopPlay(); saveCp(); render(); }));
+    const cpPlayOpts = () => ({voice:cpVoice,volume:settings.volume/100});
+    const cpInterval = () => Math.round(60000/cpTempo);
     panel.querySelectorAll('[data-cpchord]').forEach(b=>b.addEventListener('click',()=>{
       const i=+b.dataset.cpchord;
       stopPlay(); selAdvIdx=-1;
       selChordIdx=selChordIdx===i?-1:i;
-      if(selChordIdx>=0){ unlockAudio(); chords[i].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),j*40)); }
+      if(selChordIdx>=0){ unlockAudio(); chords[i].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts()}),j*40)); }
       render();
     }));
     panel.querySelectorAll('[data-cpadv]').forEach(b=>b.addEventListener('click',()=>{
       const i=+b.dataset.cpadv;
       stopPlay(); selChordIdx=-1;
       selAdvIdx=selAdvIdx===i?-1:i;
-      if(selAdvIdx>=0){ unlockAudio(); adv[i].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),j*40)); }
+      if(selAdvIdx>=0){ unlockAudio(); adv[i].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts()}),j*40)); }
       render();
     }));
-    panel.querySelector('#cpToggleScale')?.addEventListener('click',()=>{ showScale=!showScale; localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); });
+    panel.querySelector('#cpToggleScale')?.addEventListener('click',()=>{ showScale=!showScale; saveCp(); render(); });
+    panel.querySelector('#cpLoopBtn')?.addEventListener('click',()=>{ cpLoop=!cpLoop; saveCp(); render(); });
+    panel.querySelector('#cpVoiceSel')?.addEventListener('change',(e)=>{ cpVoice=e.target.value; saveCp(); });
+    panel.querySelector('#cpTempoDown')?.addEventListener('click',()=>{ cpTempo=Math.max(40,cpTempo-10); saveCp(); render(); });
+    panel.querySelector('#cpTempoUp')?.addEventListener('click',()=>{ cpTempo=Math.min(240,cpTempo+10); saveCp(); render(); });
     panel.querySelector('#cpPlayAll')?.addEventListener('click',()=>{
       unlockAudio();
       if(playTimer){ stopPlay(); selChordIdx=-1; selAdvIdx=-1; render(); return; }
       selAdvIdx=-1; playIdx=0;
       const playNext=()=>{
-        if(playIdx>=chords.length){ stopPlay(); selChordIdx=-1; render(); return; }
+        if(playIdx>=chords.length){ if(cpLoop){playIdx=0;}else{stopPlay(); selChordIdx=-1; render(); return;} }
         selChordIdx=playIdx;
-        chords[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100,duration:1.2}),j*40));
+        const dur=cpInterval()/1000;
+        chords[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
         playIdx++;
         render();
       };
       playNext();
-      playTimer=setInterval(playNext, 1400);
+      playTimer=setInterval(playNext, cpInterval());
     });
     panel.querySelector('#cpPlayAdv')?.addEventListener('click',()=>{
       unlockAudio();
       if(playTimer&&selAdvIdx>=0){ stopPlay(); selAdvIdx=-1; render(); return; }
       stopPlay(); selChordIdx=-1; playIdx=0;
       const playNext=()=>{
-        if(playIdx>=adv.length){ stopPlay(); selAdvIdx=-1; render(); return; }
+        if(playIdx>=adv.length){ if(cpLoop){playIdx=0;}else{stopPlay(); selAdvIdx=-1; render(); return;} }
         selAdvIdx=playIdx;
-        adv[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100,duration:1.2}),j*40));
+        const dur=cpInterval()/1000;
+        adv[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
         playIdx++;
         render();
       };
       playNext();
-      playTimer=setInterval(playNext, 1400);
+      playTimer=setInterval(playNext, cpInterval());
     });
   };
 

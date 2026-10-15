@@ -3306,6 +3306,7 @@ views.chordsLibrarySong = (params, songId) => {
 
   // Wide full keyboard (4 octaves) highlighting the currently-playing chord.
   // big=true renders a taller keyboard that fills the card width.
+  let clShowLabels = true;
   const fullKbSVG = (midis, activeColor, big = false) => {
     const WW = 15, WH = big ? 104 : 62, BW = 9, BH = big ? 64 : 38, OCT = 4, BASE = 48;
     const lblW = big ? 10 : 7.5, lblB = big ? 8 : 6;
@@ -3318,6 +3319,7 @@ views.chordsLibrarySong = (params, songId) => {
         const on = highSet.has(base+pc); const x = octX+wi*WW+1;
         wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${on?activeColor:'#f7f7fa'}" stroke="#c8c8c8" stroke-width="1"/>`;
         if (on) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        else if (clShowLabels) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="600" fill="#c43" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
         const on = highSet.has(base+pc); const x = octX+ox*WW-Math.floor(BW/2)+1;
@@ -3386,7 +3388,7 @@ views.chordsLibrarySong = (params, songId) => {
     const labelEl = app.querySelector('#clNowChordLabel');
     if (labelEl) labelEl.innerHTML = labelHtml;
     const kbEl = app.querySelector('#clNowKb');
-    if (kbEl) kbEl.innerHTML = fullKbSVG(midis, col);
+    if (kbEl) { kbEl.innerHTML = fullKbSVG(midis, col); kbEl._lastMidis = midis; kbEl._lastCol = col; }
     const bar2 = app.querySelector('#clNowPlayingBar2');
     if (bar2) bar2.style.display = 'block';
     const kbEl2 = app.querySelector('#clNowKb2');
@@ -3626,6 +3628,9 @@ views.chordsLibrarySong = (params, songId) => {
           </div>
         </div>
         <div id="clNowKb2" style="background:#dcdce4;border-radius:10px;padding:5px;overflow:hidden"></div>
+        <div style="text-align:right;margin-top:6px">
+          <button id="clToggleLabels" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--p);color:#fff;cursor:pointer">Notes: ON</button>
+        </div>
       </div>
     </div>
   </section>`;
@@ -3732,6 +3737,22 @@ views.chordsLibrarySong = (params, songId) => {
   bpmSlider?.addEventListener('input', () => setBpm(parseInt(bpmSlider.value)));
   app.querySelector('#clBpmDown')?.addEventListener('click', () => setBpm(bpm - 4));
   app.querySelector('#clBpmUp')?.addEventListener('click', () => setBpm(bpm + 4));
+
+  // ── Toggle note labels on keyboard ─────────────────────────────────────
+  app.querySelector('#clToggleLabels')?.addEventListener('click', (e) => {
+    clShowLabels = !clShowLabels;
+    e.currentTarget.textContent = clShowLabels ? 'Notes: ON' : 'Notes: OFF';
+    e.currentTarget.style.background = clShowLabels ? 'var(--p)' : 'var(--solid)';
+    e.currentTarget.style.color = clShowLabels ? '#fff' : 'var(--fg)';
+    // re-render keyboards if currently showing
+    const kbEl = app.querySelector('#clNowKb');
+    const kbEl2 = app.querySelector('#clNowKb2');
+    if (kbEl && kbEl.innerHTML) {
+      const last = kbEl._lastMidis;
+      const lastCol = kbEl._lastCol;
+      if (last) { kbEl.innerHTML = fullKbSVG(last, lastCol); if (kbEl2) kbEl2.innerHTML = fullKbSVG(last, lastCol, true); }
+    }
+  });
 
   // ── Clickable Now Playing pills — tap a chord to hear & see it ─────────
   const handleNowPillClick = (e) => {

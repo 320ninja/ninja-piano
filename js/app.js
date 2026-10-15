@@ -3509,11 +3509,13 @@ views.chordsLibrarySong = (params, songId) => {
       </div>
     </div>
 
-    <!-- Speed control -->
+    <!-- Speed + instrument control -->
     <div class="card pad" style="padding-top:10px;padding-bottom:10px">
-      <div style="display:flex;align-items:center;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span style="font-size:12px;color:var(--muted);margin-right:2px">Speed</span>
         ${speedBtnsHtml}
+        <span style="font-size:12px;color:var(--muted);margin:0 2px 0 8px">Sound</span>
+        ${voicePicker()}
       </div>
     </div>
 

@@ -3117,10 +3117,11 @@ views.chordsPractice = () => {
   let selChordIdx = -1, selAdvIdx = -1, playTimer = null, playIdx = 0;
   let showScale = false;
   let cpLoop = saved.loop || false;
+  let cpShuffle = saved.shuffle || false;
   let cpVoice = saved.voice || 'grand';
   let cpTempo = saved.tempo || 100;
   const CP_VOICES = {grand:'Grand Piano',bright:'Bright',electric:'Electric',soft:'Soft',synth:'Synth',organ:'Organ',edm:'EDM'};
-  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,voice:cpVoice,tempo:cpTempo}));
+  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,shuffle:cpShuffle,voice:cpVoice,tempo:cpTempo}));
 
   const KW=14, KH=58, BW=9, BH=36, octW=7*KW, nOcts=3, KB0=48;
   const TW = nOcts*octW+1;
@@ -3269,6 +3270,7 @@ views.chordsPractice = () => {
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
         <button id="cpLoopBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpLoop?'var(--p)':'var(--line)'};background:${cpLoop?'var(--p)':'transparent'};color:${cpLoop?'#fff':'var(--muted)'}">🔁 Loop</button>
+        <button id="cpShuffleBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpShuffle?'var(--p)':'var(--line)'};background:${cpShuffle?'var(--p)':'transparent'};color:${cpShuffle?'#fff':'var(--muted)'}">🔀 Random</button>
         <select id="cpVoiceSel" style="padding:4px 8px;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer">
           ${Object.entries(CP_VOICES).map(([k,v])=>`<option value="${k}"${k===cpVoice?' selected':''}>${v}</option>`).join('')}
         </select>
@@ -3315,19 +3317,22 @@ views.chordsPractice = () => {
     }));
     panel.querySelector('#cpToggleScale')?.addEventListener('click',()=>{ showScale=!showScale; saveCp(); render(); });
     panel.querySelector('#cpLoopBtn')?.addEventListener('click',()=>{ cpLoop=!cpLoop; saveCp(); render(); });
+    panel.querySelector('#cpShuffleBtn')?.addEventListener('click',()=>{ cpShuffle=!cpShuffle; saveCp(); render(); });
     panel.querySelector('#cpVoiceSel')?.addEventListener('change',(e)=>{ cpVoice=e.target.value; saveCp(); });
     panel.querySelector('#cpTempoDown')?.addEventListener('click',()=>{ cpTempo=Math.max(40,cpTempo-10); saveCp(); render(); });
     panel.querySelector('#cpTempoUp')?.addEventListener('click',()=>{ cpTempo=Math.min(240,cpTempo+10); saveCp(); render(); });
+    const randIdx=(len)=>Math.floor(Math.random()*len);
     panel.querySelector('#cpPlayAll')?.addEventListener('click',()=>{
       unlockAudio();
       if(playTimer){ stopPlay(); selChordIdx=-1; selAdvIdx=-1; render(); return; }
       selAdvIdx=-1; playIdx=0;
       const playNext=()=>{
-        if(playIdx>=chords.length){ if(cpLoop){playIdx=0;}else{stopPlay(); selChordIdx=-1; render(); return;} }
-        selChordIdx=playIdx;
+        const idx=cpShuffle?randIdx(chords.length):playIdx;
+        if(!cpShuffle&&playIdx>=chords.length){ if(cpLoop){playIdx=0;}else{stopPlay(); selChordIdx=-1; render(); return;} }
+        selChordIdx=cpShuffle?idx:playIdx;
         const dur=cpInterval()/1000;
-        chords[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
-        playIdx++;
+        chords[selChordIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
+        if(!cpShuffle) playIdx++;
         render();
       };
       playNext();
@@ -3338,11 +3343,12 @@ views.chordsPractice = () => {
       if(playTimer&&selAdvIdx>=0){ stopPlay(); selAdvIdx=-1; render(); return; }
       stopPlay(); selChordIdx=-1; playIdx=0;
       const playNext=()=>{
-        if(playIdx>=adv.length){ if(cpLoop){playIdx=0;}else{stopPlay(); selAdvIdx=-1; render(); return;} }
-        selAdvIdx=playIdx;
+        const idx=cpShuffle?randIdx(adv.length):playIdx;
+        if(!cpShuffle&&playIdx>=adv.length){ if(cpLoop){playIdx=0;}else{stopPlay(); selAdvIdx=-1; render(); return;} }
+        selAdvIdx=cpShuffle?idx:playIdx;
         const dur=cpInterval()/1000;
-        adv[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
-        playIdx++;
+        adv[selAdvIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
+        if(!cpShuffle) playIdx++;
         render();
       };
       playNext();

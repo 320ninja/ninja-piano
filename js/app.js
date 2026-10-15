@@ -2612,67 +2612,125 @@ views.quizBlack = (params) => {
 };
 
 views.quiz = (params, kind) => {
-  setNav('practice-run');
-  const ear = kind === 'ear';
-  const level = params.get('level') || 'easy';
+  setNav(‘practice-run’);
+  const ear = kind === ‘ear’;
+  const level = params.get(‘level’) || ‘easy’;
+  const mode = params.get(‘mode’) || ‘notes’;
   const POOLS = {
     easy: [60, 62, 64, 65, 67, 69, 71, 72],
     medium: [48, 50, 52, 53, 55, 57, 59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79],
     hard: Array.from({ length: 37 }, (_, i) => 43 + i),
   };
-  const pool = POOLS[level];
-  const st = { n: 0, right: 0, streak: 0, best: load(`np.quiz.${kind}`, 0), target: 0, tries: 0, t0: 0 };
-  app.innerHTML = `<section class="view">
-    <div class="top"><a class="iconbtn" href="#/practice">${icon('back')}</a><h1>${ear ? 'Ear Training' : 'Note Reading'}</h1>${voicePicker()}</div>
-    <div class="chips" id="lv" style="padding-top:0">${['easy', 'medium', 'hard'].map((l) => `<a class="chip ${l === level ? 'on' : ''}" href="#/quiz/${kind}?level=${l}">${l[0].toUpperCase() + l.slice(1)}</a>`).join('')}</div>
-    <div class="stats"><div class="card stat"><b id="sc">0/0</b><span>Correct</span></div><div class="card stat"><b id="sk">0🔥</b><span>Streak</span></div><div class="card stat"><b>${st.best}</b><span>Best streak</span></div></div>
-    <div class="card score-wrap" style="margin-top:12px;text-align:center">
-      ${ear ? `<button class="btn" id="hear" style="margin:26px auto">${icon('ear')} Play the note again</button>` : '<div class="score" id="score" style="max-width:340px;margin:0 auto"></div>'}
-      <div class="muted" id="qmsg" style="padding-bottom:10px">${ear ? 'Listen, then find the note on the keyboard' : 'Which note is this? Play it on the keyboard'}</div>
+  const CHORD_IVS = {
+    major: [0,4,7], minor: [0,3,7], ‘7th’: [0,4,7,10],
+    maj7: [0,4,7,11], m7: [0,3,7,10], dim: [0,3,6], aug: [0,4,8],
+    sus4: [0,5,7], sus2: [0,2,7], ‘9th’: [0,4,7,10,14],
+  };
+  const SCALE_IVS = { major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10], blues:[0,3,5,6,7,10] };
+  const ROOTS = [60,62,64,65,67,69,71]; // C D E F G A B
+  const ROOTS_ALL = Array.from({length:12},(_,i)=>60+i);
+
+  const buildPool = () => {
+    if (mode === ‘notes’) return POOLS[level];
+    if (mode === ‘scales’) {
+      const types = Object.values(SCALE_IVS);
+      return (level===’hard’?ROOTS_ALL:ROOTS).flatMap(r => types.map(ivs => ivs.map(i => r + i)));
+    }
+    let chordTypes;
+    if (mode === ‘major’) chordTypes = [CHORD_IVS.major];
+    else if (mode === ‘minor’) chordTypes = [CHORD_IVS.minor];
+    else if (mode === ‘7th’) chordTypes = [CHORD_IVS[‘7th’], CHORD_IVS.maj7, CHORD_IVS.m7];
+    else chordTypes = [CHORD_IVS.dim, CHORD_IVS.aug, CHORD_IVS.sus4, CHORD_IVS.sus2, CHORD_IVS[‘9th’]];
+    return (level===’hard’?ROOTS_ALL:ROOTS).flatMap(r => chordTypes.map(ivs => ivs.map(i => r + i)));
+  };
+
+  const pool = buildPool();
+  const isChordMode = mode !== ‘notes’;
+  const st = { n: 0, right: 0, streak: 0, best: load(`np.quiz.${kind}`, 0), target: null, targetSet: new Set(), hit: new Set(), tries: 0 };
+
+  const MODES = [
+    {k:’notes’,l:’Notes’},{k:’scales’,l:’Scales’},{k:’major’,l:’Major’},{k:’minor’,l:’Minor’},
+    {k:’7th’,l:’7th’},{k:’variations’,l:’Variations’}
+  ];
+  const modeChips = MODES.map(({k,l})=>`<a class=”chip ${k===mode?’on’:’’}” href=”#/quiz/${kind}?level=${level}&mode=${k}”>${l}</a>`).join(‘’);
+
+  app.innerHTML = `<section class=”view”>
+    <div class=”top”><a class=”iconbtn” href=”#/practice”>${icon(‘back’)}</a><h1>${ear ? ‘Ear Training’ : ‘Note Reading’}</h1>${voicePicker()}</div>
+    <div class=”chips” id=”lv” style=”padding-top:0”>${[‘easy’, ‘medium’, ‘hard’].map((l) => `<a class=”chip ${l === level ? ‘on’ : ‘’}” href=”#/quiz/${kind}?level=${l}&mode=${mode}”>${l[0].toUpperCase() + l.slice(1)}</a>`).join(‘’)}</div>
+    <div class=”chips” style=”padding-top:0;padding-bottom:4px”>${modeChips}</div>
+    <div class=”stats”><div class=”card stat”><b id=”sc”>0/0</b><span>Correct</span></div><div class=”card stat”><b id=”sk”>0🔥</b><span>Streak</span></div><div class=”card stat”><b>${st.best}</b><span>Best streak</span></div></div>
+    <div class=”card score-wrap” style=”margin-top:12px;text-align:center”>
+      ${ear ? `<button class=”btn” id=”hear” style=”margin:26px auto”>${icon(‘ear’)} Play the note again</button>` : ‘<div class=”score” id=”score” style=”max-width:340px;margin:0 auto”></div>’}
+      <div class=”muted” id=”qmsg” style=”padding-bottom:10px”>${ear ? ‘Listen, then find the note on the keyboard’ : isChordMode ? ‘Play all the notes shown’ : ‘Which note is this? Play it on the keyboard’}</div>
     </div>
-    <div class="kb-dock"><div class="kb" id="kb"></div></div>
+    <div class=”kb-dock”><div class=”kb” id=”kb”></div></div>
   </section>`;
   const $ = (s) => app.querySelector(s);
   const qSong = (m) => {
     const name = midiName(m);
-    const pitch = name.replace('#', '#');
-    const clef = m < 60 ? 'lh' : 'rh';
-    return { id: 'q', title: '', key: 'C', time: '4/4', bpm: 80, rh: clef === 'rh' ? `${pitch}/w` : 'r/w', lh: clef === 'lh' ? `${pitch}/w` : 'r/w' };
+    const pitch = name.replace(‘#’, ‘#’);
+    const clef = m < 60 ? ‘lh’ : ‘rh’;
+    return { id: ‘q’, title: ‘’, key: ‘C’, time: ‘4/4’, bpm: 80, rh: clef === ‘rh’ ? `${pitch}/w` : ‘r/w’, lh: clef === ‘lh’ ? `${pitch}/w` : ‘r/w’ };
+  };
+  const qChordSong = (midis) => {
+    const rh = midis.filter(m=>m>=60).map(m=>midiName(m).replace(‘#’,’#’));
+    const lh = midis.filter(m=>m<60).map(m=>midiName(m).replace(‘#’,’#’));
+    return { id:’q’, title:’’, key:’C’, time:’4/4’, bpm:80,
+      rh: rh.length ? `(${rh.join(‘ ‘)})/w` : ‘r/w’,
+      lh: lh.length ? `(${lh.join(‘ ‘)})/w` : ‘r/w’ };
   };
   const next = () => {
-    let m;
-    do { m = pool[Math.floor(Math.random() * pool.length)]; } while (m === st.target && pool.length > 1);
-    st.target = m; st.tries = 0;
-    if (ear) { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); }
-    else renderScore($('#score'), parseSong(qSong(m)), { showNames: false, showChords: false });
-    $('#qmsg').textContent = ear ? 'Which note did you hear?' : 'Which note is this?';
+    let item;
+    do { item = pool[Math.floor(Math.random() * pool.length)]; } while (item === st.target && pool.length > 1);
+    st.target = item; st.tries = 0;
+    if (isChordMode) {
+      const midis = Array.isArray(item) ? item : [item];
+      st.targetSet = new Set(midis);
+      st.hit = new Set();
+      if (ear) { unlockAudio(); midis.forEach((m,i)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),i*60)); }
+      else renderScore($(‘#score’), parseSong(qChordSong(midis)), { showNames: false, showChords: false });
+      $(‘#qmsg’).textContent = ear ? ‘Play all the notes you heard’ : `Play all ${midis.length} notes shown`;
+    } else {
+      const m = Array.isArray(item) ? item[0] : item;
+      st.target = m; st.targetSet = new Set([m]); st.hit = new Set();
+      if (ear) { unlockAudio(); playNote(m, { voice: settings.voice, volume: settings.volume / 100 }); }
+      else renderScore($(‘#score’), parseSong(qSong(m)), { showNames: false, showChords: false });
+      $(‘#qmsg’).textContent = ear ? ‘Which note did you hear?’ : ‘Which note is this?’;
+    }
   };
   const onPress = (m) => {
     unlockAudio();
     playNote(m, { voice: settings.voice, volume: settings.volume / 100 });
-    if (!st.target) return;
-    if (m === st.target) {
-      if (st.tries === 0) { st.right++; st.streak++; } else st.streak = 0;
-      st.n++;
-      if (st.streak > st.best) { st.best = st.streak; save(`np.quiz.${kind}`, st.best); }
-      kb.flash(m, 'good', 500);
-      $('#qmsg').innerHTML = `<b style="color:var(--ok)">✓ ${labelFor(midiName(m), settings.nameSystem)}</b>`;
-      $('#sc').textContent = `${st.right}/${st.n}`;
-      $('#sk').textContent = `${st.streak}🔥`;
-      setTimeout(next, 700);
+    if (!st.targetSet || !st.targetSet.size) return;
+    if (st.targetSet.has(m)) {
+      st.hit.add(m);
+      kb.flash(m, ‘good’, 500);
+      if (st.hit.size >= st.targetSet.size) {
+        if (st.tries === 0) { st.right++; st.streak++; } else st.streak = 0;
+        st.n++;
+        if (st.streak > st.best) { st.best = st.streak; save(`np.quiz.${kind}`, st.best); }
+        const names = [...st.targetSet].map(n=>labelFor(midiName(n),settings.nameSystem)).join(‘ ‘);
+        $(‘#qmsg’).innerHTML = `<b style=”color:var(--ok)”>✓ ${names}</b>`;
+        $(‘#sc’).textContent = `${st.right}/${st.n}`;
+        $(‘#sk’).textContent = `${st.streak}🔥`;
+        setTimeout(next, 700);
+      } else {
+        $(‘#qmsg’).innerHTML = `<b style=”color:var(--ok)”>✓ ${st.hit.size}/${st.targetSet.size}</b> — keep going`;
+      }
     } else {
       st.tries++;
-      kb.flash(m, 'wrong');
-      $('#qmsg').innerHTML = `<b style="color:var(--bad)">✗ That was ${labelFor(midiName(m), settings.nameSystem)}</b>${st.tries >= 2 ? ` — it’s ${labelFor(midiName(st.target), settings.nameSystem)}` : ''}`;
-      if (st.tries >= 2) kb.setTargets([st.target]);
+      kb.flash(m, ‘wrong’);
+      const remaining = [...st.targetSet].filter(n=>!st.hit.has(n));
+      $(‘#qmsg’).innerHTML = `<b style=”color:var(--bad)”>✗ That was ${labelFor(midiName(m), settings.nameSystem)}</b>${st.tries >= 3 ? ` — remaining: ${remaining.map(n=>labelFor(midiName(n),settings.nameSystem)).join(‘ ‘)}` : ‘’}`;
+      if (st.tries >= 3) kb.setTargets(remaining);
     }
   };
-  const kb = createKeyboard($('#kb'), { low: Math.min(...pool), high: Math.max(...pool), labels: false, nameSystem: settings.nameSystem, onPress });
+  const allMidis = pool.flat();
+  const kb = createKeyboard($(‘#kb’), { low: Math.min(...allMidis), high: Math.max(...allMidis), labels: false, nameSystem: settings.nameSystem, onPress });
   const _set = kb.setTargets.bind(kb);
   kb.setTargets = (ms) => { _set(ms); if (ms.length) setTimeout(() => _set([]), 900); };
-  if (ear) $('#hear').onclick = () => { unlockAudio(); playNote(st.target, { voice: settings.voice, volume: settings.volume / 100 }); };
-  // Ear training needs a tap first so the browser allows sound.
-  if (ear) { $('#qmsg').textContent = 'Tap “Play the note” to start'; $('#hear').onclick = () => { if (!st.target) next(); else playNote(st.target, { voice: settings.voice, volume: settings.volume / 100 }); }; }
+  if (ear) $(‘#hear’).onclick = () => { unlockAudio(); const midis=[...st.targetSet]; midis.forEach((m,i)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),i*60)); };
+  if (ear) { $(‘#qmsg’).textContent = ‘Tap “Play the note” to start’; $(‘#hear’).onclick = () => { if (!st.targetSet||!st.targetSet.size) next(); else { const midis=[...st.targetSet]; midis.forEach((m,i)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),i*60)); } }; }
   else next();
   cleanup = () => kb.destroy();
 };

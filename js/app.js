@@ -3635,15 +3635,17 @@ views.chordsLibrarySong = (params, songId) => {
     btn.addEventListener('click', () => {
       unlockAudio();
       const si = parseInt(btn.dataset.si);
-      if (activeSi === si && !fullSong && !clPaused) {
-        // pause section: keep bars visible
+      if (activeSi === si && !clPaused) {
+        // pause: keep bars visible
         stopClPlayer();
         clPaused = true;
         btn.textContent = '▶';
-      } else if (activeSi === si && clPaused && !fullSong) {
-        // resume section
+        setMasterBtns('▶');
+      } else if (activeSi === si && clPaused) {
+        // resume
         clPaused = false;
         btn.textContent = '⏸';
+        setMasterBtns('⏸');
         tick();
         const ms = (60000/bpm) * speeds[currentSpeed];
         _clPlayerTimer = setInterval(tick, ms);
@@ -3654,6 +3656,7 @@ views.chordsLibrarySong = (params, songId) => {
         activeSi = si;
         sectionPlayerIdx = 0;
         btn.textContent = '⏸';
+        setMasterBtns('⏸');
         tick();
         const ms = (60000/bpm) * speeds[currentSpeed];
         _clPlayerTimer = setInterval(tick, ms);

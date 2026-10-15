@@ -3114,7 +3114,7 @@ views.chordsPractice = () => {
 
   const saved = JSON.parse(localStorage.getItem('np.cpractice') || '{}');
   let selRoot = saved.root||0, selScale = (saved.scale && SCALE_DEFS[saved.scale]) ? saved.scale : 'Major';
-  let selChordIdx = -1, playTimer = null, playIdx = 0;
+  let selChordIdx = -1, selAdvIdx = -1, playTimer = null, playIdx = 0;
   let showScale = saved.showScale !== false;
 
   const KW=14, KH=58, BW=9, BH=36, octW=7*KW, nOcts=3, KB0=48;
@@ -3171,6 +3171,35 @@ views.chordsPractice = () => {
     });
   };
 
+  const getDiatonic7th = (root, intervals) => {
+    const len=intervals.length;
+    if(len<4) return [];
+    return intervals.map((iv,deg)=>{
+      const cRoot=(root+iv)%12;
+      const t3=((intervals[(deg+2)%len]-iv)%12+12)%12 || 12;
+      let t5=((intervals[(deg+4)%len]-iv)%12+12)%12; if(t5<=t3) t5+=12;
+      let t7=((intervals[(deg+6)%len]-iv)%12+12)%12; if(t7<=t5) t7+=12;
+      let sym='', typeName='';
+      if(t3===4&&t5===7&&t7===11){sym='maj7';typeName='maj7';}
+      else if(t3===4&&t5===7&&t7===10){sym='7';typeName='dom7';}
+      else if(t3===3&&t5===7&&t7===10){sym='m7';typeName='min7';}
+      else if(t3===3&&t5===7&&t7===11){sym='mMaj7';typeName='minMaj7';}
+      else if(t3===3&&t5===6&&t7===10){sym='ø7';typeName='half-dim';}
+      else if(t3===3&&t5===6&&t7===9){sym='°7';typeName='dim7';}
+      else if(t3===4&&t5===8&&t7===10){sym='+7';typeName='aug7';}
+      else if(t3===4&&t5===8&&t7===11){sym='+maj7';typeName='augMaj7';}
+      else{sym='7';typeName='7th';}
+      const RNUMS=['I','II','III','IV','V','VI','VII','VIII'].slice(0,len);
+      const isMinor=t3===3;
+      const deg_label=(isMinor?RNUMS[deg].toLowerCase():RNUMS[deg])+sym;
+      const rm=60+(cRoot+12)%12;
+      let midis=[rm, rm+t3, rm+t5, rm+t7];
+      midis=midis.map(m=>{ while(m<KB0)m+=12; while(m>KB0+nOcts*12-1)m-=12; return m; });
+      const noteNames=midis.map(m=>nn(m)).join(' · ');
+      return {name:nn(cRoot)+sym, deg_label, midis, typeName, noteNames};
+    });
+  };
+
   const stopPlay = () => { if(playTimer){clearInterval(playTimer);playTimer=null;} };
 
   const render = () => {
@@ -3178,9 +3207,10 @@ views.chordsPractice = () => {
     const ivs=def.intervals;
     const scalePCs=ivs.map(i=>(selRoot+i)%12);
     const chords=getDiatonic(selRoot,ivs);
-    const chord=chords[selChordIdx];
-    const chordKbColor=selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:null;
-    const kbSvg=buildKb(scalePCs, chord?.midis||null, chordKbColor);
+    const adv=getDiatonic7th(selRoot,ivs);
+    const activeChord=selChordIdx>=0?chords[selChordIdx]:selAdvIdx>=0?adv[selAdvIdx]:null;
+    const activeColor=selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:selAdvIdx>=0?CHORD_COLORS[selAdvIdx%CHORD_COLORS.length]:null;
+    const kbSvg=buildKb(scalePCs, activeChord?.midis||null, activeColor);
     const scaleNotes=scalePCs.map(pc=>nn(pc));
 
     const rootBtns=NMS.map((_,i)=>{
@@ -3208,6 +3238,18 @@ views.chordsPractice = () => {
       </button>`;
     }).join('');
 
+    const advCards=adv.map((ch,i)=>{
+      const on=i===selAdvIdx;
+      const col=CHORD_COLORS[i%CHORD_COLORS.length];
+      const bg=on?col:`${col}18`, fg=on?'#fff':col, bd=on?col:`${col}55`;
+      return `<button data-cpadv="${i}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 14px;border-radius:16px;background:${bg};color:${fg};border:2.5px solid ${bd};cursor:pointer;min-width:68px;text-align:center;transition:all .18s;${on?'transform:scale(1.05);box-shadow:0 4px 18px '+col+'55':''}">
+        <span style="font-size:10px;font-weight:700;opacity:.85">${ch.deg_label}</span>
+        <span style="font-weight:900;font-size:16px;line-height:1">${ch.name.replace(/[°ø+]/g,'')}</span>
+        <span style="font-size:10px;font-weight:600;opacity:.9">${ch.typeName}</span>
+        <span style="font-size:8.5px;opacity:.7;margin-top:2px">${ch.noteNames}</span>
+      </button>`;
+    }).join('');
+
     const isPlaying = playTimer !== null;
     const panel=app.querySelector('#cp-panel');
     if(!panel) return;
@@ -3227,26 +3269,54 @@ views.chordsPractice = () => {
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${chordCards}</div>
       `:''}
+      ${adv.length?`
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:10px">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)">Advanced — 7th Chords</span>
+          <button id="cpPlayAdv" style="padding:6px 14px;border-radius:10px;font-size:12px;font-weight:700;border:1.5px solid var(--p);background:${isPlaying&&selAdvIdx>=0?'var(--p)':'var(--card)'};color:${isPlaying&&selAdvIdx>=0?'#fff':'var(--p)'};cursor:pointer">${isPlaying&&selAdvIdx>=0?'⏹ Stop':'▶ Play All'}</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${advCards}</div>
+      `:''}
     `;
 
-    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); }));
-    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); }));
+    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; selAdvIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); }));
+    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; selAdvIdx=-1; stopPlay(); localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); }));
     panel.querySelectorAll('[data-cpchord]').forEach(b=>b.addEventListener('click',()=>{
       const i=+b.dataset.cpchord;
-      stopPlay();
+      stopPlay(); selAdvIdx=-1;
       selChordIdx=selChordIdx===i?-1:i;
       if(selChordIdx>=0){ unlockAudio(); chords[i].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),j*40)); }
+      render();
+    }));
+    panel.querySelectorAll('[data-cpadv]').forEach(b=>b.addEventListener('click',()=>{
+      const i=+b.dataset.cpadv;
+      stopPlay(); selChordIdx=-1;
+      selAdvIdx=selAdvIdx===i?-1:i;
+      if(selAdvIdx>=0){ unlockAudio(); adv[i].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100}),j*40)); }
       render();
     }));
     panel.querySelector('#cpToggleScale')?.addEventListener('click',()=>{ showScale=!showScale; localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale})); render(); });
     panel.querySelector('#cpPlayAll')?.addEventListener('click',()=>{
       unlockAudio();
-      if(playTimer){ stopPlay(); selChordIdx=-1; render(); return; }
-      playIdx=0;
+      if(playTimer){ stopPlay(); selChordIdx=-1; selAdvIdx=-1; render(); return; }
+      selAdvIdx=-1; playIdx=0;
       const playNext=()=>{
         if(playIdx>=chords.length){ stopPlay(); selChordIdx=-1; render(); return; }
         selChordIdx=playIdx;
         chords[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100,duration:1.2}),j*40));
+        playIdx++;
+        render();
+      };
+      playNext();
+      playTimer=setInterval(playNext, 1400);
+    });
+    panel.querySelector('#cpPlayAdv')?.addEventListener('click',()=>{
+      unlockAudio();
+      if(playTimer&&selAdvIdx>=0){ stopPlay(); selAdvIdx=-1; render(); return; }
+      stopPlay(); selChordIdx=-1; playIdx=0;
+      const playNext=()=>{
+        if(playIdx>=adv.length){ stopPlay(); selAdvIdx=-1; render(); return; }
+        selAdvIdx=playIdx;
+        adv[playIdx].midis.forEach((m,j)=>setTimeout(()=>playNote(m,{voice:settings.voice,volume:settings.volume/100,duration:1.2}),j*40));
         playIdx++;
         render();
       };

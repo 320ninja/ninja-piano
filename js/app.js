@@ -3371,11 +3371,15 @@ views.chordsLibrarySong = (params, songId) => {
     if (svgEl) svgEl.innerHTML = chordNotationSVG(midis);
     const labelEl = app.querySelector('#clNowChordLabel');
     if (labelEl) labelEl.textContent = `${chordName} ${qualLabel(qual)} – ${invName}`;
+    const col = PILL_COLORS[uniqueChords.indexOf(chordName)%PILL_COLORS.length] || '#6366f1';
     const kbEl = app.querySelector('#clNowKb');
-    if (kbEl) {
-      const col = PILL_COLORS[uniqueChords.indexOf(chordName)%PILL_COLORS.length] || '#6366f1';
-      kbEl.innerHTML = fullKbSVG(midis, col);
-    }
+    if (kbEl) kbEl.innerHTML = fullKbSVG(midis, col);
+    const bar2 = app.querySelector('#clNowPlayingBar2');
+    if (bar2) bar2.style.display = 'block';
+    const kbEl2 = app.querySelector('#clNowKb2');
+    if (kbEl2) kbEl2.innerHTML = fullKbSVG(midis, col);
+    const label2 = app.querySelector('#clNowChordLabel2');
+    if (label2) { label2.textContent = `${chordName} ${qualLabel(qual)} – ${invName}`; label2.style.color = col; }
     const pillsEl = app.querySelector('#clNowPills');
     if (pillsEl) pillsEl.innerHTML = sectionChords.map((c,i) => {
       const pcol = PILL_COLORS[uniqueChords.indexOf(c)%PILL_COLORS.length];
@@ -3442,6 +3446,8 @@ views.chordsLibrarySong = (params, songId) => {
     activeSi = -1;
     const bar = app.querySelector('#clNowPlayingBar');
     if (bar) bar.style.display = 'none';
+    const bar2 = app.querySelector('#clNowPlayingBar2');
+    if (bar2) bar2.style.display = 'none';
   };
 
   // HTML build
@@ -3557,11 +3563,14 @@ views.chordsLibrarySong = (params, songId) => {
     <h3 class="sec"><span class="badge">💡</span><span class="gt">Improvisation Tips</span></h3>
     <div class="card pad">${improvHtml}</div>
 
-    <a class="hero-card" href="#/progressions" style="text-decoration:none;margin-top:10px;margin-bottom:20px">
-      <div style="background:linear-gradient(135deg,#6d28d9,#3b82f6);border-radius:12px;width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">🎼</div>
-      <div style="flex:1"><div style="font-weight:800">Practice a progression</div><div style="opacity:.7;font-size:13px">Find similar patterns in Chord Progressions</div></div>
-      <div style="width:32px;height:32px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff">${icon('arrowR')}</div>
-    </a>
+    <!-- Currently playing keyboard (mirror, below tips) -->
+    <div id="clNowPlayingBar2" style="display:none;margin-bottom:20px">
+      <h3 class="sec"><span class="badge">🎹</span><span class="gt">Currently Playing</span></h3>
+      <div class="card pad" style="padding:12px 14px">
+        <div id="clNowChordLabel2" style="font-size:15px;font-weight:900;color:var(--p);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+        <div id="clNowKb2" style="background:#dcdce4;border-radius:10px;padding:5px;overflow:hidden"></div>
+      </div>
+    </div>
   </section>`;
 
   // ── Per-section play buttons ───────────────────────────────────────────────

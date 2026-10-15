@@ -3369,17 +3369,14 @@ views.chordsLibrarySong = (params, songId) => {
   };
 
   // Roman numeral from chord name relative to key
-  const ROMAN_NUMS = ['I','bII','II','bIII','III','IV','bV','V','bVI','VI','bVII','VII'];
-  const chordToRoman = (chordName, keyRoot) => {
+  const SCALE_DEGREES = [1,'b2',2,'b3',3,4,'b5',5,'b6',6,'b7',7];
+  const chordToDegree = (chordName, keyRoot) => {
     const chordMidi = chordRootMidi(chordName);
     const keyMidi = chordRootMidi(keyRoot);
     const interval = ((chordMidi - keyMidi) % 12 + 12) % 12;
-    const { qual } = parseChordName(chordName);
-    let roman = ROMAN_NUMS[interval] || '?';
-    if (['m','m7','m9','m6','m7b5','dim','dim7'].includes(qual)) roman = roman.toLowerCase();
-    return roman;
+    return SCALE_DEGREES[interval];
   };
-  const getProgression = (chords, key) => [...new Set(chords)].map(c => chordToRoman(c, key)).join(' – ');
+  const getProgression = (chords, key) => [...new Set(chords)].map(c => chordToDegree(c, key)).join(' – ');
 
   // Transpose state
   let clTranspose = 0;
@@ -3443,7 +3440,7 @@ views.chordsLibrarySong = (params, songId) => {
     const pillsEl2 = app.querySelector('#clNowPills2');
     if (pillsEl2) pillsEl2.innerHTML = pillsHtml;
     const tKey = transposeChord(song.key, clTranspose);
-    const progStr = sectionChords.map(c => chordToRoman(c, tKey)).join(' – ');
+    const progStr = sectionChords.map(c => chordToDegree(c, tKey)).join(' – ');
     const progEl = app.querySelector('#clNowProgLabel');
     if (progEl) progEl.textContent = progStr;
     const progEl2 = app.querySelector('#clNowProgLabel2');

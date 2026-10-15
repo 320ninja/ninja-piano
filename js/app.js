@@ -5,7 +5,7 @@ import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllA
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
-import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=2';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -3077,9 +3077,20 @@ const playChordAudio = (name, duration = 1.4) => {
   const opts = { voice: settings.voice, volume: settings.volume / 100, duration };
   ivs.forEach((iv, i) => setTimeout(() => playNote(midi + iv, opts), i * 35));
 };
+// Play an explicit set of MIDI notes (used for voiced inversions)
+const playMidisAudio = (midis, duration = 1.4) => {
+  const opts = { voice: settings.voice, volume: settings.volume / 100, duration };
+  midis.forEach((m, i) => setTimeout(() => playNote(m, opts), i * 35));
+};
 // Module-level player state so it persists across re-renders
 let _clPlayerTimer = null;
 const stopClPlayer = () => { if (_clPlayerTimer) { clearInterval(_clPlayerTimer); _clPlayerTimer = null; } };
+
+// Chords Library favourites (per-song), stored in localStorage
+const CL_FAV_KEY = 'np.cl-favs';
+const getClFavs = () => { try { return new Set(JSON.parse(localStorage.getItem(CL_FAV_KEY) || '[]')); } catch { return new Set(); } };
+const setClFavs = (set) => { try { localStorage.setItem(CL_FAV_KEY, JSON.stringify([...set])); } catch {} };
+const toggleClFav = (id) => { const s = getClFavs(); if (s.has(id)) s.delete(id); else s.add(id); setClFavs(s); return s.has(id); };
 
 /* ── Chords Library ─────────────────────────────────────────────────────── */
 views.chordsLibrary = (params) => {
@@ -3089,8 +3100,10 @@ views.chordsLibrary = (params) => {
   const page = parseInt(params?.get('p') || '1', 10);
   const PER = 18;
 
+  const clFavs = getClFavs();
   let filtered = CHORDS_LIBRARY;
-  if (g !== 'All') filtered = filtered.filter(s => s.genre === g);
+  if (g === 'Favourites') filtered = filtered.filter(s => clFavs.has(s.id));
+  else if (g !== 'All') filtered = filtered.filter(s => s.genre === g);
   if (q) filtered = filtered.filter(s =>
     s.title.toLowerCase().includes(q) ||
     s.artist.toLowerCase().includes(q) ||
@@ -3101,7 +3114,8 @@ views.chordsLibrary = (params) => {
   const shown = filtered.slice((page - 1) * PER, page * PER);
 
   const DIFF_COLOR = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444' };
-  const genreChips = CL_GENRES.map(genre => {
+  const favChip = `<button class="chip cc ${g === 'Favourites' ? 'on' : ''}" data-clg="Favourites" style="--c1:#ef4444;--c2:#dc2626">♥ Favourites${clFavs.size ? ` (${clFavs.size})` : ''}</button>`;
+  const genreChips = favChip + CL_GENRES.map(genre => {
     const on = genre === g;
     return `<button class="chip cc ${on ? 'on' : ''}" data-clg="${genre}" style="--c1:#f59e0b;--c2:#d97706">${genre}</button>`;
   }).join('');
@@ -3121,6 +3135,7 @@ views.chordsLibrary = (params) => {
           ${s.chords.length > 4 ? `<span class="tag cat">+${s.chords.length - 4}</span>` : ''}
         </div>
       </div>
+      <button class="cl-fav-btn" data-id="${s.id}" title="Favourite" style="background:none;border:none;cursor:pointer;font-size:20px;line-height:1;padding:4px 6px;color:${clFavs.has(s.id)?'#ef4444':'var(--muted)'};align-self:center">${clFavs.has(s.id)?'♥':'♡'}</button>
       <span class="play">${icon('arrowR')}</span>
     </a>`).join('');
 
@@ -3158,6 +3173,20 @@ views.chordsLibrary = (params) => {
     })
   );
 
+  app.querySelectorAll('.cl-fav-btn').forEach(btn =>
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const on = toggleClFav(btn.dataset.id);
+      btn.textContent = on ? '♥' : '♡';
+      btn.style.color = on ? '#ef4444' : 'var(--muted)';
+      // if viewing the Favourites filter and unfavourited, drop the row
+      if (!on && g === 'Favourites') {
+        const row = btn.closest('.song');
+        if (row) row.remove();
+      }
+    })
+  );
+
   app.querySelectorAll('.pager-row button[data-p], .pager-row button.pnav[data-p]').forEach(btn =>
     btn.addEventListener('click', () => {
       if (btn.disabled) return;
@@ -3176,20 +3205,26 @@ views.chordsLibrarySong = (params, songId) => {
   const NOTE_COLORS_MAP = { C:'#ef4444',D:'#f97316',E:'#eab308',F:'#22c55e',G:'#06b6d4',A:'#3b82f6',B:'#8b5cf6' };
   const uniqueChords = [...new Set(song.chords)];
   const DIFF_COLOR = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444' };
+  const QUALITY_INTERVALS_CL = {
+    '': [0,4,7], 'm': [0,3,7], '7': [0,4,7,10], 'maj7': [0,4,7,11],
+    'm7': [0,3,7,10], 'dim': [0,3,6], 'aug': [0,4,8], 'sus4': [0,5,7],
+    'sus2': [0,2,7], 'm7b5': [0,3,6,10], 'dim7': [0,3,6,9],
+    '9': [0,4,7,10,14], 'add9': [0,4,7,14], '6': [0,4,7,9], 'm6': [0,3,7,9],
+  };
+  const NOTE_NAMES_CL = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 
-  // Parse root note quality label e.g. "F#m7" → root="F#", qual label="minor 7"
   const qualLabel = (q) => ({
     '':'major','m':'minor','7':'dom 7','maj7':'maj 7','m7':'min 7',
     'dim':'dim','aug':'aug','sus4':'sus4','sus2':'sus2','m7b5':'half dim',
     'dim7':'dim 7','9':'dom 9','add9':'add 9','6':'maj 6','m6':'min 6',
   }[q] || q || 'major');
 
-  const chordPill = (c, colorIdx, activeClass = '') => {
+  const chordPill = (c, colorIdx) => {
     const col = PILL_COLORS[colorIdx % PILL_COLORS.length];
     const { root, acc, qual } = parseChordName(c);
     const rootNote = root + acc;
     const rootCol = NOTE_COLORS_MAP[root] || col;
-    return `<span class="chord-pill cl-pill ${activeClass}" data-chord="${esc(c)}" data-cidx="${colorIdx}"
+    return `<span class="chord-pill cl-pill" data-chord="${esc(c)}" data-cidx="${colorIdx}"
       style="background:${col}18;border:2px solid ${col}55;border-radius:14px;padding:8px 14px 6px;
              font-weight:700;cursor:pointer;transition:all .18s;display:inline-flex;flex-direction:column;
              align-items:center;min-width:54px;text-align:center;position:relative">
@@ -3200,33 +3235,242 @@ views.chordsLibrarySong = (params, songId) => {
     </span>`;
   };
 
-  // Player chord sequence — use main chords array
-  const playerChords = song.chords;
-  const bpm = parseInt(song.tempo) || 80;
-  const speeds = { slow: 8, normal: 4, fast: 2 }; // beats per chord
-  let currentSpeed = 'normal';
-  let playerPlaying = false;
-  let playerIdx = 0;
+  // Compute MIDI notes for a chord (root position)
+  const clChordMidis = (name) => {
+    const { qual } = parseChordName(name);
+    const root = chordRootMidi(name);
+    const ivs = QUALITY_INTERVALS_CL[qual] || QUALITY_INTERVALS_CL[''];
+    return ivs.map(iv => root + iv);
+  };
 
-  const sectionsHtml = song.sections.map(sec => `
-    <div style="margin-bottom:16px">
-      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
-                  color:var(--muted);margin-bottom:8px;padding-left:2px">${esc(sec.name)}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">${sec.chords.map(c => chordPill(c, uniqueChords.indexOf(c))).join('')}</div>
+  // Voice-lead a section: pick the inversion of each chord that moves least
+  // from the previous chord, so the player shows real inversions (e.g. 2nd inv.)
+  const INV_NAMES_FULL = ['Root position','1st inversion','2nd inversion','3rd inversion','4th inversion'];
+  const voiceLeadSection = (chords) => {
+    let prevAvg = 62; // ~D4, a comfortable starting register
+    return chords.map((name, idx) => {
+      const { qual } = parseChordName(name);
+      const rootMidis = clChordMidis(name);
+      const n = rootMidis.length;
+      let best = null;
+      for (let i = 0; i < n; i++) {
+        const base = [...rootMidis.slice(i), ...rootMidis.slice(0, i).map(m => m + 12)];
+        for (const oct of [-12, 0, 12]) {
+          const cand = base.map(m => m + oct);
+          const avg = cand.reduce((a, b) => a + b, 0) / cand.length;
+          if (avg < 50 || avg > 76) continue;
+          // on the first chord lightly prefer root position; otherwise pure voice-leading
+          const cost = Math.abs(avg - prevAvg) + (idx === 0 ? i * 0.6 : 0);
+          if (!best || cost < best.cost) best = { cost, midis: cand, inv: i, avg };
+        }
+      }
+      if (!best) best = { midis: rootMidis, inv: 0, avg: prevAvg };
+      prevAvg = best.avg;
+      return { name, qual, midis: best.midis, inv: best.inv, invName: INV_NAMES_FULL[best.inv] || 'Root position' };
+    });
+  };
+  const _voiceCache = {};
+  const getVoicings = (si) => _voiceCache[si] || (_voiceCache[si] = voiceLeadSection(song.sections[si].chords));
+
+  // 2-octave mini keyboard SVG. Notes are shown at their ACTUAL inversion
+  // positions (bass normalised into the first octave) so each inversion looks
+  // distinct — root pos, 1st inv and 2nd inv sit at different places.
+  const WHITE_PCS_CL = [0,2,4,5,7,9,11];
+  const BLACK_DEF_CL = [{pc:1,ox:1},{pc:3,ox:2},{pc:6,ox:4},{pc:8,ox:5},{pc:10,ox:6}];
+  const miniKbSVG = (midis, activeColor) => {
+    const WW = 14, WH = 48, BW = 9, BH = 30, OCT = 2;
+    let ms = [...midis].sort((a,b)=>a-b);
+    while (ms.length && ms[0] < 60) ms = ms.map(m=>m+12);
+    while (ms.length && ms[0] > 71) ms = ms.map(m=>m-12);
+    const highSet = new Set(ms);
+    const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
+    let wkeys='', bkeys='', labels='';
+    for (let oct=0; oct<OCT; oct++) {
+      const base = 60 + oct*12, octX = oct*octW;
+      WHITE_PCS_CL.forEach((pc,wi) => {
+        const on = highSet.has(base+pc); const x = octX+wi*WW+1;
+        wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2" fill="${on?activeColor:'#f5f5f5'}" stroke="#c8c8c8" stroke-width="1"/>`;
+        if (on) labels += `<text x="${x+(WW-1)/2}" y="${WH-5}" font-size="8" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+      });
+      BLACK_DEF_CL.forEach(({pc,ox}) => {
+        const on = highSet.has(base+pc); const x = octX+ox*WW-Math.floor(BW/2)+1;
+        bkeys += `<rect x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${on?activeColor:'#1e1e2e'}" stroke="#0f0f1a" stroke-width="1"/>`;
+        if (on) labels += `<text x="${x+BW/2}" y="${BH-3}" font-size="6.5" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+      });
+    }
+    return `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" width="100%" height="${svgH}" preserveAspectRatio="xMidYMid meet" style="max-width:${svgW}px">${wkeys}${bkeys}${labels}</svg>`;
+  };
+
+  // Wide full keyboard (4 octaves) highlighting the currently-playing chord.
+  const fullKbSVG = (midis, activeColor) => {
+    const WW = 15, WH = 62, BW = 9, BH = 38, OCT = 4, BASE = 48;
+    const highSet = new Set(midis);
+    const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
+    let wkeys='', bkeys='', labels='';
+    for (let oct=0; oct<OCT; oct++) {
+      const base = BASE + oct*12, octX = oct*octW;
+      WHITE_PCS_CL.forEach((pc,wi) => {
+        const on = highSet.has(base+pc); const x = octX+wi*WW+1;
+        wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${on?activeColor:'#f7f7fa'}" stroke="#c8c8c8" stroke-width="1"/>`;
+        labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="7.5" font-weight="${on?900:600}" fill="${on?'#fff':'#9aa'}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+      });
+      BLACK_DEF_CL.forEach(({pc,ox}) => {
+        const on = highSet.has(base+pc); const x = octX+ox*WW-Math.floor(BW/2)+1;
+        bkeys += `<rect x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${on?activeColor:'#1e1e2e'}" stroke="#0f0f1a" stroke-width="1"/>`;
+        if (on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="6" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+      });
+    }
+    return `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" width="100%" height="${svgH}" preserveAspectRatio="xMidYMid meet">${wkeys}${bkeys}${labels}</svg>`;
+  };
+
+  // Build chord chart HTML for a given chord name. activeInv highlights the
+  // inversion actually being played in the current section (voice-led).
+  const buildChordChartHtml = (chordName, activeInv = 0) => {
+    const { qual } = parseChordName(chordName);
+    const root = chordRootMidi(chordName);
+    const ivs = QUALITY_INTERVALS_CL[qual] || QUALITY_INTERVALS_CL[''];
+    const rootMidis = ivs.map(iv => root + iv);
+    const invNames = ['Root pos.', '1st inv.', '2nd inv.', '3rd inv.'];
+    const inversions = ivs.map((_, i) => ({
+      name: invNames[i] || `${i}th inv.`,
+      midis: [...rootMidis.slice(i), ...rootMidis.slice(0,i).map(m => m+12)],
+    }));
+    const col = PILL_COLORS[uniqueChords.indexOf(chordName) % PILL_COLORS.length] || '#6366f1';
+    const notesStr = rootMidis.map(m => NOTE_NAMES_CL[m%12]).join(' – ');
+    return `
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:4px">🎹 Chord Chart</div>
+      <div style="font-size:18px;font-weight:900;color:${col};margin-bottom:2px">${esc(chordName)} <span style="font-weight:500;font-size:14px;color:var(--muted)">${qualLabel(qual)}</span></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">${notesStr}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${inversions.map((inv,i) => { const on = i===activeInv; return `
+          <div class="cl-inv-card" data-chord="${esc(chordName)}" data-inv="${i}"
+            style="text-align:center;cursor:pointer;user-select:none">
+            <div style="font-size:11px;font-weight:700;margin-bottom:5px;color:${on?col:'var(--muted)'}">${inv.name}${on?' ◀':''}</div>
+            <div style="border:2px solid ${on?col:'var(--line)'};border-radius:10px;padding:5px;background:${on?col+'14':'var(--solid)'};transition:border-color .15s,background .15s">
+              ${miniKbSVG(inv.midis, col)}
+            </div>
+          </div>`; }).join('')}
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px">Tap an inversion to hear it</div>`;
+  };
+
+  // Player state
+  const bpm = parseInt(song.tempo) || 80;
+  const speeds = { slow: 8, normal: 4, fast: 2 };
+  let currentSpeed = 'normal';
+  let activeSi = -1;
+  let sectionPlayerIdx = 0;
+
+  // Now-playing bar updater. voicing = { name, qual, midis, inv, invName }
+  const showNowPlaying = (voicing, sectionChords, activeIdx) => {
+    const bar = app.querySelector('#clNowPlayingBar');
+    if (!bar) return;
+    bar.style.display = 'block';
+    const { name: chordName, qual, midis, invName } = voicing;
+    const svgEl = app.querySelector('#clNowSvg');
+    if (svgEl) svgEl.innerHTML = chordNotationSVG(midis);
+    const labelEl = app.querySelector('#clNowChordLabel');
+    if (labelEl) labelEl.textContent = `${chordName} ${qualLabel(qual)} – ${invName}`;
+    const kbEl = app.querySelector('#clNowKb');
+    if (kbEl) {
+      const col = PILL_COLORS[uniqueChords.indexOf(chordName)%PILL_COLORS.length] || '#6366f1';
+      kbEl.innerHTML = fullKbSVG(midis, col);
+    }
+    const pillsEl = app.querySelector('#clNowPills');
+    if (pillsEl) pillsEl.innerHTML = sectionChords.map((c,i) => {
+      const pcol = PILL_COLORS[uniqueChords.indexOf(c)%PILL_COLORS.length];
+      const active = i === activeIdx;
+      return `<span style="padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700;
+        background:${active?pcol:pcol+'22'};color:${active?'#fff':pcol};
+        border:1.5px solid ${active?pcol:pcol+'44'};transition:all .18s">${esc(c)}</span>`;
+    }).join('');
+  };
+
+  // Highlight a pill within a section
+  const highlightSecPill = (si, idx) => {
+    const container = app.querySelector(`.cl-sec-pills[data-si="${si}"]`);
+    if (!container) return;
+    container.querySelectorAll('.cl-pill').forEach((p,i) => {
+      const col = PILL_COLORS[parseInt(p.dataset.cidx||'0')%PILL_COLORS.length];
+      if (i === idx) {
+        p.style.background = col+'55'; p.style.border = `2px solid ${col}`;
+        p.style.transform = 'scale(1.08)'; p.style.boxShadow = `0 0 14px ${col}66`;
+      } else {
+        p.style.background = col+'18'; p.style.border = `2px solid ${col}55`;
+        p.style.transform = ''; p.style.boxShadow = '';
+      }
+    });
+  };
+
+  const resetSecPills = (si) => {
+    const container = app.querySelector(`.cl-sec-pills[data-si="${si}"]`);
+    if (!container) return;
+    container.querySelectorAll('.cl-pill').forEach(p => {
+      const col = PILL_COLORS[parseInt(p.dataset.cidx||'0')%PILL_COLORS.length];
+      p.style.background = col+'18'; p.style.border = `2px solid ${col}55`;
+      p.style.transform = ''; p.style.boxShadow = '';
+    });
+  };
+
+  const tick = () => {
+    if (activeSi === -1) return;
+    const sec = song.sections[activeSi];
+    const chordIdx = sectionPlayerIdx % sec.chords.length;
+    const chord = sec.chords[chordIdx];
+    const voicing = getVoicings(activeSi)[chordIdx];
+    const dot = app.querySelector(`.cl-beat-dot-sec[data-si="${activeSi}"]`);
+    if (dot) { dot.style.background='var(--p)'; setTimeout(()=>{if(dot)dot.style.background='var(--muted)';},120); }
+    highlightSecPill(activeSi, chordIdx);
+    showNowPlaying(voicing, sec.chords, chordIdx);
+    const chartEl = app.querySelector('#clChordChart');
+    if (chartEl) chartEl.innerHTML = buildChordChartHtml(chord, voicing.inv);
+    unlockAudio();
+    const chordDuration = (60/bpm) * speeds[currentSpeed];
+    playMidisAudio(voicing.midis, chordDuration * 0.85);
+    sectionPlayerIdx = (chordIdx + 1) % sec.chords.length;
+  };
+
+  const stopSection = (si) => {
+    stopClPlayer();
+    if (si !== -1) {
+      const btn = app.querySelector(`.cl-sec-play[data-si="${si}"]`);
+      if (btn) btn.textContent = '▶';
+      const dot = app.querySelector(`.cl-beat-dot-sec[data-si="${si}"]`);
+      if (dot) dot.style.background = 'var(--muted)';
+      resetSecPills(si);
+    }
+    activeSi = -1;
+    const bar = app.querySelector('#clNowPlayingBar');
+    if (bar) bar.style.display = 'none';
+  };
+
+  // HTML build
+  const sectionsHtml = song.sections.map((sec, si) => `
+    <div style="margin-bottom:${si<song.sections.length-1?'20':'0'}px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <button class="cl-sec-play" data-si="${si}"
+          style="width:38px;height:38px;border-radius:50%;background:var(--p);border:none;color:#fff;
+                 font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+                 flex-shrink:0;box-shadow:0 2px 8px rgba(99,102,241,.3)">▶</button>
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">${esc(sec.name)}</div>
+        <div class="cl-beat-dot-sec" data-si="${si}" style="width:10px;height:10px;border-radius:50%;background:var(--muted);transition:background .08s;margin-left:auto"></div>
+      </div>
+      <div class="cl-sec-pills" data-si="${si}" style="display:flex;flex-wrap:wrap;gap:8px">
+        ${sec.chords.map(c => chordPill(c, uniqueChords.indexOf(c))).join('')}
+      </div>
     </div>`).join('');
 
-  const allChordsHtml = uniqueChords.map((c, i) => chordPill(c, i)).join('');
+  const allChordsHtml = uniqueChords.map((c,i) => chordPill(c,i)).join('');
 
-  const scaleNotesHtml = (song.scaleNotes || []).map(n => {
+  const scaleNotesHtml = (song.scaleNotes||[]).map(n => {
     const col = NOTE_COLORS_MAP[n[0]] || '#8b5cf6';
-    return `<span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px">
-      <span style="width:34px;height:34px;border-radius:50%;background:${col};color:#fff;
-                   font-size:13px;font-weight:800;display:flex;align-items:center;
-                   justify-content:center">${esc(n)}</span>
-    </span>`;
+    return `<span class="cl-scale-note" data-note="${esc(n)}" title="Play ${esc(n)}"
+      style="width:34px;height:34px;border-radius:50%;background:${col};color:#fff;
+      font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;user-select:none;transition:transform .12s,box-shadow .12s">${esc(n)}</span>`;
   }).join('');
 
-  const improvHtml = (song.improvTips || []).map((tip, i) => `
+  const improvHtml = (song.improvTips||[]).map((tip,i) => `
     <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">
       <span style="width:22px;height:22px;border-radius:50%;background:var(--p);color:#fff;
                    font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;
@@ -3234,11 +3478,16 @@ views.chordsLibrarySong = (params, songId) => {
       <span style="font-size:14px;line-height:1.5;color:var(--fg)">${esc(tip)}</span>
     </div>`).join('');
 
+  const speedBtnsHtml = ['slow','normal','fast'].map(s=>`<button class="cl-speed ${s==='normal'?'on':''}" data-s="${s}"
+    style="padding:4px 12px;border-radius:8px;border:1.5px solid var(--line);font-size:12.5px;
+           font-weight:600;cursor:pointer;background:${s==='normal'?'var(--p)':'var(--solid)'};
+           color:${s==='normal'?'#fff':'var(--fg)'};border-color:${s==='normal'?'var(--p)':'var(--line)'}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('');
+
   app.innerHTML = `<section class="view">
     <div class="top">
       <a class="iconbtn" id="clBack" href="#/chordsLibrary">${icon('back')}</a>
       <h1 style="font-size:16px;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(song.title)}</h1>
-      <span style="width:42px"></span>
+      <button class="iconbtn" id="clFavBtn" title="Favourite" style="width:42px;font-size:20px;line-height:1;color:${getClFavs().has(song.id)?'#ef4444':'var(--muted)'}">${getClFavs().has(song.id)?'♥':'♡'}</button>
     </div>
 
     <!-- Info card -->
@@ -3260,43 +3509,46 @@ views.chordsLibrarySong = (params, songId) => {
       </div>
     </div>
 
-    <!-- ▶ Player -->
-    <h3 class="sec"><span class="badge">▶</span><span class="gt">Play Progression</span></h3>
-    <div class="card pad" id="clPlayer" style="padding-bottom:14px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-        <button id="clPlayBtn" style="width:48px;height:48px;border-radius:50%;background:var(--p);border:none;
-          color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-          flex-shrink:0;box-shadow:0 2px 12px var(--p-shadow,rgba(99,102,241,.35))">▶</button>
-        <div style="flex:1">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:5px">Speed</div>
-          <div style="display:flex;gap:6px">
-            ${['slow','normal','fast'].map(s=>`<button class="cl-speed ${s==='normal'?'on':''}" data-s="${s}"
-              style="padding:4px 12px;border-radius:8px;border:1.5px solid var(--line);font-size:12.5px;
-                     font-weight:600;cursor:pointer;background:var(--solid);color:var(--fg)">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
-          </div>
-        </div>
-        <div id="clBeatDot" style="width:12px;height:12px;border-radius:50%;background:var(--muted);
-          transition:background .08s;flex-shrink:0"></div>
+    <!-- Speed control -->
+    <div class="card pad" style="padding-top:10px;padding-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;color:var(--muted);margin-right:2px">Speed</span>
+        ${speedBtnsHtml}
       </div>
-      <div id="clPlayerPills" style="display:flex;flex-wrap:wrap;gap:10px">
-        ${playerChords.map((c, i) => chordPill(c, uniqueChords.indexOf(c), i===0 ? 'cl-active' : '')).join('')}
-      </div>
-      <div style="font-size:12px;color:var(--muted);margin-top:10px">Tap a chord to play it · Press ▶ to loop the progression</div>
     </div>
 
-    <!-- All chords -->
-    <h3 class="sec"><span class="badge">🎹</span><span class="gt">Chords Used</span></h3>
-    <div class="card pad" style="display:flex;flex-wrap:wrap;gap:10px">${allChordsHtml}</div>
+    <!-- Now Playing bar (shown when a section is playing) -->
+    <div id="clNowPlayingBar" style="display:none">
+      <h3 class="sec"><span class="badge">🎵</span><span class="gt">Now Playing</span></h3>
+      <div class="card pad" style="padding:12px 14px">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div id="clNowSvg" style="flex-shrink:0;opacity:.9"></div>
+          <div style="flex:1;min-width:0">
+            <div id="clNowChordLabel" style="font-size:15px;font-weight:900;color:var(--p);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="clNowPills" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+          </div>
+        </div>
+        <div id="clNowKb" style="margin-top:12px;background:#dcdce4;border-radius:10px;padding:5px;overflow:hidden"></div>
+      </div>
+    </div>
 
-    <!-- Sections -->
+    <!-- Song Sections (each with own play button) -->
     <h3 class="sec"><span class="badge">📋</span><span class="gt">Song Sections</span></h3>
     <div class="card pad">${sectionsHtml}</div>
+
+    <!-- Chord Chart -->
+    <h3 class="sec"><span class="badge">🎹</span><span class="gt">Chord Chart</span></h3>
+    <div class="card pad" id="clChordChart">${buildChordChartHtml(song.chords[0])}</div>
+
+    <!-- Chords Used -->
+    <h3 class="sec"><span class="badge">🎸</span><span class="gt">Chords Used</span></h3>
+    <div class="card pad" style="display:flex;flex-wrap:wrap;gap:10px">${allChordsHtml}</div>
 
     <!-- Scale -->
     <h3 class="sec"><span class="badge">🎼</span><span class="gt">Scale: ${esc(song.scale || song.key + ' Major')}</span></h3>
     <div class="card pad">
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px">${scaleNotesHtml}</div>
-      <div style="font-size:12.5px;color:var(--muted)">${esc(song.scale || '')} — ${song.scaleNotes ? song.scaleNotes.join(' – ') : ''}</div>
+      <div style="font-size:12.5px;color:var(--muted)">${esc(song.scale||'')} — ${song.scaleNotes ? song.scaleNotes.join(' – ') : ''}</div>
     </div>
 
     <!-- Improv tips -->
@@ -3310,95 +3562,95 @@ views.chordsLibrarySong = (params, songId) => {
     </a>
   </section>`;
 
-  // ── Player logic ──────────────────────────────────────────────────────────
-  const playBtn = app.querySelector('#clPlayBtn');
-  const beatDot = app.querySelector('#clBeatDot');
-  const playerPillEls = () => app.querySelectorAll('#clPlayerPills .cl-pill');
-
-  const highlightPlayerPill = (idx) => {
-    const pills = playerPillEls();
-    pills.forEach((p, i) => {
-      const col = PILL_COLORS[parseInt(p.dataset.cidx||'0') % PILL_COLORS.length];
-      if (i === idx) {
-        p.style.background = col + '55';
-        p.style.border = `2px solid ${col}`;
-        p.style.transform = 'scale(1.08)';
-        p.style.boxShadow = `0 0 14px ${col}66`;
+  // ── Per-section play buttons ───────────────────────────────────────────────
+  app.querySelectorAll('.cl-sec-play').forEach(btn => {
+    btn.addEventListener('click', () => {
+      unlockAudio();
+      const si = parseInt(btn.dataset.si);
+      if (activeSi === si) {
+        stopSection(si);
       } else {
-        p.style.background = col + '18';
-        p.style.border = `2px solid ${col}55`;
-        p.style.transform = '';
-        p.style.boxShadow = '';
+        if (activeSi !== -1) stopSection(activeSi);
+        activeSi = si;
+        sectionPlayerIdx = 0;
+        btn.textContent = '⏸';
+        tick();
+        const ms = (60000/bpm) * speeds[currentSpeed];
+        _clPlayerTimer = setInterval(tick, ms);
       }
     });
-  };
-
-  const tick = () => {
-    beatDot.style.background = 'var(--p)';
-    setTimeout(() => { if (beatDot) beatDot.style.background = 'var(--muted)'; }, 120);
-    highlightPlayerPill(playerIdx);
-    unlockAudio();
-    const chordDuration = (60 / bpm) * speeds[currentSpeed];
-    playChordAudio(playerChords[playerIdx], chordDuration * 0.85);
-    playerIdx = (playerIdx + 1) % playerChords.length;
-  };
-
-  const startPlayer = () => {
-    playerPlaying = true;
-    playerIdx = 0;
-    playBtn.textContent = '⏸';
-    tick();
-    const ms = (60000 / bpm) * speeds[currentSpeed];
-    _clPlayerTimer = setInterval(tick, ms);
-  };
-
-  const pausePlayer = () => {
-    stopClPlayer();
-    playerPlaying = false;
-    playBtn.textContent = '▶';
-    beatDot.style.background = 'var(--muted)';
-    playerPillEls().forEach(p => {
-      const col = PILL_COLORS[parseInt(p.dataset.cidx||'0') % PILL_COLORS.length];
-      p.style.background = col + '18'; p.style.border = `2px solid ${col}55`;
-      p.style.transform = ''; p.style.boxShadow = '';
-    });
-  };
-
-  playBtn.addEventListener('click', () => {
-    unlockAudio();
-    if (playerPlaying) { pausePlayer(); } else { startPlayer(); }
   });
 
-  app.querySelectorAll('.cl-speed').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentSpeed = btn.dataset.s;
-      app.querySelectorAll('.cl-speed').forEach(b => {
-        b.classList.toggle('on', b.dataset.s === currentSpeed);
-        b.style.background = b.dataset.s === currentSpeed ? 'var(--p)' : 'var(--solid)';
-        b.style.color = b.dataset.s === currentSpeed ? '#fff' : 'var(--fg)';
-        b.style.borderColor = b.dataset.s === currentSpeed ? 'var(--p)' : 'var(--line)';
-      });
-      if (playerPlaying) { stopClPlayer(); startPlayer(); }
-    });
-  });
-
-  // Style active speed btn
+  // ── Speed buttons ─────────────────────────────────────────────────────────
   app.querySelectorAll('.cl-speed').forEach(b => {
-    b.style.background = b.dataset.s === 'normal' ? 'var(--p)' : 'var(--solid)';
-    b.style.color = b.dataset.s === 'normal' ? '#fff' : 'var(--fg)';
-    b.style.borderColor = b.dataset.s === 'normal' ? 'var(--p)' : 'var(--line)';
+    b.addEventListener('click', () => {
+      currentSpeed = b.dataset.s;
+      app.querySelectorAll('.cl-speed').forEach(s => {
+        const on = s.dataset.s === currentSpeed;
+        s.style.background = on ? 'var(--p)' : 'var(--solid)';
+        s.style.color = on ? '#fff' : 'var(--fg)';
+        s.style.borderColor = on ? 'var(--p)' : 'var(--line)';
+      });
+      if (activeSi !== -1) { stopClPlayer(); const ms=(60000/bpm)*speeds[currentSpeed]; _clPlayerTimer=setInterval(tick,ms); }
+    });
   });
 
-  // Stop player on navigation
-  app.querySelector('#clBack')?.addEventListener('click', stopClPlayer);
-  addEventListener('hashchange', stopClPlayer, { once: true });
+  // ── Navigation cleanup ────────────────────────────────────────────────────
+  app.querySelector('#clBack')?.addEventListener('click', () => stopSection(activeSi));
+  addEventListener('hashchange', () => stopSection(activeSi), { once: true });
 
-  // Tap any chord pill to play it
+  // ── Favourite toggle ─────────────────────────────────────────────────────
+  app.querySelector('#clFavBtn')?.addEventListener('click', (e) => {
+    const btn = e.currentTarget;
+    const on = toggleClFav(song.id);
+    btn.textContent = on ? '♥' : '♡';
+    btn.style.color = on ? '#ef4444' : 'var(--muted)';
+    btn.style.transform = 'scale(1.3)';
+    setTimeout(() => { btn.style.transform = ''; }, 180);
+  });
+
+  // ── Tap chord pill → play audio + update chord chart ─────────────────────
   app.querySelectorAll('.cl-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       unlockAudio();
-      playChordAudio(pill.dataset.chord, 1.4);
+      const c = pill.dataset.chord;
+      playChordAudio(c, 1.4);
+      const chartEl = app.querySelector('#clChordChart');
+      if (chartEl) chartEl.innerHTML = buildChordChartHtml(c);
     });
+  });
+
+  // ── Scale note circles → play note ───────────────────────────────────────
+  app.querySelectorAll('.cl-scale-note').forEach(el => {
+    el.addEventListener('click', () => {
+      unlockAudio();
+      const n = el.dataset.note;
+      const midi = chordRootMidi(n); // reuse parser — handles sharps and flats
+      playNote(midi, { voice: settings.voice, volume: settings.volume / 100, duration: 1.0 });
+      el.style.transform = 'scale(1.22)';
+      el.style.boxShadow = `0 0 12px ${el.style.background || '#6366f1'}88`;
+      setTimeout(() => { el.style.transform = ''; el.style.boxShadow = ''; }, 280);
+    });
+  });
+
+  // ── Chord chart inversion cards → play inversion (event delegation) ───────
+  app.querySelector('#clChordChart')?.addEventListener('click', (e) => {
+    const card = e.target.closest('.cl-inv-card');
+    if (!card) return;
+    unlockAudio();
+    const chordName = card.dataset.chord;
+    const invIdx = parseInt(card.dataset.inv);
+    const { qual } = parseChordName(chordName);
+    const root = chordRootMidi(chordName);
+    const ivs = QUALITY_INTERVALS_CL[qual] || QUALITY_INTERVALS_CL[''];
+    const rootMidis = ivs.map(iv => root + iv);
+    const invMidis = [...rootMidis.slice(invIdx), ...rootMidis.slice(0, invIdx).map(m => m + 12)];
+    const opts = { voice: settings.voice, volume: settings.volume / 100, duration: 1.4 };
+    invMidis.forEach((m, i) => setTimeout(() => playNote(m, opts), i * 35));
+    // Highlight the tapped inversion card briefly
+    app.querySelectorAll('.cl-inv-card').forEach(c2 => c2.querySelector('div[style*="border"]') && (c2.querySelector('div[style*="border"]').style.transform = ''));
+    const inner = card.querySelector('div[style*="border"]');
+    if (inner) { inner.style.transform = 'scale(1.04)'; setTimeout(() => { inner.style.transform = ''; }, 300); }
   });
 };
 

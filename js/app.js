@@ -3340,8 +3340,8 @@ views.chordsPractice = () => {
     panel.querySelector('#cpShuffleBtn')?.addEventListener('click',()=>{ cpShuffle=!cpShuffle; saveCp(); render(); });
     panel.querySelector('#cpInvSel')?.addEventListener('change',(e)=>{ cpInversion=+e.target.value; saveCp(); render(); });
     panel.querySelector('#cpVoiceSel')?.addEventListener('change',(e)=>{ cpVoice=e.target.value; saveCp(); });
-    panel.querySelector('#cpTempoDown')?.addEventListener('click',()=>{ cpTempo=Math.max(40,cpTempo-10); saveCp(); render(); });
-    panel.querySelector('#cpTempoUp')?.addEventListener('click',()=>{ cpTempo=Math.min(240,cpTempo+10); saveCp(); render(); });
+    panel.querySelector('#cpTempoDown')?.addEventListener('click',()=>{ cpTempo=Math.max(10,cpTempo-5); saveCp(); render(); });
+    panel.querySelector('#cpTempoUp')?.addEventListener('click',()=>{ cpTempo=Math.min(240,cpTempo+5); saveCp(); render(); });
     const randIdx=(len)=>Math.floor(Math.random()*len);
     panel.querySelector('#cpPlayAll')?.addEventListener('click',()=>{
       unlockAudio();

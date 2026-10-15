@@ -3667,8 +3667,8 @@ views.chordsLibrarySong = (params, songId) => {
   app.querySelectorAll('.cl-master-play').forEach(mp => {
     mp.addEventListener('click', () => {
       unlockAudio();
-      if (fullSong && !clPaused) {
-        // pause: stop timer but keep bars visible
+      if (activeSi !== -1 && !clPaused) {
+        // pause: stop timer but keep bars visible (works for both fullSong and section play)
         stopClPlayer();
         clPaused = true;
         setMasterBtns('▶');

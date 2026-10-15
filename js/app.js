@@ -5,7 +5,7 @@ import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllA
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
-import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=3';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=4';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -3305,8 +3305,10 @@ views.chordsLibrarySong = (params, songId) => {
   };
 
   // Wide full keyboard (4 octaves) highlighting the currently-playing chord.
-  const fullKbSVG = (midis, activeColor) => {
-    const WW = 15, WH = 62, BW = 9, BH = 38, OCT = 4, BASE = 48;
+  // big=true renders a taller keyboard that fills the card width.
+  const fullKbSVG = (midis, activeColor, big = false) => {
+    const WW = 15, WH = big ? 104 : 62, BW = 9, BH = big ? 64 : 38, OCT = 4, BASE = 48;
+    const lblW = big ? 10 : 7.5, lblB = big ? 8 : 6;
     const highSet = new Set(midis);
     const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
     let wkeys='', bkeys='', labels='';
@@ -3315,15 +3317,16 @@ views.chordsLibrarySong = (params, songId) => {
       WHITE_PCS_CL.forEach((pc,wi) => {
         const on = highSet.has(base+pc); const x = octX+wi*WW+1;
         wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${on?activeColor:'#f7f7fa'}" stroke="#c8c8c8" stroke-width="1"/>`;
-        labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="7.5" font-weight="${on?900:600}" fill="${on?'#fff':'#9aa'}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="${on?900:600}" fill="${on?'#fff':'#9aa'}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
         const on = highSet.has(base+pc); const x = octX+ox*WW-Math.floor(BW/2)+1;
         bkeys += `<rect x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${on?activeColor:'#1e1e2e'}" stroke="#0f0f1a" stroke-width="1"/>`;
-        if (on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="6" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        if (on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
     }
-    return `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" width="100%" height="${svgH}" preserveAspectRatio="xMidYMid meet">${wkeys}${bkeys}${labels}</svg>`;
+    const sizing = big ? 'width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto"' : `width="100%" height="${svgH}" preserveAspectRatio="xMidYMid meet"`;
+    return `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" ${sizing}>${wkeys}${bkeys}${labels}</svg>`;
   };
 
   // Build chord chart HTML for a given chord name. activeInv highlights the
@@ -3367,24 +3370,28 @@ views.chordsLibrarySong = (params, songId) => {
   const setSecBtn = (si, ch) => { const b = app.querySelector(`.cl-sec-play[data-si="${si}"]`); if (b) b.textContent = ch; };
 
   // Now-playing bar updater. voicing = { name, qual, midis, inv, invName }
-  const showNowPlaying = (voicing, sectionChords, activeIdx) => {
+  const showNowPlaying = (voicing, sectionChords, activeIdx, sectionName = '') => {
     const bar = app.querySelector('#clNowPlayingBar');
     if (!bar) return;
     bar.style.display = 'block';
     const { name: chordName, qual, midis, invName } = voicing;
+    const col = PILL_COLORS[uniqueChords.indexOf(chordName)%PILL_COLORS.length] || '#6366f1';
+    const secBadge = sectionName
+      ? `<span style="display:inline-block;background:${col};color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:7px;margin-right:8px;vertical-align:middle">${esc(sectionName)}</span>`
+      : '';
+    const labelHtml = `${secBadge}<span style="vertical-align:middle">${esc(chordName)} ${qualLabel(qual)} – ${invName}</span>`;
     const svgEl = app.querySelector('#clNowSvg');
     if (svgEl) svgEl.innerHTML = chordNotationSVG(midis);
     const labelEl = app.querySelector('#clNowChordLabel');
-    if (labelEl) labelEl.textContent = `${chordName} ${qualLabel(qual)} – ${invName}`;
-    const col = PILL_COLORS[uniqueChords.indexOf(chordName)%PILL_COLORS.length] || '#6366f1';
+    if (labelEl) labelEl.innerHTML = labelHtml;
     const kbEl = app.querySelector('#clNowKb');
     if (kbEl) kbEl.innerHTML = fullKbSVG(midis, col);
     const bar2 = app.querySelector('#clNowPlayingBar2');
     if (bar2) bar2.style.display = 'block';
     const kbEl2 = app.querySelector('#clNowKb2');
-    if (kbEl2) kbEl2.innerHTML = fullKbSVG(midis, col);
+    if (kbEl2) kbEl2.innerHTML = fullKbSVG(midis, col, true);
     const label2 = app.querySelector('#clNowChordLabel2');
-    if (label2) { label2.textContent = `${chordName} ${qualLabel(qual)} – ${invName}`; label2.style.color = col; }
+    if (label2) { label2.innerHTML = labelHtml; label2.style.color = col; }
     const pillsHtml = sectionChords.map((c,i) => {
       const pcol = PILL_COLORS[uniqueChords.indexOf(c)%PILL_COLORS.length];
       const active = i === activeIdx;
@@ -3433,7 +3440,7 @@ views.chordsLibrarySong = (params, songId) => {
     const dot = app.querySelector(`.cl-beat-dot-sec[data-si="${activeSi}"]`);
     if (dot) { dot.style.background='var(--p)'; setTimeout(()=>{if(dot)dot.style.background='var(--muted)';},120); }
     highlightSecPill(activeSi, chordIdx);
-    showNowPlaying(voicing, sec.chords, chordIdx);
+    showNowPlaying(voicing, sec.chords, chordIdx, sec.name);
     const chartEl = app.querySelector('#clChordChart');
     if (chartEl) chartEl.innerHTML = buildChordChartHtml(chord, voicing.inv);
     unlockAudio();
@@ -3463,8 +3470,7 @@ views.chordsLibrarySong = (params, songId) => {
     }
     activeSi = -1;
     fullSong = false;
-    const mp = app.querySelector('#clMasterPlay');
-    if (mp) mp.textContent = '▶';
+    app.querySelectorAll('.cl-master-play').forEach(mp => mp.textContent = '▶');
     const bar = app.querySelector('#clNowPlayingBar');
     if (bar) bar.style.display = 'none';
     const bar2 = app.querySelector('#clNowPlayingBar2');
@@ -3549,12 +3555,12 @@ views.chordsLibrarySong = (params, songId) => {
     <!-- Transport: prev song · play/pause whole song · next song -->
     <div class="card pad" style="padding-top:12px;padding-bottom:12px">
       <div style="display:flex;align-items:center;justify-content:center;gap:18px">
-        <a class="iconbtn" id="clPrevSong" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}"
+        <a class="iconbtn cl-prev-song" id="clPrevSong" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}"
            style="width:44px;height:44px;font-size:20px;display:flex;align-items:center;justify-content:center">⏮</a>
-        <button id="clMasterPlay" title="Play whole song"
+        <button class="cl-master-play" id="clMasterPlay" title="Play whole song"
           style="width:60px;height:60px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:26px;
                  cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px var(--p)">▶</button>
-        <a class="iconbtn" id="clNextSong" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}"
+        <a class="iconbtn cl-next-song" id="clNextSong" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}"
            style="width:44px;height:44px;font-size:20px;display:flex;align-items:center;justify-content:center">⏭</a>
       </div>
       <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:6px">Play the full song — all sections in order</div>
@@ -3605,6 +3611,11 @@ views.chordsLibrarySong = (params, songId) => {
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
           <div id="clNowChordLabel2" style="font-size:15px;font-weight:900;color:var(--p);white-space:nowrap"></div>
           <div id="clNowPills2" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+            <a class="iconbtn cl-prev-song" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}" style="width:34px;height:34px;font-size:16px;display:flex;align-items:center;justify-content:center">⏮</a>
+            <button class="cl-master-play" title="Play / pause" style="width:44px;height:44px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">⏸</button>
+            <a class="iconbtn cl-next-song" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}" style="width:34px;height:34px;font-size:16px;display:flex;align-items:center;justify-content:center">⏭</a>
+          </div>
         </div>
         <div id="clNowKb2" style="background:#dcdce4;border-radius:10px;padding:5px;overflow:hidden"></div>
       </div>
@@ -3631,28 +3642,31 @@ views.chordsLibrarySong = (params, songId) => {
     });
   });
 
-  // ── Master play/pause (whole song) ────────────────────────────────────────
-  app.querySelector('#clMasterPlay')?.addEventListener('click', (e) => {
-    unlockAudio();
-    const mp = e.currentTarget;
-    if (fullSong) {
-      stopSection(activeSi);
-    } else {
-      if (activeSi !== -1) stopSection(activeSi);
-      fullSong = true;
-      activeSi = 0;
-      sectionPlayerIdx = 0;
-      mp.textContent = '⏸';
-      setSecBtn(0, '⏸');
-      tick();
-      const ms = (60000/bpm) * speeds[currentSpeed];
-      _clPlayerTimer = setInterval(tick, ms);
-    }
+  // ── Master play/pause (whole song) — top + Currently Playing bar in sync ──
+  const setMasterBtns = (ch) => app.querySelectorAll('.cl-master-play').forEach(b => b.textContent = ch);
+  app.querySelectorAll('.cl-master-play').forEach(mp => {
+    mp.addEventListener('click', () => {
+      unlockAudio();
+      if (fullSong) {
+        stopSection(activeSi);
+        setMasterBtns('▶');
+      } else {
+        if (activeSi !== -1) stopSection(activeSi);
+        fullSong = true;
+        activeSi = 0;
+        sectionPlayerIdx = 0;
+        setMasterBtns('⏸');
+        setSecBtn(0, '⏸');
+        tick();
+        const ms = (60000/bpm) * speeds[currentSpeed];
+        _clPlayerTimer = setInterval(tick, ms);
+      }
+    });
   });
 
   // ── Prev/Next song — stop playback before navigating ──────────────────────
-  app.querySelector('#clPrevSong')?.addEventListener('click', () => stopSection(activeSi));
-  app.querySelector('#clNextSong')?.addEventListener('click', () => stopSection(activeSi));
+  app.querySelectorAll('.cl-prev-song, .cl-next-song').forEach(a =>
+    a.addEventListener('click', () => stopSection(activeSi)));
 
   // ── Speed buttons ─────────────────────────────────────────────────────────
   app.querySelectorAll('.cl-speed').forEach(b => {

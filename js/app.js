@@ -3456,7 +3456,7 @@ views.chordsLibrarySong = (params, songId) => {
       activeSi = (activeSi + 1) % song.sections.length;
       setSecBtn(activeSi, '⏸');
       sectionPlayerIdx = 0;
-      app.querySelectorAll('.cl-sec-picker').forEach(p => p.value = String(activeSi));
+      // keep picker on "full" during full song mode
     } else {
       sectionPlayerIdx = next % sec.chords.length;
     }
@@ -3693,7 +3693,12 @@ views.chordsLibrarySong = (params, songId) => {
   let clPaused = false;
   const syncPickers = (val) => app.querySelectorAll('.cl-sec-picker').forEach(p => p.value = val);
   app.querySelectorAll('.cl-sec-picker').forEach(p => {
-    p.addEventListener('change', () => syncPickers(p.value));
+    p.addEventListener('change', () => {
+      syncPickers(p.value);
+      if (activeSi !== -1 && !clPaused) {
+        startFromPicker();
+      }
+    });
   });
 
   // ── Section-go play/pause — reads from picker ─────────────────────────

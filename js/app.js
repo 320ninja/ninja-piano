@@ -3098,7 +3098,7 @@ views.chordsLibrary = (params) => {
   const q = (params?.get('q') || '').toLowerCase();
   const g = params?.get('g') || 'All';
   const page = parseInt(params?.get('p') || '1', 10);
-  const PER = 18;
+  const PER = 30;
 
   const clFavs = getClFavs();
   let filtered = CHORDS_LIBRARY;

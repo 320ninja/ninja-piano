@@ -3361,7 +3361,8 @@ views.chordsLibrarySong = (params, songId) => {
   };
 
   // Player state
-  const bpm = parseInt(song.tempo) || 80;
+  const baseBpm = parseInt(song.tempo) || 80;
+  let bpm = baseBpm;
   const speeds = { slow: 8, normal: 4, fast: 2 };
   let currentSpeed = 'normal';
   let activeSi = -1;
@@ -3550,6 +3551,13 @@ views.chordsLibrarySong = (params, songId) => {
         <span style="font-size:12px;color:var(--muted);margin:0 2px 0 8px">Sound</span>
         ${voicePicker()}
       </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+        <span style="font-size:12px;color:var(--muted)">Tempo</span>
+        <button id="clBpmDown" title="Slower" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:18px;font-weight:800;cursor:pointer;line-height:1">−</button>
+        <input id="clBpm" type="range" min="40" max="220" step="1" value="${baseBpm}" style="flex:1;accent-color:var(--p);cursor:pointer">
+        <button id="clBpmUp" title="Faster" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:18px;font-weight:800;cursor:pointer;line-height:1">+</button>
+        <span id="clBpmVal" style="font-size:13px;font-weight:800;color:var(--p);min-width:62px;text-align:right">${baseBpm} BPM</span>
+      </div>
     </div>
 
     <!-- Transport: prev song · play/pause whole song · next song -->
@@ -3681,6 +3689,22 @@ views.chordsLibrarySong = (params, songId) => {
       if (activeSi !== -1) { stopClPlayer(); const ms=(60000/bpm)*speeds[currentSpeed]; _clPlayerTimer=setInterval(tick,ms); }
     });
   });
+
+  // ── Tempo (BPM) adjustment ────────────────────────────────────────────────
+  const restartTimer = () => {
+    if (activeSi !== -1) { stopClPlayer(); _clPlayerTimer = setInterval(tick, (60000/bpm) * speeds[currentSpeed]); }
+  };
+  const bpmSlider = app.querySelector('#clBpm');
+  const bpmVal = app.querySelector('#clBpmVal');
+  const setBpm = (v) => {
+    bpm = Math.max(40, Math.min(220, Math.round(v)));
+    if (bpmSlider) bpmSlider.value = bpm;
+    if (bpmVal) bpmVal.textContent = `${bpm} BPM`;
+    restartTimer();
+  };
+  bpmSlider?.addEventListener('input', () => setBpm(parseInt(bpmSlider.value)));
+  app.querySelector('#clBpmDown')?.addEventListener('click', () => setBpm(bpm - 4));
+  app.querySelector('#clBpmUp')?.addEventListener('click', () => setBpm(bpm + 4));
 
   // ── Navigation cleanup ────────────────────────────────────────────────────
   app.querySelector('#clBack')?.addEventListener('click', () => stopSection(activeSi));

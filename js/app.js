@@ -5,7 +5,7 @@ import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllA
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
-import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=2';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=3';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -3198,8 +3198,11 @@ views.chordsLibrary = (params) => {
 views.chordsLibrarySong = (params, songId) => {
   setNav('practice');
   stopClPlayer();
-  const song = CHORDS_LIBRARY.find(s => s.id === songId);
+  const songIdx = CHORDS_LIBRARY.findIndex(s => s.id === songId);
+  const song = CHORDS_LIBRARY[songIdx];
   if (!song) { location.hash = '#/chordsLibrary'; return; }
+  const prevSongId = CHORDS_LIBRARY[(songIdx - 1 + CHORDS_LIBRARY.length) % CHORDS_LIBRARY.length].id;
+  const nextSongId = CHORDS_LIBRARY[(songIdx + 1) % CHORDS_LIBRARY.length].id;
 
   const PILL_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f43f5e'];
   const NOTE_COLORS_MAP = { C:'#ef4444',D:'#f97316',E:'#eab308',F:'#22c55e',G:'#06b6d4',A:'#3b82f6',B:'#8b5cf6' };
@@ -3360,6 +3363,8 @@ views.chordsLibrarySong = (params, songId) => {
   let currentSpeed = 'normal';
   let activeSi = -1;
   let sectionPlayerIdx = 0;
+  let fullSong = false;
+  const setSecBtn = (si, ch) => { const b = app.querySelector(`.cl-sec-play[data-si="${si}"]`); if (b) b.textContent = ch; };
 
   // Now-playing bar updater. voicing = { name, qual, midis, inv, invName }
   const showNowPlaying = (voicing, sectionChords, activeIdx) => {
@@ -3380,14 +3385,17 @@ views.chordsLibrarySong = (params, songId) => {
     if (kbEl2) kbEl2.innerHTML = fullKbSVG(midis, col);
     const label2 = app.querySelector('#clNowChordLabel2');
     if (label2) { label2.textContent = `${chordName} ${qualLabel(qual)} – ${invName}`; label2.style.color = col; }
-    const pillsEl = app.querySelector('#clNowPills');
-    if (pillsEl) pillsEl.innerHTML = sectionChords.map((c,i) => {
+    const pillsHtml = sectionChords.map((c,i) => {
       const pcol = PILL_COLORS[uniqueChords.indexOf(c)%PILL_COLORS.length];
       const active = i === activeIdx;
       return `<span style="padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700;
         background:${active?pcol:pcol+'22'};color:${active?'#fff':pcol};
-        border:1.5px solid ${active?pcol:pcol+'44'};transition:all .18s">${esc(c)}</span>`;
+        border:1.5px solid ${active?pcol:pcol+'44'};transition:all .18s;${active?`box-shadow:0 0 10px ${pcol}66`:''}">${esc(c)}</span>`;
     }).join('');
+    const pillsEl = app.querySelector('#clNowPills');
+    if (pillsEl) pillsEl.innerHTML = pillsHtml;
+    const pillsEl2 = app.querySelector('#clNowPills2');
+    if (pillsEl2) pillsEl2.innerHTML = pillsHtml;
   };
 
   // Highlight a pill within a section
@@ -3431,7 +3439,17 @@ views.chordsLibrarySong = (params, songId) => {
     unlockAudio();
     const chordDuration = (60/bpm) * speeds[currentSpeed];
     playMidisAudio(voicing.midis, chordDuration * 0.85);
-    sectionPlayerIdx = (chordIdx + 1) % sec.chords.length;
+    const next = chordIdx + 1;
+    if (fullSong && next >= sec.chords.length) {
+      // advance to the next section (looping the whole song)
+      resetSecPills(activeSi);
+      setSecBtn(activeSi, '▶');
+      activeSi = (activeSi + 1) % song.sections.length;
+      setSecBtn(activeSi, '⏸');
+      sectionPlayerIdx = 0;
+    } else {
+      sectionPlayerIdx = next % sec.chords.length;
+    }
   };
 
   const stopSection = (si) => {
@@ -3444,6 +3462,9 @@ views.chordsLibrarySong = (params, songId) => {
       resetSecPills(si);
     }
     activeSi = -1;
+    fullSong = false;
+    const mp = app.querySelector('#clMasterPlay');
+    if (mp) mp.textContent = '▶';
     const bar = app.querySelector('#clNowPlayingBar');
     if (bar) bar.style.display = 'none';
     const bar2 = app.querySelector('#clNowPlayingBar2');
@@ -3525,6 +3546,20 @@ views.chordsLibrarySong = (params, songId) => {
       </div>
     </div>
 
+    <!-- Transport: prev song · play/pause whole song · next song -->
+    <div class="card pad" style="padding-top:12px;padding-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:18px">
+        <a class="iconbtn" id="clPrevSong" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}"
+           style="width:44px;height:44px;font-size:20px;display:flex;align-items:center;justify-content:center">⏮</a>
+        <button id="clMasterPlay" title="Play whole song"
+          style="width:60px;height:60px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:26px;
+                 cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px var(--p)">▶</button>
+        <a class="iconbtn" id="clNextSong" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}"
+           style="width:44px;height:44px;font-size:20px;display:flex;align-items:center;justify-content:center">⏭</a>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:6px">Play the full song — all sections in order</div>
+    </div>
+
     <!-- Now Playing bar (shown when a section is playing) -->
     <div id="clNowPlayingBar" style="display:none">
       <h3 class="sec"><span class="badge">🎵</span><span class="gt">Now Playing</span></h3>
@@ -3567,7 +3602,10 @@ views.chordsLibrarySong = (params, songId) => {
     <div id="clNowPlayingBar2" style="display:none;margin-bottom:20px">
       <h3 class="sec"><span class="badge">🎹</span><span class="gt">Currently Playing</span></h3>
       <div class="card pad" style="padding:12px 14px">
-        <div id="clNowChordLabel2" style="font-size:15px;font-weight:900;color:var(--p);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+          <div id="clNowChordLabel2" style="font-size:15px;font-weight:900;color:var(--p);white-space:nowrap"></div>
+          <div id="clNowPills2" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+        </div>
         <div id="clNowKb2" style="background:#dcdce4;border-radius:10px;padding:5px;overflow:hidden"></div>
       </div>
     </div>
@@ -3578,10 +3616,11 @@ views.chordsLibrarySong = (params, songId) => {
     btn.addEventListener('click', () => {
       unlockAudio();
       const si = parseInt(btn.dataset.si);
-      if (activeSi === si) {
+      if (activeSi === si && !fullSong) {
         stopSection(si);
       } else {
         if (activeSi !== -1) stopSection(activeSi);
+        fullSong = false;
         activeSi = si;
         sectionPlayerIdx = 0;
         btn.textContent = '⏸';
@@ -3591,6 +3630,29 @@ views.chordsLibrarySong = (params, songId) => {
       }
     });
   });
+
+  // ── Master play/pause (whole song) ────────────────────────────────────────
+  app.querySelector('#clMasterPlay')?.addEventListener('click', (e) => {
+    unlockAudio();
+    const mp = e.currentTarget;
+    if (fullSong) {
+      stopSection(activeSi);
+    } else {
+      if (activeSi !== -1) stopSection(activeSi);
+      fullSong = true;
+      activeSi = 0;
+      sectionPlayerIdx = 0;
+      mp.textContent = '⏸';
+      setSecBtn(0, '⏸');
+      tick();
+      const ms = (60000/bpm) * speeds[currentSpeed];
+      _clPlayerTimer = setInterval(tick, ms);
+    }
+  });
+
+  // ── Prev/Next song — stop playback before navigating ──────────────────────
+  app.querySelector('#clPrevSong')?.addEventListener('click', () => stopSection(activeSi));
+  app.querySelector('#clNextSong')?.addEventListener('click', () => stopSection(activeSi));
 
   // ── Speed buttons ─────────────────────────────────────────────────────────
   app.querySelectorAll('.cl-speed').forEach(b => {

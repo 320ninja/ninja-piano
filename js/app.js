@@ -3047,6 +3047,40 @@ views.done = (params, id) => {
   [72, 76, 79, 84].forEach((m, i) => playNote(m, { when: i * 0.12, voice: settings.voice, volume: settings.volume / 100 }));
 };
 
+/* ── Chords Library shared helpers ─────────────────────────────────────── */
+// Parse a chord name → { root, accidental, quality } e.g. "F#m7" → {root:"F",acc:"#",qual:"m7"}
+const parseChordName = (name) => {
+  const m = (name || '').match(/^([A-G])([b#♭♯]?)(.*)$/);
+  if (!m) return { root: name, acc: '', qual: '' };
+  return { root: m[1], acc: m[2].replace('♭','b').replace('♯','#'), qual: m[3] };
+};
+// Return MIDI root (C4 = 60) for a chord name
+const chordRootMidi = (name) => {
+  const { root, acc } = parseChordName(name);
+  const BASE = { C:60, D:62, E:64, F:65, G:67, A:69, B:71 };
+  return (BASE[root] ?? 60) + (acc === '#' ? 1 : acc === 'b' ? -1 : 0);
+};
+// Play a chord (strum notes with slight delay)
+const playChordAudio = (name, duration = 1.4) => {
+  const QUALITY_INTERVALS = {
+    '': [0,4,7], 'm': [0,3,7], '7': [0,4,7,10], 'maj7': [0,4,7,11],
+    'm7': [0,3,7,10], 'dim': [0,3,6], 'aug': [0,4,8], 'sus4': [0,5,7],
+    'sus2': [0,2,7], '9': [0,4,7,10,14], 'm9': [0,3,7,10,14],
+    '7sus4': [0,5,7,10], 'b5': [0,4,6], '7b5': [0,4,6,10],
+    'm7b5': [0,3,6,10], 'dim7': [0,3,6,9], 'maj9': [0,4,7,11,14],
+    'add9': [0,4,7,14], '6': [0,4,7,9], 'm6': [0,3,7,9],
+    '11': [0,4,7,10,14,17], 'D9': [0,4,7,10,14],
+  };
+  const { qual } = parseChordName(name);
+  const midi = chordRootMidi(name);
+  const ivs = QUALITY_INTERVALS[qual] || QUALITY_INTERVALS[''];
+  const opts = { voice: settings.voice, volume: settings.volume / 100, duration };
+  ivs.forEach((iv, i) => setTimeout(() => playNote(midi + iv, opts), i * 35));
+};
+// Module-level player state so it persists across re-renders
+let _clPlayerTimer = null;
+const stopClPlayer = () => { if (_clPlayerTimer) { clearInterval(_clPlayerTimer); _clPlayerTimer = null; } };
+
 /* ── Chords Library ─────────────────────────────────────────────────────── */
 views.chordsLibrary = (params) => {
   setNav('practice');
@@ -3134,93 +3168,236 @@ views.chordsLibrary = (params) => {
 
 views.chordsLibrarySong = (params, songId) => {
   setNav('practice');
+  stopClPlayer();
   const song = CHORDS_LIBRARY.find(s => s.id === songId);
   if (!song) { location.hash = '#/chordsLibrary'; return; }
 
   const PILL_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f43f5e'];
-  const chordPill = (c, i) => {
-    const col = PILL_COLORS[i % PILL_COLORS.length];
-    return `<span class="chord-pill" data-chord="${esc(c)}" style="background:${col}22;color:${col};border:1.5px solid ${col}44;border-radius:10px;padding:6px 14px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s" title="Play ${esc(c)}">${esc(c)}</span>`;
-  };
-
+  const NOTE_COLORS_MAP = { C:'#ef4444',D:'#f97316',E:'#eab308',F:'#22c55e',G:'#06b6d4',A:'#3b82f6',B:'#8b5cf6' };
   const uniqueChords = [...new Set(song.chords)];
   const DIFF_COLOR = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444' };
 
+  // Parse root note quality label e.g. "F#m7" → root="F#", qual label="minor 7"
+  const qualLabel = (q) => ({
+    '':'major','m':'minor','7':'dom 7','maj7':'maj 7','m7':'min 7',
+    'dim':'dim','aug':'aug','sus4':'sus4','sus2':'sus2','m7b5':'half dim',
+    'dim7':'dim 7','9':'dom 9','add9':'add 9','6':'maj 6','m6':'min 6',
+  }[q] || q || 'major');
+
+  const chordPill = (c, colorIdx, activeClass = '') => {
+    const col = PILL_COLORS[colorIdx % PILL_COLORS.length];
+    const { root, acc, qual } = parseChordName(c);
+    const rootNote = root + acc;
+    const rootCol = NOTE_COLORS_MAP[root] || col;
+    return `<span class="chord-pill cl-pill ${activeClass}" data-chord="${esc(c)}" data-cidx="${colorIdx}"
+      style="background:${col}18;border:2px solid ${col}55;border-radius:14px;padding:8px 14px 6px;
+             font-weight:700;cursor:pointer;transition:all .18s;display:inline-flex;flex-direction:column;
+             align-items:center;min-width:54px;text-align:center;position:relative">
+      <span style="font-size:9px;font-weight:800;background:${rootCol};color:#fff;border-radius:5px;
+                   padding:1px 5px;margin-bottom:3px;letter-spacing:.02em">${esc(rootNote)}</span>
+      <span style="font-size:15px;color:${col};line-height:1">${esc(c)}</span>
+      <span style="font-size:9.5px;color:${col};opacity:.75;margin-top:1px">${qualLabel(qual)}</span>
+    </span>`;
+  };
+
+  // Player chord sequence — use main chords array
+  const playerChords = song.chords;
+  const bpm = parseInt(song.tempo) || 80;
+  const speeds = { slow: 8, normal: 4, fast: 2 }; // beats per chord
+  let currentSpeed = 'normal';
+  let playerPlaying = false;
+  let playerIdx = 0;
+
   const sectionsHtml = song.sections.map(sec => `
-    <div style="margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px">${esc(sec.name)}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">${sec.chords.map((c, i) => chordPill(c, uniqueChords.indexOf(c))).join('')}</div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+                  color:var(--muted);margin-bottom:8px;padding-left:2px">${esc(sec.name)}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">${sec.chords.map(c => chordPill(c, uniqueChords.indexOf(c))).join('')}</div>
     </div>`).join('');
 
-  const allChordsHtml = `<div style="display:flex;flex-wrap:wrap;gap:8px">${uniqueChords.map((c, i) => chordPill(c, i)).join('')}</div>`;
+  const allChordsHtml = uniqueChords.map((c, i) => chordPill(c, i)).join('');
+
+  const scaleNotesHtml = (song.scaleNotes || []).map(n => {
+    const col = NOTE_COLORS_MAP[n[0]] || '#8b5cf6';
+    return `<span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px">
+      <span style="width:34px;height:34px;border-radius:50%;background:${col};color:#fff;
+                   font-size:13px;font-weight:800;display:flex;align-items:center;
+                   justify-content:center">${esc(n)}</span>
+    </span>`;
+  }).join('');
+
+  const improvHtml = (song.improvTips || []).map((tip, i) => `
+    <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">
+      <span style="width:22px;height:22px;border-radius:50%;background:var(--p);color:#fff;
+                   font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;
+                   flex-shrink:0;margin-top:1px">${i+1}</span>
+      <span style="font-size:14px;line-height:1.5;color:var(--fg)">${esc(tip)}</span>
+    </div>`).join('');
 
   app.innerHTML = `<section class="view">
     <div class="top">
-      <a class="iconbtn" href="#/chordsLibrary">${icon('back')}</a>
-      <h1 style="font-size:17px;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(song.title)}</h1>
+      <a class="iconbtn" id="clBack" href="#/chordsLibrary">${icon('back')}</a>
+      <h1 style="font-size:16px;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(song.title)}</h1>
       <span style="width:42px"></span>
     </div>
 
+    <!-- Info card -->
     <div class="card pad" style="display:flex;gap:14px;align-items:flex-start">
-      <div style="width:62px;height:62px;flex-shrink:0;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;flex-direction:column;align-items:center;justify-content:center">
-        <div style="font-size:16px;font-weight:900;color:#fff">${esc(song.key)}</div>
-        <div style="font-size:9px;color:rgba(255,255,255,.8);font-weight:600">KEY</div>
+      <div style="width:58px;height:58px;flex-shrink:0;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0">
+        <div style="font-size:15px;font-weight:900;color:#fff;line-height:1">${esc(song.key)}</div>
+        <div style="font-size:8px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.05em">KEY</div>
       </div>
       <div style="flex:1;min-width:0">
-        <div style="font-weight:800;font-size:18px;margin-bottom:2px">${esc(song.title)}</div>
-        <div style="color:var(--muted);font-size:14px;margin-bottom:8px">${esc(song.artist)} · ${song.year}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <div style="font-weight:800;font-size:17px;margin-bottom:1px">${esc(song.title)}</div>
+        <div style="color:var(--muted);font-size:13.5px;margin-bottom:7px">${esc(song.artist)} · ${song.year}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
           <span class="tag cat" style="background:${DIFF_COLOR[song.difficulty]}22;color:${DIFF_COLOR[song.difficulty]}">${song.difficulty}</span>
           <span class="tag cat">${esc(song.genre)}</span>
-          <span class="tag cat">🎵 ${esc(song.key)}</span>
           <span class="tag cat">⏱ ${esc(song.tempo)}</span>
+          <span class="tag cat">🎵 ${esc(song.key)}</span>
         </div>
       </div>
     </div>
 
-    <h3 class="sec"><span class="badge">🎹</span><span class="gt">All Chords Used</span></h3>
-    <div class="card pad" id="clAllChords">${allChordsHtml}</div>
-    <div style="font-size:12.5px;color:var(--muted);margin:4px 2px 10px">Tap any chord to hear it on the piano</div>
+    <!-- ▶ Player -->
+    <h3 class="sec"><span class="badge">▶</span><span class="gt">Play Progression</span></h3>
+    <div class="card pad" id="clPlayer" style="padding-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <button id="clPlayBtn" style="width:48px;height:48px;border-radius:50%;background:var(--p);border:none;
+          color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+          flex-shrink:0;box-shadow:0 2px 12px var(--p-shadow,rgba(99,102,241,.35))">▶</button>
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:5px">Speed</div>
+          <div style="display:flex;gap:6px">
+            ${['slow','normal','fast'].map(s=>`<button class="cl-speed ${s==='normal'?'on':''}" data-s="${s}"
+              style="padding:4px 12px;border-radius:8px;border:1.5px solid var(--line);font-size:12.5px;
+                     font-weight:600;cursor:pointer;background:var(--solid);color:var(--fg)">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
+          </div>
+        </div>
+        <div id="clBeatDot" style="width:12px;height:12px;border-radius:50%;background:var(--muted);
+          transition:background .08s;flex-shrink:0"></div>
+      </div>
+      <div id="clPlayerPills" style="display:flex;flex-wrap:wrap;gap:10px">
+        ${playerChords.map((c, i) => chordPill(c, uniqueChords.indexOf(c), i===0 ? 'cl-active' : '')).join('')}
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:10px">Tap a chord to play it · Press ▶ to loop the progression</div>
+    </div>
 
+    <!-- All chords -->
+    <h3 class="sec"><span class="badge">🎹</span><span class="gt">Chords Used</span></h3>
+    <div class="card pad" style="display:flex;flex-wrap:wrap;gap:10px">${allChordsHtml}</div>
+
+    <!-- Sections -->
     <h3 class="sec"><span class="badge">📋</span><span class="gt">Song Sections</span></h3>
     <div class="card pad">${sectionsHtml}</div>
 
-    <div class="card pad" style="margin-top:10px">
-      <div style="font-weight:700;margin-bottom:4px">Chord Progression</div>
-      <div style="font-size:15px;color:var(--muted)">${song.chords.join(' – ')}</div>
+    <!-- Scale -->
+    <h3 class="sec"><span class="badge">🎼</span><span class="gt">Scale: ${esc(song.scale || song.key + ' Major')}</span></h3>
+    <div class="card pad">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px">${scaleNotesHtml}</div>
+      <div style="font-size:12.5px;color:var(--muted)">${esc(song.scale || '')} — ${song.scaleNotes ? song.scaleNotes.join(' – ') : ''}</div>
     </div>
 
-    <a class="hero-card" href="#/progressions" style="text-decoration:none;margin-top:14px">
-      <div style="background:linear-gradient(135deg,#6d28d9,#3b82f6);border-radius:14px;width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">🎼</div>
+    <!-- Improv tips -->
+    <h3 class="sec"><span class="badge">💡</span><span class="gt">Improvisation Tips</span></h3>
+    <div class="card pad">${improvHtml}</div>
+
+    <a class="hero-card" href="#/progressions" style="text-decoration:none;margin-top:10px;margin-bottom:20px">
+      <div style="background:linear-gradient(135deg,#6d28d9,#3b82f6);border-radius:12px;width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">🎼</div>
       <div style="flex:1"><div style="font-weight:800">Practice a progression</div><div style="opacity:.7;font-size:13px">Find similar patterns in Chord Progressions</div></div>
-      <div style="width:34px;height:34px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff">${icon('arrowR')}</div>
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff">${icon('arrowR')}</div>
     </a>
   </section>`;
 
-  // Play chord on tap
-  app.querySelectorAll('.chord-pill').forEach(pill => {
+  // ── Player logic ──────────────────────────────────────────────────────────
+  const playBtn = app.querySelector('#clPlayBtn');
+  const beatDot = app.querySelector('#clBeatDot');
+  const playerPillEls = () => app.querySelectorAll('#clPlayerPills .cl-pill');
+
+  const highlightPlayerPill = (idx) => {
+    const pills = playerPillEls();
+    pills.forEach((p, i) => {
+      const col = PILL_COLORS[parseInt(p.dataset.cidx||'0') % PILL_COLORS.length];
+      if (i === idx) {
+        p.style.background = col + '55';
+        p.style.border = `2px solid ${col}`;
+        p.style.transform = 'scale(1.08)';
+        p.style.boxShadow = `0 0 14px ${col}66`;
+      } else {
+        p.style.background = col + '18';
+        p.style.border = `2px solid ${col}55`;
+        p.style.transform = '';
+        p.style.boxShadow = '';
+      }
+    });
+  };
+
+  const tick = () => {
+    beatDot.style.background = 'var(--p)';
+    setTimeout(() => { if (beatDot) beatDot.style.background = 'var(--muted)'; }, 120);
+    highlightPlayerPill(playerIdx);
+    unlockAudio();
+    const chordDuration = (60 / bpm) * speeds[currentSpeed];
+    playChordAudio(playerChords[playerIdx], chordDuration * 0.85);
+    playerIdx = (playerIdx + 1) % playerChords.length;
+  };
+
+  const startPlayer = () => {
+    playerPlaying = true;
+    playerIdx = 0;
+    playBtn.textContent = '⏸';
+    tick();
+    const ms = (60000 / bpm) * speeds[currentSpeed];
+    _clPlayerTimer = setInterval(tick, ms);
+  };
+
+  const pausePlayer = () => {
+    stopClPlayer();
+    playerPlaying = false;
+    playBtn.textContent = '▶';
+    beatDot.style.background = 'var(--muted)';
+    playerPillEls().forEach(p => {
+      const col = PILL_COLORS[parseInt(p.dataset.cidx||'0') % PILL_COLORS.length];
+      p.style.background = col + '18'; p.style.border = `2px solid ${col}55`;
+      p.style.transform = ''; p.style.boxShadow = '';
+    });
+  };
+
+  playBtn.addEventListener('click', () => {
+    unlockAudio();
+    if (playerPlaying) { pausePlayer(); } else { startPlayer(); }
+  });
+
+  app.querySelectorAll('.cl-speed').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSpeed = btn.dataset.s;
+      app.querySelectorAll('.cl-speed').forEach(b => {
+        b.classList.toggle('on', b.dataset.s === currentSpeed);
+        b.style.background = b.dataset.s === currentSpeed ? 'var(--p)' : 'var(--solid)';
+        b.style.color = b.dataset.s === currentSpeed ? '#fff' : 'var(--fg)';
+        b.style.borderColor = b.dataset.s === currentSpeed ? 'var(--p)' : 'var(--line)';
+      });
+      if (playerPlaying) { stopClPlayer(); startPlayer(); }
+    });
+  });
+
+  // Style active speed btn
+  app.querySelectorAll('.cl-speed').forEach(b => {
+    b.style.background = b.dataset.s === 'normal' ? 'var(--p)' : 'var(--solid)';
+    b.style.color = b.dataset.s === 'normal' ? '#fff' : 'var(--fg)';
+    b.style.borderColor = b.dataset.s === 'normal' ? 'var(--p)' : 'var(--line)';
+  });
+
+  // Stop player on navigation
+  app.querySelector('#clBack')?.addEventListener('click', stopClPlayer);
+  addEventListener('hashchange', stopClPlayer, { once: true });
+
+  // Tap any chord pill to play it
+  app.querySelectorAll('.cl-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       unlockAudio();
-      const name = pill.dataset.chord;
-      // Map chord name to MIDI notes (root position, octave 4)
-      const NOTE_MAP = { C:60,D:62,E:64,F:65,G:67,A:69,B:71 };
-      const QUALITY_INTERVALS = {
-        '':   [0,4,7],   'm':  [0,3,7],   '7':  [0,4,7,10],
-        'maj7':[0,4,7,11],'m7': [0,3,7,10],'dim':[0,3,6],
-        'aug': [0,4,8],  'sus4':[0,5,7],  'sus2':[0,2,7],
-        '9':  [0,4,7,10,14],'m9':[0,3,7,10,14],'7sus4':[0,5,7,10],
-        'b5': [0,4,6],   '7b5':[0,4,6,10],'m7b5':[0,3,6,10],
-        'dim7':[0,3,6,9],'maj9':[0,4,7,11,14],'add9':[0,4,7,14],
-        '6':  [0,4,7,9], 'm6': [0,3,7,9], '11': [0,4,7,10,14,17],
-      };
-      const m = name.match(/^([A-G][b#♭♯]?)(.*)$/);
-      if (!m) return;
-      let root = m[1], qual = m[2] || '';
-      const acc = root.length > 1 ? root[1] : '';
-      let midi = (NOTE_MAP[root[0]] ?? 60) + (acc === '#' ? 1 : acc === 'b' ? -1 : 0);
-      const intervals = QUALITY_INTERVALS[qual] || QUALITY_INTERVALS[''];
-      const opts = { voice: settings.voice, volume: settings.volume / 100, duration: 1.2 };
-      intervals.forEach((iv, i) => setTimeout(() => playNote(midi + iv, opts), i * 30));
+      playChordAudio(pill.dataset.chord, 1.4);
     });
   });
 };

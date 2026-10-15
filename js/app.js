@@ -3396,7 +3396,7 @@ views.chordsLibrarySong = (params, songId) => {
     const pillsHtml = sectionChords.map((c,i) => {
       const pcol = PILL_COLORS[uniqueChords.indexOf(c)%PILL_COLORS.length];
       const active = i === activeIdx;
-      return `<span style="padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700;
+      return `<span class="cl-now-pill" data-chord="${esc(c)}" data-ci="${i}" style="padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
         background:${active?pcol:pcol+'22'};color:${active?'#fff':pcol};
         border:1.5px solid ${active?pcol:pcol+'44'};transition:all .18s;${active?`box-shadow:0 0 10px ${pcol}66`:''}">${esc(c)}</span>`;
     }).join('');
@@ -3732,6 +3732,43 @@ views.chordsLibrarySong = (params, songId) => {
   bpmSlider?.addEventListener('input', () => setBpm(parseInt(bpmSlider.value)));
   app.querySelector('#clBpmDown')?.addEventListener('click', () => setBpm(bpm - 4));
   app.querySelector('#clBpmUp')?.addEventListener('click', () => setBpm(bpm + 4));
+
+  // ── Clickable Now Playing pills — tap a chord to hear & see it ─────────
+  const handleNowPillClick = (e) => {
+    const pill = e.target.closest('.cl-now-pill');
+    if (!pill) return;
+    const chord = pill.dataset.chord;
+    if (!chord) return;
+    unlockAudio();
+    playChordAudio(chord, 1.4);
+    const si = activeSi >= 0 ? activeSi : 0;
+    const voicings = getVoicings(si);
+    const ci = parseInt(pill.dataset.ci || '0');
+    const voicing = voicings[ci] || voicings[0];
+    if (voicing) {
+      const sec = song.sections[si];
+      const col = PILL_COLORS[uniqueChords.indexOf(chord) % PILL_COLORS.length] || '#6366f1';
+      const kbEl = app.querySelector('#clNowKb');
+      if (kbEl) kbEl.innerHTML = fullKbSVG(voicing.midis, col);
+      const kbEl2 = app.querySelector('#clNowKb2');
+      if (kbEl2) kbEl2.innerHTML = fullKbSVG(voicing.midis, col, true);
+      const invName = voicing.invName || '';
+      const labelHtml = `<span style="vertical-align:middle">${esc(chord)} ${qualLabel(voicing.qual)} – ${invName}</span>`;
+      const labelEl = app.querySelector('#clNowChordLabel');
+      if (labelEl) labelEl.innerHTML = labelHtml;
+      const label2 = app.querySelector('#clNowChordLabel2');
+      if (label2) { label2.innerHTML = labelHtml; label2.style.color = col; }
+      const chartEl = app.querySelector('#clChordChart');
+      if (chartEl) chartEl.innerHTML = buildChordChartHtml(chord, voicing.inv);
+      playMidisAudio(voicing.midis, 1.4);
+      const bar = app.querySelector('#clNowPlayingBar');
+      if (bar) bar.style.display = 'block';
+      const bar2 = app.querySelector('#clNowPlayingBar2');
+      if (bar2) bar2.style.display = 'block';
+    }
+  };
+  app.querySelector('#clNowPills')?.addEventListener('click', handleNowPillClick);
+  app.querySelector('#clNowPills2')?.addEventListener('click', handleNowPillClick);
 
   // ── Navigation cleanup ────────────────────────────────────────────────────
   app.querySelector('#clBack')?.addEventListener('click', () => stopSection(activeSi));

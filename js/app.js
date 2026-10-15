@@ -3451,12 +3451,12 @@ views.chordsLibrarySong = (params, songId) => {
     playMidisAudio(voicing.midis, chordDuration * 0.85);
     const next = chordIdx + 1;
     if (fullSong && next >= sec.chords.length) {
-      // advance to the next section (looping the whole song)
       resetSecPills(activeSi);
       setSecBtn(activeSi, '▶');
       activeSi = (activeSi + 1) % song.sections.length;
       setSecBtn(activeSi, '⏸');
       sectionPlayerIdx = 0;
+      app.querySelectorAll('.cl-sec-picker').forEach(p => p.value = String(activeSi));
     } else {
       sectionPlayerIdx = next % sec.chords.length;
     }
@@ -3473,7 +3473,7 @@ views.chordsLibrarySong = (params, songId) => {
     }
     activeSi = -1;
     fullSong = false;
-    app.querySelectorAll('.cl-master-play').forEach(mp => mp.textContent = '▶');
+    app.querySelectorAll('.cl-section-go').forEach(mp => mp.textContent = '▶');
     const bar = app.querySelector('#clNowPlayingBar');
     if (bar) bar.style.display = 'none';
     const bar2 = app.querySelector('#clNowPlayingBar2');
@@ -3562,18 +3562,24 @@ views.chordsLibrarySong = (params, songId) => {
       </div>
     </div>
 
-    <!-- Transport: prev song · play/pause whole song · next song -->
+    <!-- Transport: section picker + prev/play/next -->
     <div class="card pad" style="padding-top:12px;padding-bottom:12px">
-      <div style="display:flex;align-items:center;justify-content:center;gap:18px">
-        <a class="iconbtn cl-prev-song" id="clPrevSong" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}"
-           style="width:44px;height:44px;font-size:20px;display:flex;align-items:center;justify-content:center">⏮</a>
-        <button class="cl-master-play" id="clMasterPlay" title="Play whole song"
-          style="width:60px;height:60px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:26px;
-                 cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px var(--p)">▶</button>
-        <a class="iconbtn cl-next-song" id="clNextSong" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}"
-           style="width:44px;height:44px;font-size:20px;display:flex;align-items:center;justify-content:center">⏭</a>
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap">
+        <select id="clSectionPicker" class="cl-sec-picker" style="padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer;min-width:140px">
+          <option value="full">🔁 Full Song</option>
+          ${song.sections.map((sec,si) => `<option value="${si}">▶ ${esc(sec.name)}</option>`).join('')}
+        </select>
+        <div style="display:flex;align-items:center;gap:12px">
+          <a class="iconbtn cl-prev-song" id="clPrevSong" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}"
+             style="width:44px;height:44px;font-size:20px;display:flex;align-items:center;justify-content:center">⏮</a>
+          <button class="cl-section-go" id="clMasterPlay" title="Play selected section"
+            style="width:60px;height:60px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:26px;
+                   cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px var(--p)">▶</button>
+          <a class="iconbtn cl-next-song" id="clNextSong" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}"
+             style="width:44px;height:44px;font-size:20px;display:flex;align-items:center;justify-content:center">⏭</a>
+        </div>
       </div>
-      <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:6px">Play the full song — all sections in order</div>
+      <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:6px">Select a section or play the full song</div>
     </div>
 
     <!-- Now Playing bar (shown when a section is playing) -->
@@ -3587,8 +3593,12 @@ views.chordsLibrarySong = (params, songId) => {
             <div id="clNowPills" style="display:flex;flex-wrap:wrap;gap:5px"></div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <select class="cl-sec-picker" style="padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:11px;font-weight:700;cursor:pointer">
+              <option value="full">🔁 Full</option>
+              ${song.sections.map((sec,si) => `<option value="${si}">${esc(sec.name)}</option>`).join('')}
+            </select>
             <a class="iconbtn cl-prev-song" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}" style="width:34px;height:34px;font-size:16px;display:flex;align-items:center;justify-content:center">⏮</a>
-            <button class="cl-master-play" title="Play / pause" style="width:44px;height:44px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">⏸</button>
+            <button class="cl-section-go" title="Play / pause" style="width:44px;height:44px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">⏸</button>
             <a class="iconbtn cl-next-song" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}" style="width:34px;height:34px;font-size:16px;display:flex;align-items:center;justify-content:center">⏭</a>
           </div>
         </div>
@@ -3626,9 +3636,13 @@ views.chordsLibrarySong = (params, songId) => {
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
           <div id="clNowChordLabel2" style="font-size:15px;font-weight:900;color:var(--p);white-space:nowrap"></div>
           <div id="clNowPills2" style="display:flex;flex-wrap:wrap;gap:5px"></div>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <select class="cl-sec-picker" style="padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:11px;font-weight:700;cursor:pointer">
+              <option value="full">🔁 Full</option>
+              ${song.sections.map((sec,si) => `<option value="${si}">${esc(sec.name)}</option>`).join('')}
+            </select>
             <a class="iconbtn cl-prev-song" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}" style="width:34px;height:34px;font-size:16px;display:flex;align-items:center;justify-content:center">⏮</a>
-            <button class="cl-master-play" title="Play / pause" style="width:44px;height:44px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">⏸</button>
+            <button class="cl-section-go" title="Play / pause" style="width:44px;height:44px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">⏸</button>
             <a class="iconbtn cl-next-song" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}" style="width:34px;height:34px;font-size:16px;display:flex;align-items:center;justify-content:center">⏭</a>
           </div>
         </div>
@@ -3674,37 +3688,48 @@ views.chordsLibrarySong = (params, songId) => {
     });
   });
 
-  // ── Master play/pause (whole song) — top + Currently Playing bar in sync ──
-  const setMasterBtns = (ch) => app.querySelectorAll('.cl-master-play').forEach(b => b.textContent = ch);
+  // ── Section picker sync ─────────────────────────────────────────────────
+  const setMasterBtns = (ch) => app.querySelectorAll('.cl-section-go').forEach(b => b.textContent = ch);
   let clPaused = false;
-  app.querySelectorAll('.cl-master-play').forEach(mp => {
+  const syncPickers = (val) => app.querySelectorAll('.cl-sec-picker').forEach(p => p.value = val);
+  app.querySelectorAll('.cl-sec-picker').forEach(p => {
+    p.addEventListener('change', () => syncPickers(p.value));
+  });
+
+  // ── Section-go play/pause — reads from picker ─────────────────────────
+  const startFromPicker = () => {
+    const pickerVal = app.querySelector('.cl-sec-picker')?.value || 'full';
+    if (activeSi !== -1) stopSection(activeSi);
+    clPaused = false;
+    if (pickerVal === 'full') {
+      fullSong = true;
+      activeSi = 0;
+    } else {
+      fullSong = false;
+      activeSi = parseInt(pickerVal);
+    }
+    sectionPlayerIdx = 0;
+    setMasterBtns('⏸');
+    setSecBtn(activeSi, '⏸');
+    tick();
+    _clPlayerTimer = setInterval(tick, (60000/bpm) * speeds[currentSpeed]);
+  };
+  app.querySelectorAll('.cl-section-go').forEach(mp => {
     mp.addEventListener('click', () => {
       unlockAudio();
       if (activeSi !== -1 && !clPaused) {
-        // pause: stop timer but keep bars visible (works for both fullSong and section play)
         stopClPlayer();
         clPaused = true;
         setMasterBtns('▶');
         setSecBtn(activeSi, '▶');
       } else if (clPaused && activeSi !== -1) {
-        // resume from paused state
         clPaused = false;
         setMasterBtns('⏸');
         setSecBtn(activeSi, '⏸');
         tick();
-        const ms = (60000/bpm) * speeds[currentSpeed];
-        _clPlayerTimer = setInterval(tick, ms);
+        _clPlayerTimer = setInterval(tick, (60000/bpm) * speeds[currentSpeed]);
       } else {
-        if (activeSi !== -1) stopSection(activeSi);
-        clPaused = false;
-        fullSong = true;
-        activeSi = 0;
-        sectionPlayerIdx = 0;
-        setMasterBtns('⏸');
-        setSecBtn(0, '⏸');
-        tick();
-        const ms = (60000/bpm) * speeds[currentSpeed];
-        _clPlayerTimer = setInterval(tick, ms);
+        startFromPicker();
       }
     });
   });

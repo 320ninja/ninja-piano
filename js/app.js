@@ -3317,7 +3317,7 @@ views.chordsLibrarySong = (params, songId) => {
       WHITE_PCS_CL.forEach((pc,wi) => {
         const on = highSet.has(base+pc); const x = octX+wi*WW+1;
         wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${on?activeColor:'#f7f7fa'}" stroke="#c8c8c8" stroke-width="1"/>`;
-        labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="${on?900:600}" fill="${on?'#fff':'#c43'}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        if (on) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
         const on = highSet.has(base+pc); const x = octX+ox*WW-Math.floor(BW/2)+1;

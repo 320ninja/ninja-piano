@@ -3586,6 +3586,11 @@ views.chordsLibrarySong = (params, songId) => {
             <div id="clNowChordLabel" style="font-size:15px;font-weight:900;color:var(--p);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
             <div id="clNowPills" style="display:flex;flex-wrap:wrap;gap:5px"></div>
           </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <a class="iconbtn cl-prev-song" title="Previous song" href="#/chordsLibrary/${encodeURIComponent(prevSongId)}" style="width:34px;height:34px;font-size:16px;display:flex;align-items:center;justify-content:center">⏮</a>
+            <button class="cl-master-play" title="Play / pause" style="width:44px;height:44px;border-radius:50%;background:var(--p);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center">⏸</button>
+            <a class="iconbtn cl-next-song" title="Next song" href="#/chordsLibrary/${encodeURIComponent(nextSongId)}" style="width:34px;height:34px;font-size:16px;display:flex;align-items:center;justify-content:center">⏭</a>
+          </div>
         </div>
         <div id="clNowKb" style="margin-top:12px;background:#dcdce4;border-radius:10px;padding:5px;overflow:hidden"></div>
       </div>

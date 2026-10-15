@@ -3207,6 +3207,7 @@ views.chordsLibrarySong = (params, songId) => {
   const PILL_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f43f5e'];
   const NOTE_COLORS_MAP = { C:'#ef4444',D:'#f97316',E:'#eab308',F:'#22c55e',G:'#06b6d4',A:'#3b82f6',B:'#8b5cf6' };
   const uniqueChords = [...new Set(song.chords)];
+  const getUniqueChords = () => [...new Set(song.chords.map(c => transposeChord(c, clTranspose)))];
   const DIFF_COLOR = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444' };
   const QUALITY_INTERVALS_CL = {
     '': [0,4,7], 'm': [0,3,7], '7': [0,4,7,10], 'maj7': [0,4,7,11],
@@ -3272,8 +3273,13 @@ views.chordsLibrarySong = (params, songId) => {
       return { name, qual, midis: best.midis, inv: best.inv, invName: INV_NAMES_FULL[best.inv] || 'Root position' };
     });
   };
-  const _voiceCache = {};
-  const getVoicings = (si) => _voiceCache[si] || (_voiceCache[si] = voiceLeadSection(song.sections[si].chords));
+  let _voiceCache = {};
+  let _voiceCacheTrans = null;
+  const getVoicings = (si) => {
+    if (_voiceCacheTrans !== clTranspose) { _voiceCache = {}; _voiceCacheTrans = clTranspose; }
+    const tChords = song.sections[si].chords.map(c => transposeChord(c, clTranspose));
+    return _voiceCache[si] || (_voiceCache[si] = voiceLeadSection(tChords));
+  };
 
   // 2-octave mini keyboard SVG. Notes are shown at their ACTUAL inversion
   // positions (bass normalised into the first octave) so each inversion looks
@@ -3362,6 +3368,35 @@ views.chordsLibrarySong = (params, songId) => {
       <div style="font-size:11px;color:var(--muted);margin-top:10px">Tap an inversion to hear it</div>`;
   };
 
+  // Roman numeral from chord name relative to key
+  const ROMAN_NUMS = ['I','bII','II','bIII','III','IV','bV','V','bVI','VI','bVII','VII'];
+  const chordToRoman = (chordName, keyRoot) => {
+    const chordMidi = chordRootMidi(chordName);
+    const keyMidi = chordRootMidi(keyRoot);
+    const interval = ((chordMidi - keyMidi) % 12 + 12) % 12;
+    const { qual } = parseChordName(chordName);
+    let roman = ROMAN_NUMS[interval] || '?';
+    if (['m','m7','m9','m6','m7b5','dim','dim7'].includes(qual)) roman = roman.toLowerCase();
+    return roman;
+  };
+  const getProgression = (chords, key) => [...new Set(chords)].map(c => chordToRoman(c, key)).join(' – ');
+
+  // Transpose state
+  let clTranspose = 0;
+  const transposeChord = (name, semitones) => {
+    if (semitones === 0) return name;
+    const { root, acc, qual } = parseChordName(name);
+    const BASE = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
+    const pc = ((BASE[root] ?? 0) + (acc === '#' ? 1 : acc === 'b' ? -1 : 0) + semitones + 120) % 12;
+    return NOTE_NAMES_CL[pc] + qual;
+  };
+  const transposeSong = () => {
+    const tKey = transposeChord(song.key, clTranspose);
+    const tChords = song.chords.map(c => transposeChord(c, clTranspose));
+    const tSections = song.sections.map(sec => ({ ...sec, chords: sec.chords.map(c => transposeChord(c, clTranspose)) }));
+    return { key: tKey, chords: tChords, sections: tSections };
+  };
+
   // Player state
   const baseBpm = parseInt(song.tempo) || 80;
   let bpm = baseBpm;
@@ -3378,7 +3413,8 @@ views.chordsLibrarySong = (params, songId) => {
     if (!bar) return;
     bar.style.display = 'block';
     const { name: chordName, qual, midis, invName } = voicing;
-    const col = PILL_COLORS[uniqueChords.indexOf(chordName)%PILL_COLORS.length] || '#6366f1';
+    const tuc = getUniqueChords();
+    const col = PILL_COLORS[tuc.indexOf(chordName)%PILL_COLORS.length] || '#6366f1';
     const secBadge = sectionName
       ? `<span style="display:inline-block;background:${col};color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:7px;margin-right:8px;vertical-align:middle">${esc(sectionName)}</span>`
       : '';
@@ -3396,7 +3432,7 @@ views.chordsLibrarySong = (params, songId) => {
     const label2 = app.querySelector('#clNowChordLabel2');
     if (label2) { label2.innerHTML = labelHtml; label2.style.color = col; }
     const pillsHtml = sectionChords.map((c,i) => {
-      const pcol = PILL_COLORS[uniqueChords.indexOf(c)%PILL_COLORS.length];
+      const pcol = PILL_COLORS[tuc.indexOf(c)%PILL_COLORS.length];
       const active = i === activeIdx;
       return `<span class="cl-now-pill" data-chord="${esc(c)}" data-ci="${i}" style="padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
         background:${active?pcol:pcol+'22'};color:${active?'#fff':pcol};
@@ -3406,6 +3442,12 @@ views.chordsLibrarySong = (params, songId) => {
     if (pillsEl) pillsEl.innerHTML = pillsHtml;
     const pillsEl2 = app.querySelector('#clNowPills2');
     if (pillsEl2) pillsEl2.innerHTML = pillsHtml;
+    const tKey = transposeChord(song.key, clTranspose);
+    const progStr = sectionChords.map(c => chordToRoman(c, tKey)).join(' – ');
+    const progEl = app.querySelector('#clNowProgLabel');
+    if (progEl) progEl.textContent = progStr;
+    const progEl2 = app.querySelector('#clNowProgLabel2');
+    if (progEl2) progEl2.textContent = progStr;
   };
 
   // Highlight a pill within a section
@@ -3437,13 +3479,14 @@ views.chordsLibrarySong = (params, songId) => {
   const tick = () => {
     if (activeSi === -1) return;
     const sec = song.sections[activeSi];
+    const tChords = sec.chords.map(c => transposeChord(c, clTranspose));
     const chordIdx = sectionPlayerIdx % sec.chords.length;
-    const chord = sec.chords[chordIdx];
+    const chord = tChords[chordIdx];
     const voicing = getVoicings(activeSi)[chordIdx];
     const dot = app.querySelector(`.cl-beat-dot-sec[data-si="${activeSi}"]`);
     if (dot) { dot.style.background='var(--p)'; setTimeout(()=>{if(dot)dot.style.background='var(--muted)';},120); }
     highlightSecPill(activeSi, chordIdx);
-    showNowPlaying(voicing, sec.chords, chordIdx, sec.name);
+    showNowPlaying(voicing, tChords, chordIdx, sec.name);
     const chartEl = app.querySelector('#clChordChart');
     if (chartEl) chartEl.innerHTML = buildChordChartHtml(chord, voicing.inv);
     unlockAudio();
@@ -3562,6 +3605,18 @@ views.chordsLibrarySong = (params, songId) => {
       </div>
     </div>
 
+    <!-- Transpose -->
+    <div class="card pad" style="padding-top:10px;padding-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:12px;color:var(--muted)">Transpose</span>
+        <button id="clTransDown" title="Down" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:18px;font-weight:800;cursor:pointer;line-height:1">−</button>
+        <span id="clTransVal" style="font-size:13px;font-weight:800;color:var(--p);min-width:32px;text-align:center">0</span>
+        <button id="clTransUp" title="Up" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:18px;font-weight:800;cursor:pointer;line-height:1">+</button>
+        <span id="clTransKey" style="font-size:13px;font-weight:700;color:var(--fg);margin-left:4px">Key: ${esc(song.key)}</span>
+      </div>
+      <div id="clProgression" style="margin-top:8px;font-size:13px;font-weight:700;color:var(--p);letter-spacing:.03em">${getProgression(song.chords, song.key)}</div>
+    </div>
+
     <!-- Transport: section picker + prev/play/next -->
     <div class="card pad" style="padding-top:12px;padding-bottom:12px">
       <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap">
@@ -3589,7 +3644,8 @@ views.chordsLibrarySong = (params, songId) => {
         <div style="display:flex;gap:12px;align-items:center">
           <div id="clNowSvg" style="flex-shrink:0;opacity:.9"></div>
           <div style="flex:1;min-width:0">
-            <div id="clNowChordLabel" style="font-size:15px;font-weight:900;color:var(--p);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="clNowChordLabel" style="font-size:15px;font-weight:900;color:var(--p);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="clNowProgLabel" style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:.03em"></div>
             <div id="clNowPills" style="display:flex;flex-wrap:wrap;gap:5px"></div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
@@ -3634,7 +3690,10 @@ views.chordsLibrarySong = (params, songId) => {
       <h3 class="sec"><span class="badge">🎹</span><span class="gt">Currently Playing</span></h3>
       <div class="card pad" style="padding:12px 14px">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-          <div id="clNowChordLabel2" style="font-size:15px;font-weight:900;color:var(--p);white-space:nowrap"></div>
+          <div style="min-width:0">
+            <div id="clNowChordLabel2" style="font-size:15px;font-weight:900;color:var(--p);white-space:nowrap"></div>
+            <div id="clNowProgLabel2" style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.03em"></div>
+          </div>
           <div id="clNowPills2" style="display:flex;flex-wrap:wrap;gap:5px"></div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
             <select class="cl-sec-picker" style="padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:11px;font-weight:700;cursor:pointer">
@@ -3773,6 +3832,21 @@ views.chordsLibrarySong = (params, songId) => {
   app.querySelector('#clBpmDown')?.addEventListener('click', () => setBpm(bpm - 4));
   app.querySelector('#clBpmUp')?.addEventListener('click', () => setBpm(bpm + 4));
 
+  // ── Transpose controls ────────────────────────────────────────────────
+  const updateTransposeUI = () => {
+    const tKey = transposeChord(song.key, clTranspose);
+    const el = app.querySelector('#clTransVal');
+    if (el) el.textContent = (clTranspose > 0 ? '+' : '') + clTranspose;
+    const keyEl = app.querySelector('#clTransKey');
+    if (keyEl) keyEl.textContent = `Key: ${tKey}`;
+    const progEl = app.querySelector('#clProgression');
+    if (progEl) progEl.textContent = getProgression(song.chords.map(c => transposeChord(c, clTranspose)), tKey);
+    _voiceCache = {}; _voiceCacheTrans = null;
+    restartTimer();
+  };
+  app.querySelector('#clTransDown')?.addEventListener('click', () => { clTranspose = ((clTranspose - 1) + 12) % 12; if (clTranspose > 6) clTranspose -= 12; updateTransposeUI(); });
+  app.querySelector('#clTransUp')?.addEventListener('click', () => { clTranspose = ((clTranspose + 1) + 12) % 12; if (clTranspose > 6) clTranspose -= 12; updateTransposeUI(); });
+
   // ── Toggle note labels on keyboard ─────────────────────────────────────
   app.querySelector('#clToggleLabels')?.addEventListener('click', (e) => {
     clShowLabels = !clShowLabels;
@@ -3803,7 +3877,7 @@ views.chordsLibrarySong = (params, songId) => {
     const voicing = voicings[ci] || voicings[0];
     if (voicing) {
       const sec = song.sections[si];
-      const col = PILL_COLORS[uniqueChords.indexOf(chord) % PILL_COLORS.length] || '#6366f1';
+      const col = PILL_COLORS[getUniqueChords().indexOf(chord) % PILL_COLORS.length] || '#6366f1';
       const kbEl = app.querySelector('#clNowKb');
       if (kbEl) kbEl.innerHTML = fullKbSVG(voicing.midis, col);
       const kbEl2 = app.querySelector('#clNowKb2');

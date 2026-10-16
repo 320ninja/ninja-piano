@@ -3126,21 +3126,23 @@ views.chordsPractice = () => {
 
   // Random Practice state
   let rpTimer = null, rpSeq = [], rpPos = 0, rpActiveIdx = -1, rpInvOn = false, rpLoop = true, rpBassOn = false;
+  let rpCurrentBassMidis = [];   // the 5 bass MIDI notes of the current chord's pattern
+  let rpCurrentBassNames = [];   // readable note names for those bass notes
   const rpSavedKey = 'np.rpractice';
   { const s=JSON.parse(localStorage.getItem(rpSavedKey)||'{}'); rpInvOn=s.inv||false; rpLoop=s.loop!==false; rpBassOn=s.bass||false; }
   const saveRp = () => localStorage.setItem(rpSavedKey, JSON.stringify({inv:rpInvOn,loop:rpLoop,bass:rpBassOn}));
 
-  // Bass pattern engine — returns array of {offsetSec, midi} for 5 bass hits
+  // Bass pattern engine — 6 variations per quality, randomly picked each chord
+  // indices: 0=root, 1=3rd/b3rd, 2=5th, 3=7th
   const BASS_PATTERNS = {
-    // [pattern of chord-tone indices], 0=root, 1=3rd/b3rd, 2=5th, 3=7th
-    'M':    [0,2,0,1,2],   // major: root-5th-root-3rd-5th
-    'm':    [0,2,0,1,2],   // minor: root-5th-root-b3rd-5th
-    '7':    [0,2,3,1,2],   // dom7: root-5th-b7-3rd-5th
-    'maj7': [0,2,3,1,2],   // maj7: root-5th-7-3rd-5th
-    'm7':   [0,2,3,1,2],   // min7: root-5th-b7-b3rd-5th
-    'dim':  [0,1,2,0,1],   // dim: root-b3-b5-root-b3
-    'ø':    [0,1,2,3,0],   // half-dim: root-b3-b5-b7-root
-    'aug':  [0,1,2,0,2],   // aug: root-3-#5-root-#5
+    'M':    [[0,2,0,1,2],[0,1,2,1,0],[0,0,2,0,1],[0,2,1,2,0],[0,1,0,2,0],[0,2,2,1,0]],
+    'm':    [[0,2,0,1,2],[0,1,2,0,2],[0,0,1,0,2],[0,2,0,2,1],[0,1,2,1,2],[0,0,2,1,2]],
+    '7':    [[0,2,3,1,2],[0,1,3,2,0],[0,3,2,1,0],[0,2,1,3,0],[0,0,3,2,1],[0,1,2,3,0]],
+    'maj7': [[0,2,3,1,2],[0,1,2,3,0],[0,3,2,1,0],[0,2,1,3,2],[0,1,3,2,0],[0,0,2,3,1]],
+    'm7':   [[0,2,3,1,2],[0,1,3,0,2],[0,3,1,2,0],[0,2,0,3,1],[0,1,2,3,1],[0,0,3,1,2]],
+    'dim':  [[0,1,2,0,1],[0,2,1,0,2],[0,0,1,2,1],[0,1,0,2,0],[0,2,0,1,0],[0,1,2,1,0]],
+    'ø':    [[0,1,2,3,0],[0,2,3,1,0],[0,3,1,2,0],[0,1,3,2,0],[0,2,1,3,0],[0,0,2,3,1]],
+    'aug':  [[0,1,2,0,2],[0,2,1,0,1],[0,0,1,2,0],[0,2,0,1,2],[0,1,0,2,1],[0,2,2,1,0]],
   };
   const qualToBassKey = (ch) => {
     const t = (ch.typeName||'').toLowerCase();
@@ -3159,22 +3161,27 @@ views.chordsPractice = () => {
     // Root midi in bass octave 2 (MIDI 36–47)
     const rootPc = ch.midis[0] % 12;
     const bassRoot = 36 + rootPc;
-    // Chord tones in bass octave — keep within 36–59
+    // Chord tones in bass octave — keep within 36–55
     const tones = ch.midis.map(m => {
       let b = 36 + (m % 12);
-      if(b < 36) b += 12;
       if(b > 55) b -= 12;
       return b;
     });
     const key = qualToBassKey(ch);
-    const pattern = BASS_PATTERNS[key] || BASS_PATTERNS['M'];
-    // Space 5 hits across the chord duration; first hit immediate, rest evenly spaced
+    const variants = BASS_PATTERNS[key] || BASS_PATTERNS['M'];
+    const pattern = variants[Math.floor(Math.random() * variants.length)];
+    // Resolve the 5 midi notes for this pattern
+    const patternMidis = pattern.map(toneIdx => tones[Math.min(toneIdx, tones.length-1)] ?? bassRoot);
+    // Save for keyboard display (unique set in order of first appearance)
+    const seen = new Set();
+    rpCurrentBassMidis = patternMidis.filter(m => { if(seen.has(m)) return false; seen.add(m); return true; });
+    rpCurrentBassNames = rpCurrentBassMidis.map(m => nn(m%12));
+    // Space 5 hits across the chord duration
     const step = durSec / 5;
-    pattern.forEach((toneIdx, i) => {
-      const midi = tones[Math.min(toneIdx, tones.length-1)] ?? bassRoot;
+    patternMidis.forEach((midi, i) => {
       const when = i * step;
       setTimeout(() => playNote(midi, {
-        voice: 'soft',          // warm bass tone
+        voice: 'soft',
         volume: (opts.volume||0.7) * 0.72,
         velocity: i === 0 ? 0.85 : 0.6,
         duration: step * 0.85,
@@ -3182,7 +3189,7 @@ views.chordsPractice = () => {
       }), when * 1000);
     });
   };
-  const stopRp = () => { if(rpTimer){clearInterval(rpTimer);rpTimer=null;} };
+  const stopRp = () => { if(rpTimer){clearInterval(rpTimer);rpTimer=null;} rpCurrentBassMidis=[]; rpCurrentBassNames=[]; };
   // Fisher-Yates shuffle
   const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
   // Build next permutation block so all chords appear before repeating
@@ -3223,26 +3230,30 @@ views.chordsPractice = () => {
   const wPC=[0,2,4,5,7,9,11];
   const bDef=[{pc:1,ox:10},{pc:3,ox:24},{pc:6,ox:52},{pc:8,ox:66},{pc:10,ox:80}];
 
-  const buildKb = (scalePCs, chordMidis, chordColor) => {
+  const buildKb = (scalePCs, chordMidis, chordColor, bassMidis) => {
     const scSet=new Set(showScale?scalePCs:[]), chSet=new Set(chordMidis||[]);
+    // Bass note PCs (pitch classes) highlighted in teal
+    const bsSet=new Set((bassMidis||[]).map(m=>m%12));
+    const BASS_COL='#0891b2';  // teal-600
     const cCol=chordColor||'var(--p)';
     let wk='', bk='', lb='';
     for(let o=0;o<nOcts;o++){
       const ox=o*octW, base=KB0+o*12;
       wPC.forEach((pc,wi)=>{
         const midi=base+pc, gpc=midi%12, x=ox+wi*KW+1;
-        const isCh=chSet.has(midi), isSc=scSet.has(gpc);
-        const fill=isCh?cCol:isSc?'#fecaca':'white';
-        const stroke=isSc||isCh?'#ef4444':'#ddd', sw=isSc||isCh?1.5:0.5;
-        wk+=`<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${fill}" stroke="${isCh?cCol:stroke}" stroke-width="${sw}"/>`;
-        if(isSc||isCh) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh?'#fff':'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
+        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isSc=scSet.has(gpc);
+        const fill=isCh?cCol:isBs?BASS_COL:isSc?'#fecaca':'white';
+        const stroke=isCh?cCol:isBs?BASS_COL:isSc?'#ef4444':'#ddd';
+        const sw=isCh||isBs||isSc?1.5:0.5;
+        wk+=`<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+        if(isCh||isBs||isSc) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh||isBs?'#fff':'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
       });
       bDef.forEach(({pc,ox:bx})=>{
         const midi=base+pc, gpc=midi%12;
-        const isCh=chSet.has(midi), isSc=scSet.has(gpc);
-        const fill=isCh?cCol:isSc?'#ef4444':'#1a1a1a';
+        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isSc=scSet.has(gpc);
+        const fill=isCh?cCol:isBs?BASS_COL:isSc?'#ef4444':'#1a1a1a';
         bk+=`<rect x="${ox+bx}" y="1" width="${BW}" height="${BH}" rx="1" fill="${fill}"/>`;
-        if(isSc||isCh) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="#fff" font-weight="800">${nn(gpc)}</text>`;
+        if(isCh||isBs||isSc) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="#fff" font-weight="800">${nn(gpc)}</text>`;
       });
     }
     return `<svg width="100%" viewBox="0 0 ${TW} ${KH+2}" style="border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;display:block"><rect width="${TW}" height="${KH+2}" fill="#c8c8c8"/>${wk}${bk}${lb}</svg>`;
@@ -3322,41 +3333,58 @@ views.chordsPractice = () => {
     const activeChord=rpChord||(selChordIdx>=0?chords[selChordIdx]:selAdvIdx>=0?adv[selAdvIdx]:null);
     const activeMidis=activeChord?(rpChord?lastPlayedMidis:resolveInversion(activeChord.midis,selChordIdx>=0?maxInvTriad:maxInv7)):null;
     const activeColor=rpChord?CHORD_COLORS[rpActiveIdx%CHORD_COLORS.length]:selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:selAdvIdx>=0?CHORD_COLORS[selAdvIdx%CHORD_COLORS.length]:null;
-    const kbSvg=buildKb(scalePCs, activeMidis, activeColor);
+    const activeBass = rpBassOn && rpTimer !== null && rpCurrentBassMidis.length ? rpCurrentBassMidis : null;
+    const kbSvg=buildKb(scalePCs, activeMidis, activeColor, activeBass);
     const scaleNotes=scalePCs.map(pc=>nn(pc));
 
-    // Compute now-playing label
+    // Bass note names below keyboard
+    const bassNamesHtml = activeBass
+      ? `<div style="font-size:11px;font-weight:700;color:#0891b2;margin-top:4px;margin-bottom:2px">Bass: ${rpCurrentBassNames.join(' · ')}</div>`
+      : '';
+
+    // Compute now-playing label — single horizontal row: Bass | Now Playing | Next
     let nowPlayingHtml = '';
     if(activeChord && activeMidis) {
       const INV_NAMES_CP = ['Root Position','1st Inversion','2nd Inversion','3rd Inversion'];
-      // Detect inversion by comparing bass note PC to root chord MIDI PCs
       const rootPCs = activeChord.midis.map(m=>m%12);
       const bassPC = activeMidis[0]%12;
       const invIdx = rootPCs.indexOf(bassPC);
       const invName = INV_NAMES_CP[invIdx] ?? 'Root Position';
       const col = activeColor || 'var(--p)';
-      // Next 2 chords from random practice queue
-      let nextChordsHtml = '';
+
+      // LEFT — bass section
+      const bassSection = (rpBassOn && rpTimer !== null && rpCurrentBassNames.length)
+        ? `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:80px">
+            <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#0891b2">Bass</span>
+            <span style="font-size:13px;font-weight:800;color:#0891b2;line-height:1.2;text-align:center">${rpCurrentBassNames.join(' · ')}</span>
+          </div>`
+        : `<div style="min-width:80px"></div>`;
+
+      // CENTER — now playing
+      const nowPlayingCenter = `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Now Playing</span>
+          <span style="font-size:26px;font-weight:900;color:${col};line-height:1.1">${activeChord.name}</span>
+          <span style="font-size:12px;font-weight:600;color:${col};opacity:.8">${invName}</span>
+        </div>`;
+
+      // RIGHT — next chords
+      let nextSection = `<div style="min-width:80px"></div>`;
       if(rpTimer !== null && rpSeq.length > 0) {
         const nextItems = rpSeq.slice(rpPos, rpPos + 2).map(idx => {
           const ch = allPool[idx];
           if(!ch) return '';
           const c = CHORD_COLORS[idx % CHORD_COLORS.length];
           return `<div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-            <span style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">next</span>
-            <span style="font-size:15px;font-weight:800;color:${c};line-height:1">${ch.name}</span>
-            <span style="font-size:9px;font-weight:600;color:${c};opacity:.7">${ch.typeName||''}</span>
+            <span style="font-size:8px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">next</span>
+            <span style="font-size:14px;font-weight:800;color:${c};line-height:1">${ch.name}</span>
+            <span style="font-size:8px;font-weight:600;color:${c};opacity:.7">${ch.typeName||''}</span>
           </div>`;
         });
-        if(nextItems.length) nextChordsHtml = `<div style="display:flex;flex-direction:column;gap:6px;padding-left:12px;border-left:1.5px solid var(--line)">${nextItems.join('')}</div>`;
+        if(nextItems.length) nextSection = `<div style="display:flex;flex-direction:column;gap:5px;min-width:80px;padding-left:10px;border-left:1.5px solid var(--line)">${nextItems.join('')}</div>`;
       }
-      nowPlayingHtml = `<div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 6px">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Now Playing</span>
-          <span style="font-size:28px;font-weight:900;color:${col};line-height:1.1">${activeChord.name}</span>
-          <span style="font-size:13px;font-weight:600;color:${col};opacity:.8">${invName}</span>
-        </div>
-        ${nextChordsHtml}
+
+      nowPlayingHtml = `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px 4px">
+        ${bassSection}${nowPlayingCenter}${nextSection}
       </div>`;
     }
 
@@ -3409,7 +3437,8 @@ views.chordsPractice = () => {
       <div style="font-size:20px;font-weight:900;color:var(--p);margin-bottom:12px">${nn(selRoot)} ${selScale}</div>
       <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch">${rootBtns}</div>
       <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">${scaleBtns}</div>
-      <div style="margin-bottom:4px">${kbSvg}</div>
+      <div style="margin-bottom:0px">${kbSvg}</div>
+      ${bassNamesHtml}
       ${nowPlayingHtml}
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
         ${noteChips}

@@ -3123,6 +3123,75 @@ views.chordsPractice = () => {
   let cpTempo = saved.tempo || 100;
   let lastPlayedMidis = null;
   const INV_OPTS = [{v:0,l:'Root'},{v:1,l:'1st Inv'},{v:2,l:'2nd Inv'},{v:3,l:'3rd Inv'},{v:'best',l:'Best'},{v:'random',l:'Random'}];
+
+  // Random Practice state
+  let rpTimer = null, rpSeq = [], rpPos = 0, rpActiveIdx = -1, rpInvOn = false, rpLoop = true, rpBassOn = false;
+  const rpSavedKey = 'np.rpractice';
+  { const s=JSON.parse(localStorage.getItem(rpSavedKey)||'{}'); rpInvOn=s.inv||false; rpLoop=s.loop!==false; rpBassOn=s.bass||false; }
+  const saveRp = () => localStorage.setItem(rpSavedKey, JSON.stringify({inv:rpInvOn,loop:rpLoop,bass:rpBassOn}));
+
+  // Bass pattern engine — returns array of {offsetSec, midi} for 5 bass hits
+  const BASS_PATTERNS = {
+    // [pattern of chord-tone indices], 0=root, 1=3rd/b3rd, 2=5th, 3=7th
+    'M':    [0,2,0,1,2],   // major: root-5th-root-3rd-5th
+    'm':    [0,2,0,1,2],   // minor: root-5th-root-b3rd-5th
+    '7':    [0,2,3,1,2],   // dom7: root-5th-b7-3rd-5th
+    'maj7': [0,2,3,1,2],   // maj7: root-5th-7-3rd-5th
+    'm7':   [0,2,3,1,2],   // min7: root-5th-b7-b3rd-5th
+    'dim':  [0,1,2,0,1],   // dim: root-b3-b5-root-b3
+    'ø':    [0,1,2,3,0],   // half-dim: root-b3-b5-b7-root
+    'aug':  [0,1,2,0,2],   // aug: root-3-#5-root-#5
+  };
+  const qualToBassKey = (ch) => {
+    const t = (ch.typeName||'').toLowerCase();
+    const s = (ch.sym||'');
+    if(t==='maj7'||s==='maj7') return 'maj7';
+    if(t==='dom7'||t==='7th'||s==='7') return '7';
+    if(t==='min7'||s==='m7') return 'm7';
+    if(t==='half-dim'||s==='ø7') return 'ø';
+    if(t==='dim7'||t==='dim'||s==='°'||s==='°7') return 'dim';
+    if(t==='aug7'||t==='augmaj7'||s==='+'||s==='+7') return 'aug';
+    if(t==='minor'||s==='m') return 'm';
+    if(t==='major') return 'M';
+    return 'M';
+  };
+  const playBassPattern = (ch, durSec, opts) => {
+    // Root midi in bass octave 2 (MIDI 36–47)
+    const rootPc = ch.midis[0] % 12;
+    const bassRoot = 36 + rootPc;
+    // Chord tones in bass octave — keep within 36–59
+    const tones = ch.midis.map(m => {
+      let b = 36 + (m % 12);
+      if(b < 36) b += 12;
+      if(b > 55) b -= 12;
+      return b;
+    });
+    const key = qualToBassKey(ch);
+    const pattern = BASS_PATTERNS[key] || BASS_PATTERNS['M'];
+    // Space 5 hits across the chord duration; first hit immediate, rest evenly spaced
+    const step = durSec / 5;
+    pattern.forEach((toneIdx, i) => {
+      const midi = tones[Math.min(toneIdx, tones.length-1)] ?? bassRoot;
+      const when = i * step;
+      setTimeout(() => playNote(midi, {
+        voice: 'soft',          // warm bass tone
+        volume: (opts.volume||0.7) * 0.72,
+        velocity: i === 0 ? 0.85 : 0.6,
+        duration: step * 0.85,
+        when: 0
+      }), when * 1000);
+    });
+  };
+  const stopRp = () => { if(rpTimer){clearInterval(rpTimer);rpTimer=null;} };
+  // Fisher-Yates shuffle
+  const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+  // Build next permutation block so all chords appear before repeating
+  const rpNextBlock = (len) => shuffle([...Array(len)].map((_,i)=>i));
+  const rpResolveInv = (midis) => {
+    if(!rpInvOn) return midis;
+    const maxInv = Math.min(2, midis.length-1);
+    return invertChord(midis, Math.floor(Math.random()*(maxInv+1)));
+  };
   const invertChord = (midis, inv) => {
     if(inv===0||!midis.length) return midis;
     const m=[...midis];
@@ -3238,7 +3307,7 @@ views.chordsPractice = () => {
     });
   };
 
-  const stopPlay = () => { if(playTimer){clearInterval(playTimer);playTimer=null;} };
+  const stopPlay = () => { if(playTimer){clearInterval(playTimer);playTimer=null;} stopRp(); rpActiveIdx=-1; };
 
   const render = () => {
     const def=SCALE_DEFS[selScale];
@@ -3248,11 +3317,48 @@ views.chordsPractice = () => {
     const adv=getDiatonic7th(selRoot,ivs);
     const maxInvTriad=typeof cpInversion==='number'?Math.min(cpInversion,2):2;
     const maxInv7=typeof cpInversion==='number'?Math.min(cpInversion,3):3;
-    const activeChord=selChordIdx>=0?chords[selChordIdx]:selAdvIdx>=0?adv[selAdvIdx]:null;
-    const activeMidis=activeChord?resolveInversion(activeChord.midis,selChordIdx>=0?maxInvTriad:maxInv7):null;
-    const activeColor=selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:selAdvIdx>=0?CHORD_COLORS[selAdvIdx%CHORD_COLORS.length]:null;
+    const allPool=[...chords,...adv];
+    const rpChord = rpTimer!==null&&rpActiveIdx>=0 ? allPool[rpActiveIdx] : null;
+    const activeChord=rpChord||(selChordIdx>=0?chords[selChordIdx]:selAdvIdx>=0?adv[selAdvIdx]:null);
+    const activeMidis=activeChord?(rpChord?lastPlayedMidis:resolveInversion(activeChord.midis,selChordIdx>=0?maxInvTriad:maxInv7)):null;
+    const activeColor=rpChord?CHORD_COLORS[rpActiveIdx%CHORD_COLORS.length]:selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:selAdvIdx>=0?CHORD_COLORS[selAdvIdx%CHORD_COLORS.length]:null;
     const kbSvg=buildKb(scalePCs, activeMidis, activeColor);
     const scaleNotes=scalePCs.map(pc=>nn(pc));
+
+    // Compute now-playing label
+    let nowPlayingHtml = '';
+    if(activeChord && activeMidis) {
+      const INV_NAMES_CP = ['Root Position','1st Inversion','2nd Inversion','3rd Inversion'];
+      // Detect inversion by comparing bass note PC to root chord MIDI PCs
+      const rootPCs = activeChord.midis.map(m=>m%12);
+      const bassPC = activeMidis[0]%12;
+      const invIdx = rootPCs.indexOf(bassPC);
+      const invName = INV_NAMES_CP[invIdx] ?? 'Root Position';
+      const col = activeColor || 'var(--p)';
+      // Next 2 chords from random practice queue
+      let nextChordsHtml = '';
+      if(rpTimer !== null && rpSeq.length > 0) {
+        const nextItems = rpSeq.slice(rpPos, rpPos + 2).map(idx => {
+          const ch = allPool[idx];
+          if(!ch) return '';
+          const c = CHORD_COLORS[idx % CHORD_COLORS.length];
+          return `<div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+            <span style="font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">next</span>
+            <span style="font-size:15px;font-weight:800;color:${c};line-height:1">${ch.name}</span>
+            <span style="font-size:9px;font-weight:600;color:${c};opacity:.7">${ch.typeName||''}</span>
+          </div>`;
+        });
+        if(nextItems.length) nextChordsHtml = `<div style="display:flex;flex-direction:column;gap:6px;padding-left:12px;border-left:1.5px solid var(--line)">${nextItems.join('')}</div>`;
+      }
+      nowPlayingHtml = `<div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 6px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Now Playing</span>
+          <span style="font-size:28px;font-weight:900;color:${col};line-height:1.1">${activeChord.name}</span>
+          <span style="font-size:13px;font-weight:600;color:${col};opacity:.8">${invName}</span>
+        </div>
+        ${nextChordsHtml}
+      </div>`;
+    }
 
     const rootBtns=NMS.map((_,i)=>{
       const lbl=USE_FLAT.has(i)?NMF[i]:NMS[i];
@@ -3303,7 +3409,8 @@ views.chordsPractice = () => {
       <div style="font-size:20px;font-weight:900;color:var(--p);margin-bottom:12px">${nn(selRoot)} ${selScale}</div>
       <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch">${rootBtns}</div>
       <div style="overflow-x:auto;display:flex;gap:6px;flex-wrap:nowrap;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch">${scaleBtns}</div>
-      <div style="margin-bottom:10px">${kbSvg}</div>
+      <div style="margin-bottom:4px">${kbSvg}</div>
+      ${nowPlayingHtml}
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
         ${noteChips}
         <button id="cpToggleScale" style="margin-left:auto;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid #ef444460;background:${showScale?'#ef444420':'var(--card)'};color:${showScale?'#ef4444':'var(--muted)'}">${showScale?'Scale ✓':'Scale'}</button>
@@ -3338,10 +3445,42 @@ views.chordsPractice = () => {
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${advCards}</div>
       `:''}
+      ${(()=>{
+        const rpOn = rpTimer !== null;
+        // Build the visual sequence queue — show current + next 7 from rpSeq
+        const allPool = [...chords, ...adv];
+        const queueStart = Math.max(0, rpPos - 1);
+        const queueItems = rpSeq.slice(queueStart, queueStart + 8).map((idx, qi) => {
+          const ch = allPool[idx];
+          if(!ch) return '';
+          const col = CHORD_COLORS[idx % CHORD_COLORS.length];
+          const currentQi = rpPos > 0 ? 1 : 0;
+          const isCurrent = qi === currentQi && rpOn;
+          return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;padding:8px 10px;border-radius:12px;background:${isCurrent?col:col+'18'};color:${isCurrent?'#fff':col};border:2px solid ${isCurrent?col:col+'44'};transition:all .2s;${isCurrent?'transform:scale(1.08);box-shadow:0 4px 16px '+col+'66':'opacity:.7'}">
+            <span style="font-size:9px;font-weight:700;opacity:.85">${ch.deg_label||''}</span>
+            <span style="font-size:15px;font-weight:900;line-height:1">${ch.name}</span>
+            <span style="font-size:8px;font-weight:600;opacity:.8">${ch.typeName||''}</span>
+          </div>`;
+        }).join('');
+        return `
+        <div style="margin-top:24px;padding:16px;border-radius:16px;background:var(--card);border:1.5px solid var(--line)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)">🎲 Random Practice</span>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button id="rpBassBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${rpBassOn?'#22c55e':'var(--line)'};background:${rpBassOn?'#22c55e':'transparent'};color:${rpBassOn?'#fff':'var(--muted)'}">🎸 Bass ${rpBassOn?'ON':'OFF'}</button>
+              <button id="rpInvBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${rpInvOn?'var(--p)':'var(--line)'};background:${rpInvOn?'var(--p)':'transparent'};color:${rpInvOn?'#fff':'var(--muted)'}">🔄 Inv ${rpInvOn?'ON':'OFF'}</button>
+              <button id="rpLoopBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${rpLoop?'var(--p)':'var(--line)'};background:${rpLoop?'var(--p)':'transparent'};color:${rpLoop?'#fff':'var(--muted)'}">🔁 Loop</button>
+              <button id="rpPlayBtn" style="padding:6px 16px;border-radius:10px;font-size:12px;font-weight:700;border:none;background:${rpOn?'#ef4444':'var(--p)'};color:#fff;cursor:pointer">${rpOn?'⏹ Stop':'▶ Start'}</button>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:10px;font-weight:600">All ${allPool.length} chords rotate through every possible order — no chord repeats until all have played</div>
+          ${rpOn&&queueItems?`<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch">${queueItems}<div style="display:flex;align-items:center;padding:0 8px;color:var(--muted);font-size:18px;opacity:.4">→</div></div>`:'<div style="color:var(--muted);font-size:12px;text-align:center;padding:12px 0">Press Start to begin random chord sequence</div>'}
+        </div>`;
+      })()}
     `;
 
-    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; selAdvIdx=-1; stopPlay(); saveCp(); render(); }));
-    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; selAdvIdx=-1; stopPlay(); saveCp(); render(); }));
+    panel.querySelectorAll('[data-cproot]').forEach(b=>b.addEventListener('click',()=>{ selRoot=+b.dataset.cproot; selChordIdx=-1; selAdvIdx=-1; rpActiveIdx=-1; rpSeq=[]; stopPlay(); saveCp(); render(); }));
+    panel.querySelectorAll('[data-cpscale]').forEach(b=>b.addEventListener('click',()=>{ selScale=b.dataset.cpscale; selChordIdx=-1; selAdvIdx=-1; rpActiveIdx=-1; rpSeq=[]; stopPlay(); saveCp(); render(); }));
     const cpPlayOpts = () => ({voice:cpVoice,volume:settings.volume/100});
     const cpInterval = () => Math.round(60000/cpTempo);
     panel.querySelectorAll('[data-cpchord]').forEach(b=>b.addEventListener('click',()=>{
@@ -3397,6 +3536,39 @@ views.chordsPractice = () => {
       };
       playNext();
       playTimer=setInterval(playNext, cpInterval());
+    });
+
+    // Random Practice
+    panel.querySelector('#rpBassBtn')?.addEventListener('click',()=>{ rpBassOn=!rpBassOn; saveRp(); render(); });
+    panel.querySelector('#rpInvBtn')?.addEventListener('click',()=>{ rpInvOn=!rpInvOn; saveRp(); render(); });
+    panel.querySelector('#rpLoopBtn')?.addEventListener('click',()=>{ rpLoop=!rpLoop; saveRp(); render(); });
+    panel.querySelector('#rpPlayBtn')?.addEventListener('click',()=>{
+      unlockAudio();
+      if(rpTimer){ stopRp(); rpActiveIdx=-1; rpSeq=[]; render(); return; }
+      stopPlay(); selChordIdx=-1; selAdvIdx=-1;
+      const allPool=[...chords,...adv];
+      // Seed the sequence with 3 shuffled permutations so the queue looks full
+      rpSeq=[...rpNextBlock(allPool.length),...rpNextBlock(allPool.length),...rpNextBlock(allPool.length)];
+      rpPos=0;
+      const playRpNext=()=>{
+        // Refill when running low — ensures endless unique patterns
+        if(rpPos>=rpSeq.length-allPool.length) rpSeq=[...rpSeq,...rpNextBlock(allPool.length)];
+        if(rpPos>=rpSeq.length){ if(rpLoop){rpPos=0;}else{stopRp();rpActiveIdx=-1;render();return;} }
+        const idx=rpSeq[rpPos];
+        rpActiveIdx=idx;
+        const ch=allPool[idx];
+        const maxInv=idx<chords.length?2:3;
+        const pm=rpResolveInv(rpInvOn?invertChord(ch.midis,Math.floor(Math.random()*(maxInv+1))):ch.midis);
+        lastPlayedMidis=pm;
+        const dur=cpInterval()/1000;
+        pm.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
+        if(rpBassOn) playBassPattern(ch, dur, cpPlayOpts());
+        rpPos++;
+        render();
+      };
+      // Set timer BEFORE first play so render() sees rpTimer as non-null
+      rpTimer=setInterval(playRpNext, cpInterval());
+      playRpNext();
     });
   };
 

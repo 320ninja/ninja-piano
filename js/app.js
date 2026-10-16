@@ -3182,11 +3182,13 @@ views.chordsPractice = () => {
   const getDiatonic = (root, intervals) => {
     const len=intervals.length;
     if(len<3) return [];
+    const scPCs=new Set(intervals.map(i=>(root+i)%12));
     return intervals.map((iv,deg)=>{
       const cRoot=(root+iv)%12;
-      const t3Int=(intervals[(deg+2)%len]-iv+12)%12 || 12;
-      let t5Int=(intervals[(deg+4)%len]-iv+12)%12;
-      if(t5Int<=t3Int) t5Int+=12;
+      const has3=scPCs.has((cRoot+4)%12), has3m=scPCs.has((cRoot+3)%12);
+      const has5=scPCs.has((cRoot+7)%12), has5d=scPCs.has((cRoot+6)%12), has5a=scPCs.has((cRoot+8)%12);
+      let t3Int=has3?4:has3m?3:4;
+      let t5Int=has5?7:has5d?6:has5a?8:7;
       let sym='',typeName='Major';
       if(t3Int===4&&t5Int===7){sym='';typeName='Major';}
       else if(t3Int===3&&t5Int===7){sym='m';typeName='minor';}
@@ -3206,11 +3208,15 @@ views.chordsPractice = () => {
   const getDiatonic7th = (root, intervals) => {
     const len=intervals.length;
     if(len<4) return [];
+    const scPCs=new Set(intervals.map(i=>(root+i)%12));
     return intervals.map((iv,deg)=>{
       const cRoot=(root+iv)%12;
-      const t3=((intervals[(deg+2)%len]-iv)%12+12)%12 || 12;
-      let t5=((intervals[(deg+4)%len]-iv)%12+12)%12; if(t5<=t3) t5+=12;
-      let t7=((intervals[(deg+6)%len]-iv)%12+12)%12; if(t7<=t5) t7+=12;
+      const has3=scPCs.has((cRoot+4)%12), has3m=scPCs.has((cRoot+3)%12);
+      const has5=scPCs.has((cRoot+7)%12), has5d=scPCs.has((cRoot+6)%12), has5a=scPCs.has((cRoot+8)%12);
+      const has7M=scPCs.has((cRoot+11)%12), has7m=scPCs.has((cRoot+10)%12), has7d=scPCs.has((cRoot+9)%12);
+      let t3=has3?4:has3m?3:4;
+      let t5=has5?7:has5d?6:has5a?8:7;
+      let t7=has7M?11:has7m?10:has7d?9:11;
       let sym='', typeName='';
       if(t3===4&&t5===7&&t7===11){sym='maj7';typeName='maj7';}
       else if(t3===4&&t5===7&&t7===10){sym='7';typeName='dom7';}

@@ -3258,20 +3258,19 @@ views.chordsPractice = () => {
   };
   const CP_VOICES = {grand:'Grand Piano',bright:'Bright',electric:'Electric',soft:'Soft',synth:'Synth',organ:'Organ',edm:'EDM'};
   const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,shuffle:cpShuffle,inversion:cpInversion,voice:cpVoice,tempo:cpTempo,drums:cpDrums}));
-  const startDrums = () => {
-    if (drumTimer) { clearInterval(drumTimer); drumTimer = null; }
+  // Schedule one bar of drums using Web Audio time — perfectly synced to each chord tick
+  const scheduleDrumBar = (durSec) => {
     if (!cpDrums) return;
-    drumBeat = 0;
-    const beatMs = Math.round(60000 / cpTempo / 2); // 8th-note subdivisions
-    drumTimer = setInterval(() => {
-      const b = drumBeat % 8; // 8 eighth-notes per bar (4/4)
-      if (b === 0) playKick(0, 0.65);           // beat 1 kick
-      if (b === 4) playKick(0, 0.45);           // beat 3 kick (softer)
-      if (b === 2 || b === 6) playSnare(0, 0.5); // beats 2 and 4 snare
-      playHihat(0, 0.2, b % 2 !== 0);           // 8th-note hi-hats, open on off-beats
-      drumBeat++;
-    }, beatMs);
+    const eighth = durSec / 8;
+    for (let b = 0; b < 8; b++) {
+      const t = b * eighth;
+      if (b === 0) playKick(t, 0.65);
+      if (b === 4) playKick(t, 0.45);
+      if (b === 2 || b === 6) playSnare(t, 0.5);
+      playHihat(t, 0.2, b % 2 !== 0);
+    }
   };
+  const startDrums = () => {};   // no-op — drums now fire per chord tick
   const stopDrums = () => { if (drumTimer) { clearInterval(drumTimer); drumTimer = null; } drumBeat = 0; };
 
   const KW=14, KH=58, BW=9, BH=36, octW=7*KW, nOcts=3, KB0=48;
@@ -3597,12 +3596,12 @@ views.chordsPractice = () => {
         selChordIdx=cpShuffle?idx:playIdx;
         const dur=cpInterval()/1000;
         const pm=resolveInversion(chords[selChordIdx].midis,2); lastPlayedMidis=pm; pm.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
+        scheduleDrumBar(dur);
         if(!cpShuffle) playIdx++;
         render();
       };
       playNext();
       playTimer=setInterval(playNext, cpInterval());
-      startDrums();
     });
     panel.querySelector('#cpPlayAdv')?.addEventListener('click',()=>{
       unlockAudio();
@@ -3614,12 +3613,12 @@ views.chordsPractice = () => {
         selAdvIdx=cpShuffle?idx:playIdx;
         const dur=cpInterval()/1000;
         const pm=resolveInversion(adv[selAdvIdx].midis,3); lastPlayedMidis=pm; pm.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
+        scheduleDrumBar(dur);
         if(!cpShuffle) playIdx++;
         render();
       };
       playNext();
       playTimer=setInterval(playNext, cpInterval());
-      startDrums();
     });
 
     // Random Practice
@@ -3647,13 +3646,13 @@ views.chordsPractice = () => {
         const dur=cpInterval()/1000;
         pm.forEach((m,j)=>setTimeout(()=>playNote(m,{...cpPlayOpts(),duration:dur}),j*40));
         if(rpBassOn) playBassPattern(ch, dur, cpPlayOpts());
+        scheduleDrumBar(dur);
         rpPos++;
         render();
       };
       // Set timer BEFORE first play so render() sees rpTimer as non-null
       rpTimer=setInterval(playRpNext, cpInterval());
       playRpNext();
-      startDrums();
     });
   };
 

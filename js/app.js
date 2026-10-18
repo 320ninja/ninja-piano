@@ -4138,47 +4138,71 @@ views.chordsLibrarySong = (params, songId) => {
   let clShowBass = true;
   const BASS_COL = '#06b6d4';
   const fullKbSVG = (midis, activeColor, big = false, bassActiveMidi = -1) => {
-    // Keyboard: 1 bass octave (36-47) + 3 chord octaves (48-83) = 4 octaves, BASE=36
     const WW = 15, WH = big ? 104 : 62, BW = 9, BH = big ? 64 : 38, OCT = 4, BASE = 36;
     const lblW = big ? 10 : 7.5, lblB = big ? 8 : 6;
+    const NR = big ? 7 : 5, NF = big ? 7 : 5.5; // number badge radius + font
     const highSet = new Set(midis);
     const bassNote = (clShowBass && midis && midis.length) ? Math.min(...midis) : -1;
-    const bassLow = bassNote >= 0 ? bassNote - 12 : -1; // always one octave lower, cyan
-    // When bass pattern is playing, show the active step note (may differ from bassLow)
-    const bassActiveDisplay = bassActiveMidi >= 0 ? bassActiveMidi : bassLow;
-    const BASS_ACTIVE_COL = '#00e5ff'; // bright cyan for blink
+    const bassLow  = bassNote >= 0 ? bassNote - 12 : -1;
+    const BASS_ACTIVE_COL = '#00e5ff';
+    // Chord interval numbers: sort midis, assign 1 3 5 7 by position
+    const sortedMidis = midis ? [...midis].sort((a,b)=>a-b) : [];
+    const CHORD_NUMS = ['1','3','5','7','9'];
+    const chordNumMap = new Map(sortedMidis.map((m,i) => [m, CHORD_NUMS[i]||String(i+1)]));
+    // Bass interval from chord root
+    const chordRootPc = sortedMidis.length ? sortedMidis[0]%12 : -1;
+    const IMAP = {0:'1',2:'2',3:'3',4:'3',5:'4',6:'♭5',7:'5',8:'♭6',9:'6',10:'♭7',11:'7'};
+    const bassNum = (m) => chordRootPc >= 0 ? (IMAP[((m%12)-chordRootPc+12)%12]||'B') : 'B';
     const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
-    let wkeys='', bkeys='', labels='', anims='';
+    let wkeys='', bkeys='', labels='', badges='', anims='';
     for (let oct=0; oct<OCT; oct++) {
       const base = BASE + oct*12, octX = oct*octW;
       WHITE_PCS_CL.forEach((pc,wi) => {
         const midi = base+pc;
         const on = highSet.has(midi);
-        const isBassBlink = bassActiveMidi >= 0 && midi === bassActiveMidi; // actively playing
-        const isBassLow = !isBassBlink && midi === bassLow; // static bass indicator
+        const isBassBlink = bassActiveMidi >= 0 && midi === bassActiveMidi;
+        const isBassLow   = !isBassBlink && midi === bassLow;
         const fill = isBassBlink ? BASS_ACTIVE_COL : isBassLow ? BASS_COL : on ? activeColor : '#f7f7fa';
-        const x = octX+wi*WW+1;
+        const x = octX+wi*WW+1, cx = x+(WW-1)/2;
         const rectId = isBassBlink ? `bb${midi}` : '';
         wkeys += `<rect${rectId?` id="${rectId}"`:''} x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${fill}" stroke="${(isBassBlink||isBassLow)?BASS_COL:'#c8c8c8'}" stroke-width="${(isBassBlink||isBassLow)?2.5:1}"/>`;
         if (isBassBlink) anims += `<animate href="#${rectId}" attributeName="opacity" values="1;0.4;1" dur="0.18s" repeatCount="1"/>`;
-        if (isBassBlink || isBassLow || on) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
-        else if (clShowLabels) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="600" fill="#c43" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        if (isBassBlink||isBassLow||on) labels += `<text x="${cx}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        else if (clShowLabels) labels += `<text x="${cx}" y="${WH-6}" font-size="${lblW}" font-weight="600" fill="#c43" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        // number badges: gold for chord, cyan for bass
+        if (on && chordNumMap.has(midi)) {
+          badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="#f59e0b"/>`;
+          badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${chordNumMap.get(midi)}</text>`;
+        } else if (isBassBlink||isBassLow) {
+          const bc = isBassBlink ? BASS_ACTIVE_COL : BASS_COL;
+          badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="${bc}"/>`;
+          badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="#002233" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${bassNum(isBassBlink?bassActiveMidi:bassNote)}</text>`;
+        }
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
         const midi = base+pc;
         const on = highSet.has(midi);
         const isBassBlink = bassActiveMidi >= 0 && midi === bassActiveMidi;
-        const isBassLow = !isBassBlink && midi === bassLow;
+        const isBassLow   = !isBassBlink && midi === bassLow;
         const fill = isBassBlink ? BASS_ACTIVE_COL : isBassLow ? BASS_COL : on ? activeColor : '#1e1e2e';
-        const x = octX+ox*WW-Math.floor(BW/2)+1;
+        const x = octX+ox*WW-Math.floor(BW/2)+1, cx = x+BW/2;
         const rectId = isBassBlink ? `bbb${midi}` : '';
         bkeys += `<rect${rectId?` id="${rectId}"`:''}  x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${fill}" stroke="${(isBassBlink||isBassLow)?BASS_COL:'#0f0f1a'}" stroke-width="1"/>`;
         if (isBassBlink) anims += `<animate href="#${rectId}" attributeName="opacity" values="1;0.3;1" dur="0.18s" repeatCount="1"/>`;
-        if (isBassBlink || isBassLow || on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        if (isBassBlink||isBassLow||on) labels += `<text x="${cx}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        const NRb=Math.max(NR-1,3), NFb=Math.max(NF-1,4);
+        if (on && chordNumMap.has(midi)) {
+          badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="#f59e0b"/>`;
+          badges += `<text x="${cx}" y="${NRb+2+NFb*0.38}" font-size="${NFb}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${chordNumMap.get(midi)}</text>`;
+        } else if (isBassBlink||isBassLow) {
+          const bc = isBassBlink ? BASS_ACTIVE_COL : BASS_COL;
+          badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="${bc}"/>`;
+          badges += `<text x="${cx}" y="${NRb+2+NFb*0.38}" font-size="${NFb}" font-weight="900" fill="#002233" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${bassNum(isBassBlink?bassActiveMidi:bassNote)}</text>`;
+        }
       });
     }
     const sizing = big ? 'width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;width:92%;height:auto;margin:0 auto"' : `width="100%" height="${svgH}" preserveAspectRatio="xMidYMid meet"`;
-    return `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" ${sizing}>${wkeys}${bkeys}${labels}${anims}</svg>`;
+    return `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" ${sizing}>${wkeys}${bkeys}${labels}${badges}${anims}</svg>`;
   };
 
   // Build chord chart HTML for a given chord name. activeInv highlights the

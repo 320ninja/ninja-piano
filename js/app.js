@@ -3121,6 +3121,154 @@ views.scales = () => {
   render();
 };
 
+// ── Shared drum patterns (used by Chords Practice + Chords Library) ──────
+const DRUM_GENRES = {
+  '🥁 Rock':[
+    {name:'Standard',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Kick Groove', k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Half-Time',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'16th Hats',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Double Kick', k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Driving',     k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Punk',        k:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Ballad',      k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Prog',        k:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Stadium',     k:[1,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0],h:[1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0]},
+  ],
+  '🎤 Hip-Hop':[
+    {name:'Boom Bap',    k:[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0]},
+    {name:'Classic',     k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Trap',        k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Modern',      k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Boom Bap 2',  k:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0],h:[1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0]},
+    {name:'Lo-Fi',       k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]},
+    {name:'Drill',       k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],h:[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1]},
+    {name:'Hyphy',       k:[1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,1,0,0,1,0,1,0,1,1,0,0,1,0]},
+    {name:'Cloud Rap',   k:[1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],h:[1,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0]},
+    {name:'Grime',       k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+  ],
+  '🎷 Jazz':[
+    {name:'Swing',       k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,.5,0,0,0,0,0,0,0,.5,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+    {name:'Bossa',       k:[1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],s:[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Cool',        k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,.5,0,0,0,0,0,0,0,.5,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Be-Bop',      k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,.3,0,0,0,0,0,0,0,.3,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Waltz',       k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Funk Jazz',   k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Latin Jazz',  k:[1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],s:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Gospel Jazz', k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+    {name:'Free',        k:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],h:[1,0,1,0,1,1,0,0,1,0,1,0,1,1,0,0]},
+    {name:'Fusion',      k:[1,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+  ],
+  '🌴 Reggae':[
+    {name:'One Drop',    k:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0]},
+    {name:'Steppers',    k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Rockers',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Ska',         k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
+    {name:'Dancehall',   k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Nyahbinghi',  k:[1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Dub',         k:[1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0]},
+    {name:'Rocksteady',  k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
+    {name:'Ragga',       k:[1,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0]},
+    {name:'Mento',       k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+  ],
+  '💃 Latin':[
+    {name:'Bossa Nova',  k:[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],s:[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Salsa',       k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Samba',       k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Cha-Cha',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Mambo',       k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Cumbia',      k:[1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Tango',       k:[1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Merengue',    k:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Bachata',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],s:[0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Flamenco',    k:[1,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0],s:[0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+  ],
+  '🎧 EDM':[
+    {name:'Four/Floor',  k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'House',       k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Techno',      k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Trap EDM',    k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1]},
+    {name:'Future Bass', k:[1,0,0,0,1,1,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Big Room',    k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]},
+    {name:'Dubstep',     k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0]},
+    {name:'Drum & Bass', k:[1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Trance',      k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0]},
+    {name:'Ambient',     k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0]},
+  ],
+  '🎸 Funk':[
+    {name:'Classic',     k:[1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'JB Groove',   k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Funky Drummer',k:[1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Groove',      k:[1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Heavy',       k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'P-Funk',      k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Neo-Soul',    k:[1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,0,1,1,0,0,1,0,1,0,1,1,0,0,1,0]},
+    {name:'G-Funk',      k:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,0,0,1,0,0,1,1,1,0,0,1,0,0,1]},
+    {name:'Minneapolis', k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0],s:[0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'New Jack',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0]},
+  ],
+  '🎼 Blues':[
+    {name:'Shuffle',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+    {name:'12-Bar',      k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Slow',        k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Jump',        k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+    {name:'Chicago',     k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+    {name:'Texas',       k:[1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0]},
+    {name:'Gospel',      k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,1,0,0,1,0,0,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Delta',       k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0]},
+    {name:'Boogie',      k:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+    {name:'Acoustic',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0]},
+  ],
+  '🤘 Metal':[
+    {name:'Blast Beat',  k:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],s:[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Double Bass', k:[1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Thrash',      k:[1,0,1,1,0,0,1,0,1,0,1,1,0,0,1,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Death Metal', k:[1,1,1,0,1,1,0,1,1,1,1,0,1,1,0,1],s:[0,0,0,1,0,0,1,0,0,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Groove Metal',k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Power Metal', k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Nu-Metal',    k:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Djent',       k:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Black Metal', k:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Post-Metal',  k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]},
+  ],
+  '🤠 Country':[
+    {name:'Twostep',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Honky Tonk',  k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+    {name:'Shuffle',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0]},
+    {name:'Waltz',       k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Bro Country', k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Outlaw',      k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Bluegrass',   k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
+    {name:'Boot Scoot',  k:[1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Western',     k:[1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Acoustic',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0]},
+  ],
+  '🎵 R&B':[
+    {name:'Classic RnB', k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,1,0,0,1,0,1,0,1,1,0,0,1,0]},
+    {name:'Soul',        k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Neo Soul',    k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0]},
+    {name:'Contemporary',k:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Quiet Storm', k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]},
+    {name:'Trap Soul',   k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    {name:'Gospel',      k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,1,0,0,1,0,0,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Motown',      k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    {name:'Old School',  k:[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0]},
+    {name:'Alt RnB',     k:[1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0],h:[1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0]},
+  ],
+  '🌍 Afrobeat':[
+    {name:'Classic Afro', k:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],s:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Afropop',     k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,1,0,0,1,0,1,0,1,1,0,0,1,0]},
+    {name:'Highlife',    k:[1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Jùjú',        k:[1,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0]},
+    {name:'Amapiano',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Afrofusion',  k:[1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0],h:[1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0]},
+    {name:'Afroswing',   k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,1,1,0,1,0,1,0,1,1,1,0,1,0]},
+    {name:'Azonto',      k:[1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0],s:[0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    {name:'Burna Style', k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,1,0,0,1,0,1,0,1,1,0,0]},
+    {name:'Kizomba',     k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]},
+  ],
+};
+
 // ── Chords Practice ──────────────────────────────────────────────────────
 views.chordsPractice = () => {
   setNav('practice');
@@ -3160,72 +3308,6 @@ views.chordsPractice = () => {
   let drumTimer = null, drumBeat = 0;
   let lastPlayedMidis = null;
 
-  const DRUM_GENRES = {
-    '🥁 Rock':[
-      {name:'Standard',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Kick Groove', k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Half-Time',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'16th Hats',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'Double Kick', k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Driving',     k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-    ],
-    '🎤 Hip-Hop':[
-      {name:'Boom Bap',  k:[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0]},
-      {name:'Classic',   k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
-      {name:'Trap',      k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'Modern',    k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Boom Bap 2',k:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0],h:[1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0]},
-      {name:'Lo-Fi',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]},
-    ],
-    '🎷 Jazz':[
-      {name:'Swing',    k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,.5,0,0,0,0,0,0,0,.5,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
-      {name:'Bossa',    k:[1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],s:[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Cool',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,.5,0,0,0,0,0,0,0,.5,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Be-Bop',   k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,.3,0,0,0,0,0,0,0,.3,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'Waltz',    k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
-      {name:'Funk Jazz',k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-    ],
-    '🌴 Reggae':[
-      {name:'One Drop',  k:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0]},
-      {name:'Steppers',  k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Rockers',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Ska',       k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
-      {name:'Dancehall', k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Nyahbinghi',k:[1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
-    ],
-    '💃 Latin':[
-      {name:'Bossa Nova',k:[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],s:[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Salsa',     k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Samba',     k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'Cha-Cha',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Mambo',     k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Cumbia',    k:[1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-    ],
-    '🎧 EDM':[
-      {name:'Four/Floor', k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'House',      k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'Techno',     k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Trap EDM',   k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1]},
-      {name:'Future Bass',k:[1,0,0,0,1,1,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Big Room',   k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]},
-    ],
-    '🎸 Funk':[
-      {name:'Classic',       k:[1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'JB Groove',     k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'Funky Drummer', k:[1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'Groove',        k:[1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'Heavy',         k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-      {name:'P-Funk',        k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-    ],
-    '🎼 Blues':[
-      {name:'Shuffle', k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
-      {name:'12-Bar',  k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-      {name:'Slow',    k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
-      {name:'Jump',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
-      {name:'Chicago', k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
-      {name:'Texas',   k:[1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0]},
-    ],
-  };
   const INV_OPTS = [{v:0,l:'Root'},{v:1,l:'1st Inv'},{v:2,l:'2nd Inv'},{v:3,l:'3rd Inv'},{v:'best',l:'Best'},{v:'random',l:'Random'}];
 
   // Random Practice state
@@ -3349,30 +3431,31 @@ views.chordsPractice = () => {
   const wPC=[0,2,4,5,7,9,11];
   const bDef=[{pc:1,ox:10},{pc:3,ox:24},{pc:6,ox:52},{pc:8,ox:66},{pc:10,ox:80}];
 
-  const buildKb = (scalePCs, chordMidis, chordColor, bassMidis) => {
+  const buildKb = (scalePCs, chordMidis, chordColor, bassMidis, nextMidis) => {
     const scSet=new Set(showScale?scalePCs:[]), chSet=new Set(chordMidis||[]);
-    // Bass note PCs (pitch classes) highlighted in teal
     const bsSet=new Set((bassMidis||[]).map(m=>m%12));
-    const BASS_COL='#0891b2';  // teal-600
+    const nxSet=new Set((nextMidis||[]).map(m=>m%12));
+    const BASS_COL='#0891b2';
+    const NEXT_COL='#22d3ee'; // cyan ghost for next chord
     const cCol=chordColor||'var(--p)';
     let wk='', bk='', lb='';
     for(let o=0;o<nOcts;o++){
       const ox=o*octW, base=KB0+o*12;
       wPC.forEach((pc,wi)=>{
         const midi=base+pc, gpc=midi%12, x=ox+wi*KW+1;
-        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isSc=scSet.has(gpc);
-        const fill=isCh?cCol:isBs?BASS_COL:isSc?'#fecaca':'white';
-        const stroke=isCh?cCol:isBs?BASS_COL:isSc?'#ef4444':'#ddd';
-        const sw=isCh||isBs||isSc?1.5:0.5;
+        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isNx=nxSet.has(gpc)&&!isCh, isSc=scSet.has(gpc);
+        const fill=isCh?cCol:isBs?BASS_COL:isNx?'#cffafe':isSc?'#fecaca':'white';
+        const stroke=isCh?cCol:isBs?BASS_COL:isNx?NEXT_COL:isSc?'#ef4444':'#ddd';
+        const sw=isCh||isBs||isNx||isSc?1.5:0.5;
         wk+=`<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-        if(isCh||isBs||isSc) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh||isBs?'#fff':'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
+        if(isCh||isBs||isNx||isSc) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh||isBs?'#fff':isNx?NEXT_COL:'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
       });
       bDef.forEach(({pc,ox:bx})=>{
         const midi=base+pc, gpc=midi%12;
-        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isSc=scSet.has(gpc);
-        const fill=isCh?cCol:isBs?BASS_COL:isSc?'#ef4444':'#1a1a1a';
+        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isNx=nxSet.has(gpc)&&!isCh, isSc=scSet.has(gpc);
+        const fill=isCh?cCol:isBs?BASS_COL:isNx?'#164e63':isSc?'#ef4444':'#1a1a1a';
         bk+=`<rect x="${ox+bx}" y="1" width="${BW}" height="${BH}" rx="1" fill="${fill}"/>`;
-        if(isCh||isBs||isSc) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="#fff" font-weight="800">${nn(gpc)}</text>`;
+        if(isCh||isBs||isNx||isSc) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="${isNx?NEXT_COL:'#fff'}" font-weight="800">${nn(gpc)}</text>`;
       });
     }
     return `<svg width="100%" viewBox="0 0 ${TW} ${KH+2}" style="border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;display:block"><rect width="${TW}" height="${KH+2}" fill="#c8c8c8"/>${wk}${bk}${lb}</svg>`;
@@ -3453,7 +3536,15 @@ views.chordsPractice = () => {
     const activeMidis=activeChord?(rpChord?lastPlayedMidis:resolveInversion(activeChord.midis,selChordIdx>=0?maxInvTriad:maxInv7)):null;
     const activeColor=rpChord?CHORD_COLORS[rpActiveIdx%CHORD_COLORS.length]:selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:selAdvIdx>=0?CHORD_COLORS[selAdvIdx%CHORD_COLORS.length]:null;
     const activeBass = rpBassOn && rpTimer !== null && rpCurrentBassMidis.length ? rpCurrentBassMidis : null;
-    const kbSvg=buildKb(scalePCs, activeMidis, activeColor, activeBass);
+    // Next chord preview
+    let nextMidis = null;
+    if(playTimer && !cpShuffle) {
+      const nextPool = selChordIdx >= 0 ? chords : selAdvIdx >= 0 ? adv : null;
+      if(nextPool) { const ni = playIdx % nextPool.length; const nc = nextPool[ni]; if(nc) nextMidis = resolveInversion(nc.midis, selChordIdx>=0?maxInvTriad:maxInv7); }
+    } else if(rpTimer && rpSeq.length > rpPos) {
+      const nc = allPool[rpSeq[rpPos]]; if(nc) nextMidis = nc.midis;
+    }
+    const kbSvg=buildKb(scalePCs, activeMidis, activeColor, activeBass, nextMidis);
     const scaleNotes=scalePCs.map(pc=>nn(pc));
 
     // Bass note names below keyboard
@@ -3527,11 +3618,14 @@ views.chordsPractice = () => {
       const bg=on?col:`${col}18`, fg=on?'#fff':col, bd=on?col:`${col}55`;
       const im=typeof cpInversion==='number'?invertChord(ch.midis,maxInvTriad):ch.midis;
       const iNotes=im.map(m=>nn(m)).join(' · ');
+      const rootOnly=ch.name.replace(/m\b|°|ø|\+/g,'');
+      const fullName=rootOnly+' '+(ch.typeName||'');
       return `<button data-cpchord="${i}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 14px;border-radius:16px;background:${bg};color:${fg};border:2.5px solid ${bd};cursor:pointer;min-width:68px;text-align:center;transition:all .18s;${on?'transform:scale(1.05);box-shadow:0 4px 18px '+col+'55':''}">
         <span style="font-size:10px;font-weight:700;opacity:.85">${ch.deg_label}</span>
         <span style="font-weight:900;font-size:18px;line-height:1">${ch.name.replace(/[°+]/,'')}</span>
-        <span style="font-size:10.5px;font-weight:600;opacity:.9">${ch.typeName}${invLabel}</span>
-        <span style="font-size:9px;opacity:.7;margin-top:2px">${iNotes}</span>
+        <span style="font-size:10px;font-weight:700;opacity:.95">${fullName}</span>
+        <span style="font-size:9.5px;font-weight:600;opacity:.8">${ch.typeName}${invLabel}</span>
+        <span style="font-size:9px;opacity:.7;margin-top:1px">${iNotes}</span>
       </button>`;
     }).join('');
 
@@ -3541,11 +3635,14 @@ views.chordsPractice = () => {
       const bg=on?col:`${col}18`, fg=on?'#fff':col, bd=on?col:`${col}55`;
       const im=typeof cpInversion==='number'?invertChord(ch.midis,maxInv7):ch.midis;
       const iNotes=im.map(m=>nn(m)).join(' · ');
+      const rootOnly7=ch.name.replace(/m\b|°|ø|\+|maj|min|dim|aug|7|9|11|13/gi,'');
+      const fullName7=rootOnly7+' '+(ch.typeName||'');
       return `<button data-cpadv="${i}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 14px;border-radius:16px;background:${bg};color:${fg};border:2.5px solid ${bd};cursor:pointer;min-width:68px;text-align:center;transition:all .18s;${on?'transform:scale(1.05);box-shadow:0 4px 18px '+col+'55':''}">
         <span style="font-size:10px;font-weight:700;opacity:.85">${ch.deg_label}</span>
         <span style="font-weight:900;font-size:16px;line-height:1">${ch.name.replace(/[°ø+]/g,'')}</span>
-        <span style="font-size:10px;font-weight:600;opacity:.9">${ch.typeName}${invLabel}</span>
-        <span style="font-size:8.5px;opacity:.7;margin-top:2px">${iNotes}</span>
+        <span style="font-size:10px;font-weight:700;opacity:.95">${fullName7}</span>
+        <span style="font-size:9px;font-weight:600;opacity:.8">${ch.typeName}${invLabel}</span>
+        <span style="font-size:8.5px;opacity:.7;margin-top:1px">${iNotes}</span>
       </button>`;
     }).join('');
 
@@ -4125,6 +4222,26 @@ views.chordsLibrarySong = (params, songId) => {
   let activeSi = -1;
   let sectionPlayerIdx = 0;
   let fullSong = false;
+  // Drum state for CL — reuse DRUM_GENRES + scheduleDrumBar from chords practice if loaded
+  const clDrumSaved = JSON.parse(localStorage.getItem('np.cldrums') || '{}');
+  let clDrumsOn = clDrumSaved.on || false;
+  let clDrumGenre = clDrumSaved.genre || '🥁 Rock';
+  let clDrumPat = clDrumSaved.pat ?? 'mixed';
+  let clDrumPatIdx = 0;
+  const saveCLDrums = () => localStorage.setItem('np.cldrums', JSON.stringify({on:clDrumsOn,genre:clDrumGenre,pat:clDrumPat}));
+  const clDrumGenres = typeof DRUM_GENRES !== 'undefined' ? DRUM_GENRES : null;
+  const clScheduleDrums = (durSec) => {
+    if (!clDrumsOn || !clDrumGenres) return;
+    const genre = clDrumGenres[clDrumGenre] || clDrumGenres['🥁 Rock'];
+    const pat = clDrumPat === 'mixed' ? genre[clDrumPatIdx % genre.length] : genre[Math.min(clDrumPat, genre.length-1)];
+    clDrumPatIdx++;
+    const step = durSec / 16;
+    for (let i = 0; i < 16; i++) {
+      if (pat.k[i]) playKick(i * step, pat.k[i] * 0.7);
+      if (pat.s[i]) playSnare(i * step, pat.s[i] * 0.5);
+      if (pat.h[i]) playHihat(i * step, pat.h[i] * 0.22, false);
+    }
+  };
   const setSecBtn = (si, ch) => { const b = app.querySelector(`.cl-sec-play[data-si="${si}"]`); if (b) b.textContent = ch; };
 
   // Now-playing bar updater. voicing = { name, qual, midis, inv, invName }
@@ -4212,6 +4329,7 @@ views.chordsLibrarySong = (params, songId) => {
     unlockAudio();
     const chordDuration = (60/bpm) * speeds[currentSpeed];
     playMidisAudio(voicing.midis, chordDuration * 0.85);
+    clScheduleDrums(chordDuration);
     const next = chordIdx + 1;
     if (fullSong && next >= sec.chords.length) {
       resetSecPills(activeSi);
@@ -4322,6 +4440,13 @@ views.chordsLibrarySong = (params, songId) => {
         <input id="clBpm" type="range" min="40" max="220" step="1" value="${baseBpm}" style="flex:1;accent-color:var(--p);cursor:pointer">
         <button id="clBpmUp" title="Faster" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:18px;font-weight:800;cursor:pointer;line-height:1">+</button>
         <span id="clBpmVal" style="font-size:13px;font-weight:800;color:var(--p);min-width:62px;text-align:right">${baseBpm} BPM</span>
+      </div>
+      <div style="margin-top:10px" id="clDrumsWrap">
+        <button id="clDrumsBtn" style="width:100%;padding:9px;border-radius:${clDrumsOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clDrumsOn?'#f97316':'var(--line)'};border-bottom:${clDrumsOn?'none':'2px solid var(--line)'};background:${clDrumsOn?'#f9731620':'var(--card)'};color:${clDrumsOn?'#f97316':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🥁 Drums ${clDrumsOn?'ON':'OFF — tap to turn ON'}</button>
+        ${clDrumsOn&&clDrumGenres?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #f97316;border-top:1px solid #f9731640;background:#f9731610;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;flex-wrap:wrap;gap:5px">${Object.keys(clDrumGenres).map(g=>`<button data-clg="${g}" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${g===clDrumGenre?'#f97316':'var(--line)'};background:${g===clDrumGenre?'#f97316':'transparent'};color:${g===clDrumGenre?'#fff':'var(--muted)'}">${g}</button>`).join('')}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">${(clDrumGenres[clDrumGenre]||clDrumGenres['🥁 Rock']).map((p,i)=>`<button data-clp="${i}" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${clDrumPat===i?'#38bdf8':'var(--line)'};background:${clDrumPat===i?'#38bdf820':'transparent'};color:${clDrumPat===i?'#38bdf8':'var(--muted)'}">${p.name}</button>`).join('')}<button data-clp="mixed" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${clDrumPat==='mixed'?'#a855f7':'var(--line)'};background:${clDrumPat==='mixed'?'#a855f720':'transparent'};color:${clDrumPat==='mixed'?'#a855f7':'var(--muted)'}">🔀 Mixed</button></div>
+        </div>`:''}
       </div>
     </div>
 
@@ -4551,6 +4676,17 @@ views.chordsLibrarySong = (params, songId) => {
   bpmSlider?.addEventListener('input', () => setBpm(parseInt(bpmSlider.value)));
   app.querySelector('#clBpmDown')?.addEventListener('click', () => setBpm(bpm - 4));
   app.querySelector('#clBpmUp')?.addEventListener('click', () => setBpm(bpm + 4));
+
+  // ── Drums controls ────────────────────────────────────────────────────
+  const renderCLDrumsWrap = () => {
+    const wrap = app.querySelector('#clDrumsWrap');
+    if (!wrap) return;
+    wrap.innerHTML = `<button id="clDrumsBtn" style="width:100%;padding:9px;border-radius:${clDrumsOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clDrumsOn?'#f97316':'var(--line)'};border-bottom:${clDrumsOn?'none':'2px solid var(--line)'};background:${clDrumsOn?'#f9731620':'var(--card)'};color:${clDrumsOn?'#f97316':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🥁 Drums ${clDrumsOn?'ON':'OFF — tap to turn ON'}</button>${clDrumsOn&&clDrumGenres?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #f97316;border-top:1px solid #f9731640;background:#f9731610;display:flex;flex-direction:column;gap:8px"><div style="display:flex;flex-wrap:wrap;gap:5px">${Object.keys(clDrumGenres).map(g=>`<button data-clg="${g}" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${g===clDrumGenre?'#f97316':'var(--line)'};background:${g===clDrumGenre?'#f97316':'transparent'};color:${g===clDrumGenre?'#fff':'var(--muted)'}">${g}</button>`).join('')}</div><div style="display:flex;flex-wrap:wrap;gap:5px">${(clDrumGenres[clDrumGenre]||clDrumGenres['🥁 Rock']).map((p,i)=>`<button data-clp="${i}" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${clDrumPat===i?'#38bdf8':'var(--line)'};background:${clDrumPat===i?'#38bdf820':'transparent'};color:${clDrumPat===i?'#38bdf8':'var(--muted)'}">${p.name}</button>`).join('')}<button data-clp="mixed" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${clDrumPat==='mixed'?'#a855f7':'var(--line)'};background:${clDrumPat==='mixed'?'#a855f720':'transparent'};color:${clDrumPat==='mixed'?'#a855f7':'var(--muted)'}">🔀 Mixed</button></div></div>`:''}`;
+    wrap.querySelector('#clDrumsBtn')?.addEventListener('click', () => { clDrumsOn=!clDrumsOn; clDrumPatIdx=0; saveCLDrums(); renderCLDrumsWrap(); });
+    wrap.querySelectorAll('[data-clg]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); clDrumGenre=b.dataset.clg; clDrumPat='mixed'; clDrumPatIdx=0; saveCLDrums(); renderCLDrumsWrap(); }));
+    wrap.querySelectorAll('[data-clp]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); const v=b.dataset.clp; clDrumPat=v==='mixed'?'mixed':parseInt(v); clDrumPatIdx=0; saveCLDrums(); renderCLDrumsWrap(); }));
+  };
+  renderCLDrumsWrap();
 
   // ── Transpose controls ────────────────────────────────────────────────
   const updateTransposeUI = () => {

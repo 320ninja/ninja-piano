@@ -3154,8 +3154,77 @@ views.chordsPractice = () => {
   let cpVoice = saved.voice || 'grand';
   let cpTempo = saved.tempo || 100;
   let cpDrums = saved.drums || false;
+  let cpDrumGenre = saved.drumGenre || '🥁 Rock';
+  let cpDrumPatIdx = 0;
   let drumTimer = null, drumBeat = 0;
   let lastPlayedMidis = null;
+
+  const DRUM_GENRES = {
+    '🥁 Rock':[
+      {name:'Standard',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Kick Groove', k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Half-Time',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'16th Hats',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'Double Kick', k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Driving',     k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    ],
+    '🎤 Hip-Hop':[
+      {name:'Boom Bap',  k:[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0]},
+      {name:'Classic',   k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+      {name:'Trap',      k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'Modern',    k:[1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Boom Bap 2',k:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0],h:[1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0]},
+      {name:'Lo-Fi',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1]},
+    ],
+    '🎷 Jazz':[
+      {name:'Swing',    k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,.5,0,0,0,0,0,0,0,.5,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+      {name:'Bossa',    k:[1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],s:[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Cool',     k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,.5,0,0,0,0,0,0,0,.5,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Be-Bop',   k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,.3,0,0,0,0,0,0,0,.3,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'Waltz',    k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+      {name:'Funk Jazz',k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    ],
+    '🌴 Reggae':[
+      {name:'One Drop',  k:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0]},
+      {name:'Steppers',  k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Rockers',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Ska',       k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
+      {name:'Dancehall', k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Nyahbinghi',k:[1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+    ],
+    '💃 Latin':[
+      {name:'Bossa Nova',k:[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],s:[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Salsa',     k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Samba',     k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'Cha-Cha',   k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Mambo',     k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Cumbia',    k:[1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],s:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+    ],
+    '🎧 EDM':[
+      {name:'Four/Floor', k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'House',      k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'Techno',     k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Trap EDM',   k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1]},
+      {name:'Future Bass',k:[1,0,0,0,1,1,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Big Room',   k:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]},
+    ],
+    '🎸 Funk':[
+      {name:'Classic',       k:[1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'JB Groove',     k:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'Funky Drummer', k:[1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0],s:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'Groove',        k:[1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'Heavy',         k:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+      {name:'P-Funk',        k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0],h:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+    ],
+    '🎼 Blues':[
+      {name:'Shuffle', k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+      {name:'12-Bar',  k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+      {name:'Slow',    k:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]},
+      {name:'Jump',    k:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+      {name:'Chicago', k:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0]},
+      {name:'Texas',   k:[1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],s:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],h:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0]},
+    ],
+  };
   const INV_OPTS = [{v:0,l:'Root'},{v:1,l:'1st Inv'},{v:2,l:'2nd Inv'},{v:3,l:'3rd Inv'},{v:'best',l:'Best'},{v:'random',l:'Random'}];
 
   // Random Practice state
@@ -3257,17 +3326,18 @@ views.chordsPractice = () => {
     return invertChord(midis,Math.min(cpInversion,maxInv));
   };
   const CP_VOICES = {grand:'Grand Piano',bright:'Bright',electric:'Electric',soft:'Soft',synth:'Synth',organ:'Organ',edm:'EDM'};
-  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,shuffle:cpShuffle,inversion:cpInversion,voice:cpVoice,tempo:cpTempo,drums:cpDrums}));
+  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,shuffle:cpShuffle,inversion:cpInversion,voice:cpVoice,tempo:cpTempo,drums:cpDrums,drumGenre:cpDrumGenre}));
   // Schedule one bar of drums using Web Audio time — perfectly synced to each chord tick
   const scheduleDrumBar = (durSec) => {
     if (!cpDrums) return;
-    const eighth = durSec / 8;
-    for (let b = 0; b < 8; b++) {
-      const t = b * eighth;
-      if (b === 0) playKick(t, 0.65);
-      if (b === 4) playKick(t, 0.45);
-      if (b === 2 || b === 6) playSnare(t, 0.5);
-      playHihat(t, 0.2, b % 2 !== 0);
+    const genre = DRUM_GENRES[cpDrumGenre] || DRUM_GENRES['🥁 Rock'];
+    const pat = genre[cpDrumPatIdx % genre.length];
+    cpDrumPatIdx++;
+    const step = durSec / 16;
+    for (let i = 0; i < 16; i++) {
+      if (pat.k[i]) playKick(i * step, pat.k[i] * 0.7);
+      if (pat.s[i]) playSnare(i * step, pat.s[i] * 0.5);
+      if (pat.h[i]) playHihat(i * step, pat.h[i] * 0.22, false);
     }
   };
   const startDrums = () => {};   // no-op — drums now fire per chord tick
@@ -3509,7 +3579,11 @@ views.chordsPractice = () => {
         </div>
       </div>
       <div style="margin-bottom:14px">
-        <button id="cpDrumsBtn" style="width:100%;padding:10px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid ${cpDrums?'#f97316':'var(--line)'};background:${cpDrums?'#f9731620':'var(--card)'};color:${cpDrums?'#f97316':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🥁 Drums ${cpDrums?'ON — tap to turn OFF':'OFF — tap to turn ON'}</button>
+        <button id="cpDrumsBtn" style="width:100%;padding:10px;border-radius:${cpDrums?'12px 12px 0 0':'12px'};font-size:14px;font-weight:700;cursor:pointer;border:2px solid ${cpDrums?'#f97316':'var(--line)'};border-bottom:${cpDrums?'none':'2px solid var(--line)'};background:${cpDrums?'#f9731620':'var(--card)'};color:${cpDrums?'#f97316':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🥁 Drums ${cpDrums?'ON':'OFF — tap to turn ON'}</button>
+        ${cpDrums?`<div style="padding:10px;border-radius:0 0 12px 12px;border:2px solid #f97316;border-top:1px solid #f9731640;background:#f9731610;display:flex;flex-wrap:wrap;gap:6px">
+          ${Object.keys(DRUM_GENRES).map(g=>`<button data-dg="${g}" style="padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${g===cpDrumGenre?'#f97316':'var(--line)'};background:${g===cpDrumGenre?'#f97316':'transparent'};color:${g===cpDrumGenre?'#fff':'var(--muted)'}">${g}</button>`).join('')}
+          <span style="width:100%;font-size:10px;color:#f97316;font-weight:600;opacity:0.8">Pattern: ${(DRUM_GENRES[cpDrumGenre]||DRUM_GENRES['🥁 Rock'])[cpDrumPatIdx%(DRUM_GENRES[cpDrumGenre]||DRUM_GENRES['🥁 Rock']).length].name} · cycles each chord</span>
+        </div>`:''}
       </div>
       ${chords.length?`
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -3580,7 +3654,8 @@ views.chordsPractice = () => {
     panel.querySelector('#cpToggleScale')?.addEventListener('click',()=>{ showScale=!showScale; saveCp(); render(); });
     panel.querySelector('#cpLoopBtn')?.addEventListener('click',()=>{ cpLoop=!cpLoop; saveCp(); render(); });
     panel.querySelector('#cpShuffleBtn')?.addEventListener('click',()=>{ cpShuffle=!cpShuffle; saveCp(); render(); });
-    panel.querySelector('#cpDrumsBtn')?.addEventListener('click',()=>{ cpDrums=!cpDrums; saveCp(); if(playTimer||rpTimer){ if(cpDrums) startDrums(); else stopDrums(); } render(); });
+    panel.querySelector('#cpDrumsBtn')?.addEventListener('click',()=>{ cpDrums=!cpDrums; cpDrumPatIdx=0; saveCp(); render(); });
+    panel.querySelectorAll('[data-dg]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); cpDrumGenre=b.dataset.dg; cpDrumPatIdx=0; saveCp(); render(); }));
     panel.querySelector('#cpInvSel')?.addEventListener('change',(e)=>{ const v=e.target.value; cpInversion=isNaN(v)?v:+v; lastPlayedMidis=null; saveCp(); render(); });
     panel.querySelector('#cpVoiceSel')?.addEventListener('change',(e)=>{ cpVoice=e.target.value; saveCp(); });
     panel.querySelector('#cpTempoDown')?.addEventListener('click',()=>{ cpTempo=Math.max(10,cpTempo-5); saveCp(); render(); });

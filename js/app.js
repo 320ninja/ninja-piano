@@ -4138,12 +4138,13 @@ views.chordsLibrarySong = (params, songId) => {
   let clShowBass = true;
   const BASS_COL = '#06b6d4';
   const fullKbSVG = (midis, activeColor, big = false) => {
-    const WW = 15, WH = big ? 104 : 62, BW = 9, BH = big ? 64 : 38, OCT = 4, BASE = 48;
+    // Keyboard: 1 bass octave (36-47) + 3 chord octaves (48-83) = 4 octaves, BASE=36
+    const WW = 15, WH = big ? 104 : 62, BW = 9, BH = big ? 64 : 38, OCT = 4, BASE = 36;
     const lblW = big ? 10 : 7.5, lblB = big ? 8 : 6;
-    // Show all chord notes at their positions + bass note ALSO one octave lower in cyan
     const highSet = new Set(midis);
+    // Bass note shown in its original octave AND one octave lower (in bottom/bass octave)
     const bassNote = (clShowBass && midis && midis.length) ? Math.min(...midis) : -1;
-    const bassLow = bassNote >= 0 && (bassNote - 12) >= BASE ? bassNote - 12 : -1;
+    const bassLow = bassNote >= 0 ? bassNote - 12 : -1; // always one octave lower
     const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
     let wkeys='', bkeys='', labels='';
     for (let oct=0; oct<OCT; oct++) {
@@ -4151,11 +4152,10 @@ views.chordsLibrarySong = (params, songId) => {
       WHITE_PCS_CL.forEach((pc,wi) => {
         const midi = base+pc;
         const on = highSet.has(midi);
-        const isBassLow = midi === bassLow;  // extra bass indicator one octave below chord
-        const isBassOrig = on && midi === bassNote; // original bass position in chord
-        const fill = isBassLow ? BASS_COL : isBassOrig ? BASS_COL : on ? activeColor : '#f7f7fa';
+        const isBassLow = midi === bassLow; // cyan bass indicator in lower octave
+        const fill = isBassLow ? BASS_COL : on ? activeColor : '#f7f7fa';
         const x = octX+wi*WW+1;
-        wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${fill}" stroke="${(isBassLow||isBassOrig)?BASS_COL:'#c8c8c8'}" stroke-width="${(isBassLow||isBassOrig)?2:1}"/>`;
+        wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${fill}" stroke="${isBassLow?BASS_COL:'#c8c8c8'}" stroke-width="${isBassLow?2:1}"/>`;
         if (isBassLow || on) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
         else if (clShowLabels) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="600" fill="#c43" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
@@ -4163,10 +4163,9 @@ views.chordsLibrarySong = (params, songId) => {
         const midi = base+pc;
         const on = highSet.has(midi);
         const isBassLow = midi === bassLow;
-        const isBassOrig = on && midi === bassNote;
-        const fill = isBassLow ? BASS_COL : isBassOrig ? BASS_COL : on ? activeColor : '#1e1e2e';
+        const fill = isBassLow ? BASS_COL : on ? activeColor : '#1e1e2e';
         const x = octX+ox*WW-Math.floor(BW/2)+1;
-        bkeys += `<rect x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${fill}" stroke="${(isBassLow||isBassOrig)?BASS_COL:'#0f0f1a'}" stroke-width="1"/>`;
+        bkeys += `<rect x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${fill}" stroke="${isBassLow?BASS_COL:'#0f0f1a'}" stroke-width="1"/>`;
         if (isBassLow || on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
     }

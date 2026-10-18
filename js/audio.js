@@ -124,6 +124,64 @@ export const playClick = (accent, when = 0) => {
 
 export const now = () => (ctx ? ctx.currentTime : 0);
 
+// ── Drum synthesis ──────────────────────────────────────────────────────────
+export const playKick = (when = 0, vol = 0.7) => {
+  ensure();
+  const t = ctx.currentTime + when;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.frequency.setValueAtTime(150, t);
+  o.frequency.exponentialRampToValueAtTime(40, t + 0.15);
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+  o.connect(g).connect(master);
+  o.start(t); o.stop(t + 0.36);
+};
+
+export const playSnare = (when = 0, vol = 0.5) => {
+  ensure();
+  const t = ctx.currentTime + when;
+  // Tonal body
+  const o = ctx.createOscillator();
+  const og = ctx.createGain();
+  o.frequency.value = 200;
+  og.gain.setValueAtTime(vol * 0.6, t);
+  og.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+  o.connect(og).connect(master);
+  o.start(t); o.stop(t + 0.13);
+  // Noise snare body
+  const nb = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+  const d = nb.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource();
+  noise.buffer = nb;
+  const nf = ctx.createBiquadFilter();
+  nf.type = 'bandpass'; nf.frequency.value = 3000; nf.Q.value = 0.8;
+  const ng = ctx.createGain();
+  ng.gain.setValueAtTime(vol * 0.8, t);
+  ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+  noise.connect(nf).connect(ng).connect(master);
+  noise.start(t);
+};
+
+export const playHihat = (when = 0, vol = 0.25, open = false) => {
+  ensure();
+  const t = ctx.currentTime + when;
+  const nb = ctx.createBuffer(1, ctx.sampleRate * 0.1, ctx.sampleRate);
+  const d = nb.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource();
+  noise.buffer = nb;
+  const nf = ctx.createBiquadFilter();
+  nf.type = 'highpass'; nf.frequency.value = 8000;
+  const ng = ctx.createGain();
+  const decay = open ? 0.3 : 0.06;
+  ng.gain.setValueAtTime(vol, t);
+  ng.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+  noise.connect(nf).connect(ng).connect(master);
+  noise.start(t);
+};
+
 let outGain = null;
 const ensure2 = () => { ensure(); return outGain; };
 

@@ -1,11 +1,11 @@
 import { THEMES, applyTheme } from './themes.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
 import { renderScore } from './score.js';
-import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio } from './audio.js';
+import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat } from './audio.js';
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
-import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=6';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=7';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -3153,6 +3153,8 @@ views.chordsPractice = () => {
   let cpInversion = saved.inversion ?? 0;
   let cpVoice = saved.voice || 'grand';
   let cpTempo = saved.tempo || 100;
+  let cpDrums = saved.drums || false;
+  let drumTimer = null, drumBeat = 0;
   let lastPlayedMidis = null;
   const INV_OPTS = [{v:0,l:'Root'},{v:1,l:'1st Inv'},{v:2,l:'2nd Inv'},{v:3,l:'3rd Inv'},{v:'best',l:'Best'},{v:'random',l:'Random'}];
 
@@ -3255,7 +3257,22 @@ views.chordsPractice = () => {
     return invertChord(midis,Math.min(cpInversion,maxInv));
   };
   const CP_VOICES = {grand:'Grand Piano',bright:'Bright',electric:'Electric',soft:'Soft',synth:'Synth',organ:'Organ',edm:'EDM'};
-  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,shuffle:cpShuffle,inversion:cpInversion,voice:cpVoice,tempo:cpTempo}));
+  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,shuffle:cpShuffle,inversion:cpInversion,voice:cpVoice,tempo:cpTempo,drums:cpDrums}));
+  const startDrums = () => {
+    if (drumTimer) { clearInterval(drumTimer); drumTimer = null; }
+    if (!cpDrums) return;
+    drumBeat = 0;
+    const beatMs = Math.round(60000 / cpTempo / 2); // 8th-note subdivisions
+    drumTimer = setInterval(() => {
+      const b = drumBeat % 8; // 8 eighth-notes per bar (4/4)
+      if (b === 0) playKick(0, 0.65);           // beat 1 kick
+      if (b === 4) playKick(0, 0.45);           // beat 3 kick (softer)
+      if (b === 2 || b === 6) playSnare(0, 0.5); // beats 2 and 4 snare
+      playHihat(0, 0.2, b % 2 !== 0);           // 8th-note hi-hats, open on off-beats
+      drumBeat++;
+    }, beatMs);
+  };
+  const stopDrums = () => { if (drumTimer) { clearInterval(drumTimer); drumTimer = null; } drumBeat = 0; };
 
   const KW=14, KH=58, BW=9, BH=36, octW=7*KW, nOcts=3, KB0=48;
   const TW = nOcts*octW+1;
@@ -3350,7 +3367,7 @@ views.chordsPractice = () => {
     });
   };
 
-  const stopPlay = () => { if(playTimer){clearInterval(playTimer);playTimer=null;} stopRp(); rpActiveIdx=-1; };
+  const stopPlay = () => { if(playTimer){clearInterval(playTimer);playTimer=null;} stopRp(); rpActiveIdx=-1; stopDrums(); };
 
   const render = () => {
     const def=SCALE_DEFS[selScale];
@@ -3479,6 +3496,7 @@ views.chordsPractice = () => {
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
         <button id="cpLoopBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpLoop?'var(--p)':'var(--line)'};background:${cpLoop?'var(--p)':'transparent'};color:${cpLoop?'#fff':'var(--muted)'}">🔁 Loop</button>
         <button id="cpShuffleBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpShuffle?'var(--p)':'var(--line)'};background:${cpShuffle?'var(--p)':'transparent'};color:${cpShuffle?'#fff':'var(--muted)'}">🔀 Random</button>
+        <button id="cpDrumsBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpDrums?'#f97316':'var(--line)'};background:${cpDrums?'#f9731620':'transparent'};color:${cpDrums?'#f97316':'var(--muted)'}">🥁 Drums</button>
         <select id="cpInvSel" style="padding:4px 8px;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer">
           ${INV_OPTS.map(o=>`<option value="${o.v}"${String(o.v)===String(cpInversion)?' selected':''}>${o.l}</option>`).join('')}
         </select>
@@ -3561,6 +3579,7 @@ views.chordsPractice = () => {
     panel.querySelector('#cpToggleScale')?.addEventListener('click',()=>{ showScale=!showScale; saveCp(); render(); });
     panel.querySelector('#cpLoopBtn')?.addEventListener('click',()=>{ cpLoop=!cpLoop; saveCp(); render(); });
     panel.querySelector('#cpShuffleBtn')?.addEventListener('click',()=>{ cpShuffle=!cpShuffle; saveCp(); render(); });
+    panel.querySelector('#cpDrumsBtn')?.addEventListener('click',()=>{ cpDrums=!cpDrums; saveCp(); if(playTimer||rpTimer){ if(cpDrums) startDrums(); else stopDrums(); } render(); });
     panel.querySelector('#cpInvSel')?.addEventListener('change',(e)=>{ const v=e.target.value; cpInversion=isNaN(v)?v:+v; lastPlayedMidis=null; saveCp(); render(); });
     panel.querySelector('#cpVoiceSel')?.addEventListener('change',(e)=>{ cpVoice=e.target.value; saveCp(); });
     panel.querySelector('#cpTempoDown')?.addEventListener('click',()=>{ cpTempo=Math.max(10,cpTempo-5); saveCp(); render(); });
@@ -3581,6 +3600,7 @@ views.chordsPractice = () => {
       };
       playNext();
       playTimer=setInterval(playNext, cpInterval());
+      startDrums();
     });
     panel.querySelector('#cpPlayAdv')?.addEventListener('click',()=>{
       unlockAudio();
@@ -3597,6 +3617,7 @@ views.chordsPractice = () => {
       };
       playNext();
       playTimer=setInterval(playNext, cpInterval());
+      startDrums();
     });
 
     // Random Practice
@@ -3605,7 +3626,7 @@ views.chordsPractice = () => {
     panel.querySelector('#rpLoopBtn')?.addEventListener('click',()=>{ rpLoop=!rpLoop; saveRp(); render(); });
     panel.querySelector('#rpPlayBtn')?.addEventListener('click',()=>{
       unlockAudio();
-      if(rpTimer){ stopRp(); rpActiveIdx=-1; rpSeq=[]; render(); return; }
+      if(rpTimer){ stopRp(); stopDrums(); rpActiveIdx=-1; rpSeq=[]; render(); return; }
       stopPlay(); selChordIdx=-1; selAdvIdx=-1;
       const allPool=[...chords,...adv];
       // Seed the sequence with 3 shuffled permutations so the queue looks full
@@ -3630,6 +3651,7 @@ views.chordsPractice = () => {
       // Set timer BEFORE first play so render() sees rpTimer as non-null
       rpTimer=setInterval(playRpNext, cpInterval());
       playRpNext();
+      startDrums();
     });
   };
 
@@ -3638,7 +3660,7 @@ views.chordsPractice = () => {
     <div class="card pad" id="cp-panel" style="padding:16px"></div>
   </section>`;
   render();
-  addEventListener('hashchange', stopPlay, { once: true });
+  addEventListener('hashchange', ()=>{ stopPlay(); stopDrums(); }, { once: true });
 };
 
 views.done = (params, id) => {

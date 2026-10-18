@@ -5,7 +5,7 @@ import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllA
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
-import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=5';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=6';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
@@ -1423,8 +1423,8 @@ const getChordInversionName = (label, q, midis) => {
   return `${label} ${type} – ${inv}`;
 };
 
-const PROG_MOODS = ['All','😊 Happy','😢 Sad','💫 Emotional','🔥 Epic','🎷 Jazz','🎼 Blues','🎵 Pop','🎸 Rock','🎤 Hip-Hop','🎧 EDM','💕 Romantic','🌙 Dark'];
-const MOOD_KEY   = { 'All':'all','😊 Happy':'happy','😢 Sad':'sad','💫 Emotional':'emotional','🔥 Epic':'epic','🎷 Jazz':'jazz','🎼 Blues':'blues','🎵 Pop':'pop','🎸 Rock':'rock','🎤 Hip-Hop':'hiphop','🎧 EDM':'edm','💕 Romantic':'romantic','🌙 Dark':'dark' };
+const PROG_MOODS = ['All','😊 Happy','😢 Sad','💫 Emotional','🔥 Epic','🎷 Jazz','🎼 Blues','🎵 Pop','🎸 Rock','🎤 Hip-Hop','🎧 EDM','💕 Romantic','🌙 Dark','🌴 Reggae'];
+const MOOD_KEY   = { 'All':'all','😊 Happy':'happy','😢 Sad':'sad','💫 Emotional':'emotional','🔥 Epic':'epic','🎷 Jazz':'jazz','🎼 Blues':'blues','🎵 Pop':'pop','🎸 Rock':'rock','🎤 Hip-Hop':'hiphop','🎧 EDM':'edm','💕 Romantic':'romantic','🌙 Dark':'dark','🌴 Reggae':'reggae' };
 
 const PROGRESSIONS_DB = [
   // ── Happy ──────────────────────────────────────────────
@@ -1679,6 +1679,38 @@ const PROGRESSIONS_DB = [
     chords:[{s:0,q:'m7',r:'im7'},{s:3,q:'M7',r:'♭IIImaj7'},{s:10,q:'7',r:'♭VII7'},{s:5,q:'m7',r:'ivm7'}] },
   { id:'mj-i-VI7-ii-V',  name:'i – VI7 – ii° – V (Minor Turnaround)', mood:['jazz','sad'], genre:'Jazz',
     chords:[{s:0,q:'m7',r:'im7'},{s:9,q:'7',r:'VI7'},{s:2,q:'dim',r:'ii°7'},{s:7,q:'7',r:'V7'}] },
+
+  // ── Reggae (15) ───────────────────────────────────────
+  { id:'reg-I-IV',        name:'I – IV (One Drop)',             mood:['reggae','happy'],           genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:5,q:'M',r:'IV'},{s:0,q:'M',r:'I'},{s:5,q:'M',r:'IV'}] },
+  { id:'reg-I-V-IV',      name:'I – V – IV (Roots Rock)',       mood:['reggae','happy'],           genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:7,q:'M',r:'V'},{s:5,q:'M',r:'IV'},{s:0,q:'M',r:'I'}] },
+  { id:'reg-I-IV-V',      name:'I – IV – V (Classic Ska)',      mood:['reggae','happy'],           genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:5,q:'M',r:'IV'},{s:7,q:'M',r:'V'},{s:0,q:'M',r:'I'}] },
+  { id:'reg-i-VII-VI-VII',name:'i – ♭VII – ♭VI – ♭VII (Minor Reggae)',mood:['reggae','emotional'],genre:'Reggae',
+    chords:[{s:0,q:'m',r:'i'},{s:10,q:'M',r:'♭VII'},{s:8,q:'M',r:'♭VI'},{s:10,q:'M',r:'♭VII'}] },
+  { id:'reg-i-iv-VII',    name:'i – iv – ♭VII (Dancehall)',     mood:['reggae','dark'],            genre:'Reggae',
+    chords:[{s:0,q:'m',r:'i'},{s:5,q:'m',r:'iv'},{s:10,q:'M',r:'♭VII'},{s:0,q:'m',r:'i'}] },
+  { id:'reg-I-VI-IV-V',   name:'I – VI – IV – V (Rocksteady)',  mood:['reggae','happy'],           genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:9,q:'m',r:'vi'},{s:5,q:'M',r:'IV'},{s:7,q:'M',r:'V'}] },
+  { id:'reg-i-VI-III-VII',name:'i – ♭VI – ♭III – ♭VII (Dub)',  mood:['reggae','dark'],            genre:'Reggae',
+    chords:[{s:0,q:'m',r:'i'},{s:8,q:'M',r:'♭VI'},{s:3,q:'M',r:'♭III'},{s:10,q:'M',r:'♭VII'}] },
+  { id:'reg-I-IV-I-V',    name:'I – IV – I – V (Ska Shuffle)',  mood:['reggae','happy'],           genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:5,q:'M',r:'IV'},{s:0,q:'M',r:'I'},{s:7,q:'M',r:'V'}] },
+  { id:'reg-i-iv-v-i',    name:'i – iv – v – i (Minor Roots)', mood:['reggae','sad'],             genre:'Reggae',
+    chords:[{s:0,q:'m',r:'i'},{s:5,q:'m',r:'iv'},{s:7,q:'m',r:'v'},{s:0,q:'m',r:'i'}] },
+  { id:'reg-I-V-vi-IV',   name:'I – V – vi – IV (Lovers Rock)', mood:['reggae','romantic'],       genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:7,q:'M',r:'V'},{s:9,q:'m',r:'vi'},{s:5,q:'M',r:'IV'}] },
+  { id:'reg-i-III-VII',   name:'i – ♭III – ♭VII (Steppers)',   mood:['reggae','dark'],            genre:'Reggae',
+    chords:[{s:0,q:'m',r:'i'},{s:3,q:'M',r:'♭III'},{s:10,q:'M',r:'♭VII'},{s:0,q:'m',r:'i'}] },
+  { id:'reg-I-bVII-IV',   name:'I – ♭VII – IV (Nyahbinghi)',   mood:['reggae','epic'],            genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:10,q:'M',r:'♭VII'},{s:5,q:'M',r:'IV'},{s:0,q:'M',r:'I'}] },
+  { id:'reg-I-IV-vi-V',   name:'I – IV – vi – V (Pop Reggae)', mood:['reggae','happy'],           genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:5,q:'M',r:'IV'},{s:9,q:'m',r:'vi'},{s:7,q:'M',r:'V'}] },
+  { id:'reg-i-VII-IV-VII',name:'i – ♭VII – IV – ♭VII (Dub Bass)', mood:['reggae','dark'],        genre:'Reggae',
+    chords:[{s:0,q:'m',r:'i'},{s:10,q:'M',r:'♭VII'},{s:5,q:'M',r:'IV'},{s:10,q:'M',r:'♭VII'}] },
+  { id:'reg-I-vi-IV-I',   name:'I – vi – IV – I (Mento)',      mood:['reggae','happy','classic'], genre:'Reggae',
+    chords:[{s:0,q:'M',r:'I'},{s:9,q:'m',r:'vi'},{s:5,q:'M',r:'IV'},{s:0,q:'M',r:'I'}] },
 ];
 
 // ── Progressions Favourites ─────────────────────────────────────
@@ -1701,7 +1733,7 @@ views.progressions = (params) => {
   const MOOD_COLORS = {
     happy:'#f59e0b',sad:'#6366f1',emotional:'#8b5cf6',epic:'#ef4444',
     jazz:'#d97706',blues:'#1d4ed8',pop:'#ec4899',rock:'#dc2626',hiphop:'#7c3aed',edm:'#0891b2',
-    romantic:'#ec4899',dark:'#374151',classic:'#0d9488',folk:'#65a30d',
+    romantic:'#ec4899',dark:'#374151',classic:'#0d9488',folk:'#65a30d',reggae:'#16a34a',
   };
   const moodBadge = (m) => `<span style="font-size:11px;padding:1px 8px;border-radius:12px;background:${MOOD_COLORS[m]||'#666'}22;color:${MOOD_COLORS[m]||'#888'};font-weight:600">${m}</span>`;
 

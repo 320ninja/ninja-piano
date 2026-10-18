@@ -3432,10 +3432,10 @@ views.chordsPractice = () => {
   const bDef=[{pc:1,ox:10},{pc:3,ox:24},{pc:6,ox:52},{pc:8,ox:66},{pc:10,ox:80}];
 
   const buildKb = (scalePCs, chordMidis, chordColor, bassMidis, nextMidis) => {
-    const scSet=new Set(showScale?scalePCs:[]), chSet=new Set(chordMidis||[]);
-    const bsSet=new Set((bassMidis||[]).map(m=>m%12));
-    // shift next chord up one octave so it shows distinctly above current chord
-    // force next chord into top octave (72-83) so it never overlaps current chord
+    const scSet=new Set(showScale?scalePCs:[]);
+    // Each layer pinned to its own octave: bass=48-59, chord=60-71, next=72-83
+    const chSet=new Set((chordMidis||[]).map(m=>{ let n=m; while(n<60)n+=12; while(n>71)n-=12; return n; }));
+    const bsSet=new Set((bassMidis||[]).map(m=>{ let n=m; while(n<48)n+=12; while(n>59)n-=12; return n; }));
     const nxSet=new Set((nextMidis||[]).map(m=>{ let n=m; while(n<72)n+=12; while(n>83)n-=12; return n; }));
     const BASS_COL='#0891b2';
     const NEXT_COL='#22d3ee'; // cyan ghost for next chord
@@ -3445,7 +3445,7 @@ views.chordsPractice = () => {
       const ox=o*octW, base=KB0+o*12;
       wPC.forEach((pc,wi)=>{
         const midi=base+pc, gpc=midi%12, x=ox+wi*KW+1;
-        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isNx=nxSet.has(midi)&&!isCh, isSc=scSet.has(gpc);
+        const isCh=chSet.has(midi), isBs=bsSet.has(midi), isNx=nxSet.has(midi), isSc=scSet.has(gpc);
         const fill=isCh?cCol:isBs?BASS_COL:isNx?'#cffafe':isSc?'#fecaca':'white';
         const stroke=isCh?cCol:isBs?BASS_COL:isNx?NEXT_COL:isSc?'#ef4444':'#ddd';
         const sw=isCh||isBs||isNx||isSc?1.5:0.5;
@@ -3454,7 +3454,7 @@ views.chordsPractice = () => {
       });
       bDef.forEach(({pc,ox:bx})=>{
         const midi=base+pc, gpc=midi%12;
-        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isNx=nxSet.has(midi)&&!isCh, isSc=scSet.has(gpc);
+        const isCh=chSet.has(midi), isBs=bsSet.has(midi), isNx=nxSet.has(midi), isSc=scSet.has(gpc);
         const fill=isCh?cCol:isBs?BASS_COL:isNx?'#164e63':isSc?'#ef4444':'#1a1a1a';
         bk+=`<rect x="${ox+bx}" y="1" width="${BW}" height="${BH}" rx="1" fill="${fill}"/>`;
         if(isCh||isBs||isNx||isSc) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="${isNx?NEXT_COL:'#fff'}" font-weight="800">${nn(gpc)}</text>`;

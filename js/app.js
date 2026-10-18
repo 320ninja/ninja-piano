@@ -3155,6 +3155,7 @@ views.chordsPractice = () => {
   let cpTempo = saved.tempo || 100;
   let cpDrums = saved.drums || false;
   let cpDrumGenre = saved.drumGenre || '🥁 Rock';
+  let cpDrumPat = saved.drumPat ?? 'mixed'; // number 0-5 = locked pattern, 'mixed' = cycle
   let cpDrumPatIdx = 0;
   let drumTimer = null, drumBeat = 0;
   let lastPlayedMidis = null;
@@ -3326,12 +3327,12 @@ views.chordsPractice = () => {
     return invertChord(midis,Math.min(cpInversion,maxInv));
   };
   const CP_VOICES = {grand:'Grand Piano',bright:'Bright',electric:'Electric',soft:'Soft',synth:'Synth',organ:'Organ',edm:'EDM'};
-  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,shuffle:cpShuffle,inversion:cpInversion,voice:cpVoice,tempo:cpTempo,drums:cpDrums,drumGenre:cpDrumGenre}));
+  const saveCp = () => localStorage.setItem('np.cpractice',JSON.stringify({root:selRoot,scale:selScale,showScale,loop:cpLoop,shuffle:cpShuffle,inversion:cpInversion,voice:cpVoice,tempo:cpTempo,drums:cpDrums,drumGenre:cpDrumGenre,drumPat:cpDrumPat}));
   // Schedule one bar of drums using Web Audio time — perfectly synced to each chord tick
   const scheduleDrumBar = (durSec) => {
     if (!cpDrums) return;
     const genre = DRUM_GENRES[cpDrumGenre] || DRUM_GENRES['🥁 Rock'];
-    const pat = genre[cpDrumPatIdx % genre.length];
+    const pat = cpDrumPat === 'mixed' ? genre[cpDrumPatIdx % genre.length] : genre[Math.min(cpDrumPat, genre.length - 1)];
     cpDrumPatIdx++;
     const step = durSec / 16;
     for (let i = 0; i < 16; i++) {
@@ -3580,9 +3581,14 @@ views.chordsPractice = () => {
       </div>
       <div style="margin-bottom:14px">
         <button id="cpDrumsBtn" style="width:100%;padding:10px;border-radius:${cpDrums?'12px 12px 0 0':'12px'};font-size:14px;font-weight:700;cursor:pointer;border:2px solid ${cpDrums?'#f97316':'var(--line)'};border-bottom:${cpDrums?'none':'2px solid var(--line)'};background:${cpDrums?'#f9731620':'var(--card)'};color:${cpDrums?'#f97316':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🥁 Drums ${cpDrums?'ON':'OFF — tap to turn ON'}</button>
-        ${cpDrums?`<div style="padding:10px;border-radius:0 0 12px 12px;border:2px solid #f97316;border-top:1px solid #f9731640;background:#f9731610;display:flex;flex-wrap:wrap;gap:6px">
-          ${Object.keys(DRUM_GENRES).map(g=>`<button data-dg="${g}" style="padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${g===cpDrumGenre?'#f97316':'var(--line)'};background:${g===cpDrumGenre?'#f97316':'transparent'};color:${g===cpDrumGenre?'#fff':'var(--muted)'}">${g}</button>`).join('')}
-          <span style="width:100%;font-size:10px;color:#f97316;font-weight:600;opacity:0.8">Pattern: ${(DRUM_GENRES[cpDrumGenre]||DRUM_GENRES['🥁 Rock'])[cpDrumPatIdx%(DRUM_GENRES[cpDrumGenre]||DRUM_GENRES['🥁 Rock']).length].name} · cycles each chord</span>
+        ${cpDrums?`<div style="padding:10px;border-radius:0 0 12px 12px;border:2px solid #f97316;border-top:1px solid #f9731640;background:#f9731610;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            ${Object.keys(DRUM_GENRES).map(g=>`<button data-dg="${g}" style="padding:4px 9px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${g===cpDrumGenre?'#f97316':'var(--line)'};background:${g===cpDrumGenre?'#f97316':'transparent'};color:${g===cpDrumGenre?'#fff':'var(--muted)'}">${g}</button>`).join('')}
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            ${(DRUM_GENRES[cpDrumGenre]||DRUM_GENRES['🥁 Rock']).map((p,i)=>`<button data-dp="${i}" style="padding:4px 9px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpDrumPat===i?'#38bdf8':'var(--line)'};background:${cpDrumPat===i?'#38bdf820':'transparent'};color:${cpDrumPat===i?'#38bdf8':'var(--muted)'}">${p.name}</button>`).join('')}
+            <button data-dp="mixed" style="padding:4px 9px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpDrumPat==='mixed'?'#a855f7':'var(--line)'};background:${cpDrumPat==='mixed'?'#a855f720':'transparent'};color:${cpDrumPat==='mixed'?'#a855f7':'var(--muted)'}">🔀 Mixed</button>
+          </div>
         </div>`:''}
       </div>
       ${chords.length?`
@@ -3655,7 +3661,8 @@ views.chordsPractice = () => {
     panel.querySelector('#cpLoopBtn')?.addEventListener('click',()=>{ cpLoop=!cpLoop; saveCp(); render(); });
     panel.querySelector('#cpShuffleBtn')?.addEventListener('click',()=>{ cpShuffle=!cpShuffle; saveCp(); render(); });
     panel.querySelector('#cpDrumsBtn')?.addEventListener('click',()=>{ cpDrums=!cpDrums; cpDrumPatIdx=0; saveCp(); render(); });
-    panel.querySelectorAll('[data-dg]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); cpDrumGenre=b.dataset.dg; cpDrumPatIdx=0; saveCp(); render(); }));
+    panel.querySelectorAll('[data-dg]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); cpDrumGenre=b.dataset.dg; cpDrumPat='mixed'; cpDrumPatIdx=0; saveCp(); render(); }));
+    panel.querySelectorAll('[data-dp]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); const v=b.dataset.dp; cpDrumPat=v==='mixed'?'mixed':parseInt(v); cpDrumPatIdx=0; saveCp(); render(); }));
     panel.querySelector('#cpInvSel')?.addEventListener('change',(e)=>{ const v=e.target.value; cpInversion=isNaN(v)?v:+v; lastPlayedMidis=null; saveCp(); render(); });
     panel.querySelector('#cpVoiceSel')?.addEventListener('change',(e)=>{ cpVoice=e.target.value; saveCp(); });
     panel.querySelector('#cpTempoDown')?.addEventListener('click',()=>{ cpTempo=Math.max(10,cpTempo-5); saveCp(); render(); });

@@ -1,7 +1,7 @@
 import { THEMES, applyTheme } from './themes.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
 import { renderScore } from './score.js';
-import { playNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat } from './audio.js';
+import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat } from './audio.js';
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
@@ -4256,9 +4256,10 @@ views.chordsLibrarySong = (params, songId) => {
   const clBassSaved = JSON.parse(localStorage.getItem('np.clbass') || '{}');
   let clBassOn = clBassSaved.on || false;
   let clBassPattern = clBassSaved.pat || 'Arp Up';
-  let clBassVol = clBassSaved.vol != null ? clBassSaved.vol : 0.6;
+  let clBassVol = clBassSaved.vol != null ? clBassSaved.vol : 0.7;
+  let clBassVoice = clBassSaved.voice || 'Electric';
   let clMixIdx = 0;
-  const saveCLBass = () => localStorage.setItem('np.clbass', JSON.stringify({on:clBassOn,pat:clBassPattern,vol:clBassVol}));
+  const saveCLBass = () => localStorage.setItem('np.clbass', JSON.stringify({on:clBassOn,pat:clBassPattern,vol:clBassVol,voice:clBassVoice}));
 
   // Each step: 'R'=root, '3'=third, '5'=fifth, '8'=root+octave, '6'=sixth, '7'=7th, 0=rest
   const BASS_PATTERNS = {
@@ -4306,7 +4307,7 @@ views.chordsLibrarySong = (params, songId) => {
     steps.forEach((token, i) => {
       if (!token) return;
       const note = noteMap[token] ?? bassRoot;
-      playNote(note, {duration: step * 2.5, velocity: 0.8, when: i * step, voice: 'grand', volume: clBassVol});
+      playBassNote(note, {duration: step * 2.5, velocity: 0.9, when: i * step, voice: clBassVoice, volume: clBassVol});
     });
   };
 
@@ -4759,8 +4760,10 @@ views.chordsLibrarySong = (params, songId) => {
     const wrap = app.querySelector('#clBassWrap');
     if (!wrap) return;
     const volPct = Math.round(clBassVol * 100);
-    wrap.innerHTML = `<button id="clBassBtn" style="width:100%;padding:9px;border-radius:${clBassOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clBassOn?'#06b6d4':'var(--line)'};border-bottom:${clBassOn?'none':'2px solid var(--line)'};background:${clBassOn?'#06b6d420':'var(--card)'};color:${clBassOn?'#06b6d4':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🎸 Bass ${clBassOn?'ON':'OFF — tap to turn ON'}</button>${clBassOn?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #06b6d4;border-top:1px solid #06b6d440;background:#06b6d410;display:flex;flex-direction:column;gap:8px"><div style="display:flex;flex-wrap:wrap;gap:5px">${Object.keys(BASS_PATTERNS).map(p=>`<button data-bp="${p}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassPattern===p?'#06b6d4':'var(--line)'};background:${clBassPattern===p?'#06b6d4':'transparent'};color:${clBassPattern===p?'#fff':'var(--muted)'}">${p==='Mixed'?'🔀 Mixed':p}</button>`).join('')}</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#06b6d4;font-weight:700;white-space:nowrap">🔊 Vol</span><input id="clBassVol" type="range" min="0" max="100" value="${volPct}" style="flex:1;accent-color:#06b6d4;height:4px"><span id="clBassVolLabel" style="font-size:11px;color:#06b6d4;font-weight:700;min-width:32px">${volPct}%</span></div></div>`:''}`;
+    const BASS_VOICE_KEYS = ['Electric','Synth Sub','Slap','Upright','Fretless','Funk','Deep Sub','Moog'];
+    wrap.innerHTML = `<button id="clBassBtn" style="width:100%;padding:9px;border-radius:${clBassOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clBassOn?'#06b6d4':'var(--line)'};border-bottom:${clBassOn?'none':'2px solid var(--line)'};background:${clBassOn?'#06b6d420':'var(--card)'};color:${clBassOn?'#06b6d4':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🎸 Bass ${clBassOn?'ON':'OFF — tap to turn ON'}</button>${clBassOn?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #06b6d4;border-top:1px solid #06b6d440;background:#06b6d410;display:flex;flex-direction:column;gap:8px"><div style="font-size:10px;font-weight:700;color:#06b6d4;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Instrument</div><div style="display:flex;flex-wrap:wrap;gap:5px">${BASS_VOICE_KEYS.map(v=>`<button data-bv="${v}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassVoice===v?'#f59e0b':'var(--line)'};background:${clBassVoice===v?'#f59e0b20':'transparent'};color:${clBassVoice===v?'#f59e0b':'var(--muted)'}">${v}</button>`).join('')}</div><div style="font-size:10px;font-weight:700;color:#06b6d4;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Pattern</div><div style="display:flex;flex-wrap:wrap;gap:5px">${Object.keys(BASS_PATTERNS).map(p=>`<button data-bp="${p}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassPattern===p?'#06b6d4':'var(--line)'};background:${clBassPattern===p?'#06b6d4':'transparent'};color:${clBassPattern===p?'#fff':'var(--muted)'}">${p==='Mixed'?'🔀 Mixed':p}</button>`).join('')}</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#06b6d4;font-weight:700;white-space:nowrap">🔊 Vol</span><input id="clBassVol" type="range" min="0" max="100" value="${volPct}" style="flex:1;accent-color:#06b6d4;height:4px"><span id="clBassVolLabel" style="font-size:11px;color:#06b6d4;font-weight:700;min-width:32px">${volPct}%</span></div></div>`:''}`;
     wrap.querySelector('#clBassBtn')?.addEventListener('click', () => { clBassOn=!clBassOn; saveCLBass(); renderCLBassWrap(); });
+    wrap.querySelectorAll('[data-bv]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); clBassVoice=b.dataset.bv; saveCLBass(); renderCLBassWrap(); }));
     wrap.querySelectorAll('[data-bp]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); clBassPattern=b.dataset.bp; clMixIdx=0; saveCLBass(); renderCLBassWrap(); }));
     const volSlider = wrap.querySelector('#clBassVol');
     if (volSlider) {

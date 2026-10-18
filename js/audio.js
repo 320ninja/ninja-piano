@@ -45,6 +45,82 @@ const VOICES = {
   edm: { partials: [[1, 0.9], [2, 0.8], [3, 0.5], [1.001, 0.9]], decay: 0.6, type: 'square', bright: 6000, trem: true },
 };
 
+// Bass-specific voices — tuned for low register with more punch
+const BASS_VOICES = {
+  'Electric':  { partials: [[1,1],[2,0.5],[3,0.25],[4,0.1]], decay: 1.4, type: 'triangle', bright: 1400, gainMult: 3.0 },
+  'Synth Sub': { partials: [[1,1],[2,0.6],[1.002,0.5]], decay: 1.0, type: 'sawtooth', bright: 900, gainMult: 3.2 },
+  'Slap':      { partials: [[1,1],[2,0.7],[3,0.4],[4,0.2]], decay: 0.5, type: 'triangle', bright: 2800, gainMult: 3.5, slap: true },
+  'Upright':   { partials: [[1,1],[2,0.28],[3,0.08]], decay: 2.0, type: 'sine', bright: 700, gainMult: 2.8 },
+  'Fretless':  { partials: [[1,1],[2,0.32],[3,0.1],[4,0.04]], decay: 2.4, type: 'sine', bright: 1000, gainMult: 2.8, slide: true },
+  'Funk':      { partials: [[1,1],[2,0.8],[3,0.5],[4,0.25],[1.003,0.6]], decay: 0.7, type: 'sawtooth', bright: 2200, gainMult: 3.4 },
+  'Deep Sub':  { partials: [[1,1],[2,0.2]], decay: 1.6, type: 'sine', bright: 400, gainMult: 4.0 },
+  'Moog':      { partials: [[1,1],[2,0.9],[3,0.7],[4,0.5],[5,0.3]], decay: 0.8, type: 'sawtooth', bright: 1600, gainMult: 3.0 },
+};
+
+export const playBassNote = (midi, { duration = 0.8, velocity = 0.9, when = 0, voice = 'Electric', volume = 0.7 } = {}) => {
+  ensure();
+  const v = BASS_VOICES[voice] || BASS_VOICES['Electric'];
+  const t = ctx.currentTime + Math.max(0, when);
+  const f = freq(midi);
+  const ring = Math.min(v.decay * 1.5, 3);
+  const len = Math.max(duration, 0.2) + ring * 0.4;
+
+  const env = ctx.createGain();
+  const peak = velocity * volume * 0.32 * (v.gainMult || 2.5);
+  env.gain.setValueAtTime(0.0001, t);
+  env.gain.exponentialRampToValueAtTime(peak, t + (v.slap ? 0.002 : 0.008));
+  env.gain.exponentialRampToValueAtTime(peak * 0.5, t + 0.06);
+  env.gain.exponentialRampToValueAtTime(peak * 0.28, t + Math.max(duration, 0.15));
+  env.gain.exponentialRampToValueAtTime(0.0001, t + len);
+
+  // Low-pass filter keeping warmth, rolling off harshness
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(Math.min(v.bright + f * 3, 8000), t);
+  filter.frequency.exponentialRampToValueAtTime(Math.max(f * 1.2, 200), t + len);
+  filter.Q.value = 1.2;
+  env.connect(filter);
+
+  // Subtle sub boost
+  const sub = ctx.createBiquadFilter();
+  sub.type = 'peaking';
+  sub.frequency.value = Math.min(f * 1.5, 200);
+  sub.gain.value = 6;
+  sub.Q.value = 1;
+  filter.connect(sub);
+  sub.connect(master);
+  // Less reverb for bass (keep it tight)
+  const wetG = ctx.createGain();
+  wetG.gain.value = 0.06;
+  sub.connect(wetG).connect(reverb);
+
+  for (const [mult, amp] of v.partials) {
+    const osc = ctx.createOscillator();
+    osc.type = mult === Math.round(mult) ? v.type : 'sine';
+    osc.frequency.value = f * mult;
+    if (v.slide) {
+      osc.frequency.setValueAtTime(f * mult * 0.97, t);
+      osc.frequency.exponentialRampToValueAtTime(f * mult, t + 0.04);
+    }
+    const g = ctx.createGain();
+    g.gain.value = amp / v.partials.length;
+    osc.connect(g).connect(env);
+    osc.start(t);
+    osc.stop(t + len + 0.05);
+  }
+  // Slap click transient
+  if (v.slap) {
+    const nb = ctx.createBuffer(1, ctx.sampleRate * 0.02, ctx.sampleRate);
+    const nd = nb.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = (Math.random()*2-1) * (1 - i/nd.length);
+    const ns = ctx.createBufferSource(); ns.buffer = nb;
+    const nf = ctx.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=f*5; nf.Q.value=0.5;
+    const ng = ctx.createGain(); ng.gain.value = peak * 0.4;
+    ns.connect(nf).connect(ng).connect(master);
+    ns.start(t);
+  }
+};
+
 let sustainOn = false;
 export const setSustain = (on) => { sustainOn = on; };
 export const getSustain = () => sustainOn;

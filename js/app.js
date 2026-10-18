@@ -4441,13 +4441,6 @@ views.chordsLibrarySong = (params, songId) => {
         <button id="clBpmUp" title="Faster" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--solid);color:var(--fg);font-size:18px;font-weight:800;cursor:pointer;line-height:1">+</button>
         <span id="clBpmVal" style="font-size:13px;font-weight:800;color:var(--p);min-width:62px;text-align:right">${baseBpm} BPM</span>
       </div>
-      <div style="margin-top:10px" id="clDrumsWrap">
-        <button id="clDrumsBtn" style="width:100%;padding:9px;border-radius:${clDrumsOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clDrumsOn?'#f97316':'var(--line)'};border-bottom:${clDrumsOn?'none':'2px solid var(--line)'};background:${clDrumsOn?'#f9731620':'var(--card)'};color:${clDrumsOn?'#f97316':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🥁 Drums ${clDrumsOn?'ON':'OFF — tap to turn ON'}</button>
-        ${clDrumsOn&&clDrumGenres?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #f97316;border-top:1px solid #f9731640;background:#f9731610;display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;flex-wrap:wrap;gap:5px">${Object.keys(clDrumGenres).map(g=>`<button data-clg="${g}" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${g===clDrumGenre?'#f97316':'var(--line)'};background:${g===clDrumGenre?'#f97316':'transparent'};color:${g===clDrumGenre?'#fff':'var(--muted)'}">${g}</button>`).join('')}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:5px">${(clDrumGenres[clDrumGenre]||clDrumGenres['🥁 Rock']).map((p,i)=>`<button data-clp="${i}" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${clDrumPat===i?'#38bdf8':'var(--line)'};background:${clDrumPat===i?'#38bdf820':'transparent'};color:${clDrumPat===i?'#38bdf8':'var(--muted)'}">${p.name}</button>`).join('')}<button data-clp="mixed" style="padding:4px 9px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid ${clDrumPat==='mixed'?'#a855f7':'var(--line)'};background:${clDrumPat==='mixed'?'#a855f720':'transparent'};color:${clDrumPat==='mixed'?'#a855f7':'var(--muted)'}">🔀 Mixed</button></div>
-        </div>`:''}
-      </div>
     </div>
 
     <!-- Transpose -->
@@ -4529,6 +4522,9 @@ views.chordsLibrarySong = (params, songId) => {
     <!-- Improv tips -->
     <h3 class="sec"><span class="badge">💡</span><span class="gt">Improvisation Tips</span></h3>
     <div class="card pad">${improvHtml}</div>
+
+    <!-- Drums control above currently playing -->
+    <div id="clDrumsWrap" style="margin-bottom:10px"></div>
 
     <!-- Currently playing keyboard (mirror, below tips) -->
     <div id="clNowPlayingBar2" style="display:none;margin-bottom:20px">

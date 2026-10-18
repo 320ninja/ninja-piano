@@ -4144,16 +4144,17 @@ views.chordsLibrarySong = (params, songId) => {
     const highSet = new Set(midis);
     const bassNote = (clShowBass && midis && midis.length) ? Math.min(...midis) : -1;
     const bassLow  = bassNote >= 0 ? bassNote - 12 : -1;
-    const BASS_ACTIVE_COL = '#00e5ff';
+    const BASS_ACTIVE_COL = '#22c55e'; // green for currently playing bass note
     // Chord interval numbers: sort midis, assign 1 3 5 7 by position
-    // Bass upcoming sequence: playing=1, next unique upcoming=2, 3, 4...
+    // Bass sequence: always compute from current step (numbers persist, not just on blink)
     const bassNumMap = new Map();
-    if (bassActiveMidi >= 0) bassNumMap.set(bassActiveMidi, 1);
     if (clBassStepMidis.length && clBassCurrentStep >= 0) {
+      const playingMidi = clBassStepMidis[clBassCurrentStep];
+      if (playingMidi) bassNumMap.set(playingMidi, 1);
       let num = 2;
       for (let i = 1; i < 16 && num <= 4; i++) {
         const m = clBassStepMidis[(clBassCurrentStep + i) % 16];
-        if (m && !bassNumMap.has(m)) { bassNumMap.set(m, num++); }
+        if (m && !bassNumMap.has(m)) bassNumMap.set(m, num++);
       }
     }
     const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
@@ -4172,19 +4173,13 @@ views.chordsLibrarySong = (params, songId) => {
         if (isBassBlink) anims += `<animate href="#${rectId}" attributeName="opacity" values="1;0.4;1" dur="0.18s" repeatCount="1"/>`;
         if (isBassBlink||isBassLow||on) labels += `<text x="${cx}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
         else if (clShowLabels) labels += `<text x="${cx}" y="${WH-6}" font-size="${lblW}" font-weight="600" fill="#c43" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
-        // bass sequence badges only (no chord badges)
-        if (isBassBlink || isBassLow) {
-          const bm = isBassBlink ? bassActiveMidi : bassLow;
-          if (bassNumMap.has(bm)) {
-            const bc = isBassBlink ? BASS_ACTIVE_COL : BASS_COL;
-            badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="${bc}"/>`;
-            badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="#002233" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${bassNumMap.get(bm)}</text>`;
-          }
-        } else if (bassNumMap.has(midi) && !on) {
-          // upcoming non-chord bass note
+        // bass sequence badges (no chord badges); always shown if clShowBassNums
+        if (clShowBassNums && bassNumMap.has(midi)) {
           const num = bassNumMap.get(midi);
-          badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="${BASS_COL}80"/>`;
-          badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${num}</text>`;
+          const isPlaying = num === 1 && isBassBlink;
+          const bc = isPlaying ? BASS_ACTIVE_COL : num === 1 ? BASS_COL : `${BASS_COL}99`;
+          badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="${bc}"/>`;
+          badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="${isPlaying?'#002233':'#fff'}" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${num}</text>`;
         }
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
@@ -4199,16 +4194,11 @@ views.chordsLibrarySong = (params, songId) => {
         if (isBassBlink) anims += `<animate href="#${rectId}" attributeName="opacity" values="1;0.3;1" dur="0.18s" repeatCount="1"/>`;
         if (isBassBlink||isBassLow||on) labels += `<text x="${cx}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
         const NRb=Math.max(NR-1,3), NFb=Math.max(NF-1,4);
-        if (isBassBlink || isBassLow) {
-          const bm = isBassBlink ? bassActiveMidi : bassLow;
-          if (bassNumMap.has(bm)) {
-            const bc = isBassBlink ? BASS_ACTIVE_COL : BASS_COL;
-            badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="${bc}"/>`;
-            badges += `<text x="${cx}" y="${NRb+2+NFb*0.38}" font-size="${NFb}" font-weight="900" fill="#002233" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${bassNumMap.get(bm)}</text>`;
-          }
-        } else if (bassNumMap.has(midi) && !on) {
+        if (clShowBassNums && bassNumMap.has(midi)) {
           const num = bassNumMap.get(midi);
-          badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="${BASS_COL}80"/>`;
+          const isPlaying = num === 1 && isBassBlink;
+          const bc = isPlaying ? BASS_ACTIVE_COL : num === 1 ? BASS_COL : `${BASS_COL}99`;
+          badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="${bc}"/>`;
           badges += `<text x="${cx}" y="${NRb+2+NFb*0.38}" font-size="${NFb}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${num}</text>`;
         }
       });
@@ -4313,7 +4303,10 @@ views.chordsLibrarySong = (params, songId) => {
   let clBassBlinkTimers = [];
   let clBassStepMidis = []; // resolved midi per step (0=rest) for upcoming display
   let clBassCurrentStep = -1; // which step is currently playing
+  const clBassSaved2 = (() => { try { return JSON.parse(localStorage.getItem('np.clbass2')||'{}'); } catch(e){return{};} })();
+  let clShowBassNums = clBassSaved2.showNums !== false; // default on
   const saveCLBass = () => localStorage.setItem('np.clbass', JSON.stringify({on:clBassOn,pat:clBassPattern,vol:clBassVol,voice:clBassVoice}));
+  const saveCLBass2 = () => localStorage.setItem('np.clbass2', JSON.stringify({showNums:clShowBassNums}));
   const flashBassKey = (midi, stepMs, stepIdx) => {
     clBassActiveMidi = midi;
     clBassCurrentStep = stepIdx;
@@ -4837,10 +4830,11 @@ views.chordsLibrarySong = (params, songId) => {
     if (!wrap) return;
     const volPct = Math.round(clBassVol * 100);
     const BASS_VOICE_KEYS = ['Electric','Synth Sub','Slap','Upright','Fretless','Funk','Deep Sub','Moog'];
-    wrap.innerHTML = `<button id="clBassBtn" style="width:100%;padding:9px;border-radius:${clBassOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clBassOn?'#06b6d4':'var(--line)'};border-bottom:${clBassOn?'none':'2px solid var(--line)'};background:${clBassOn?'#06b6d420':'var(--card)'};color:${clBassOn?'#06b6d4':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🎸 Bass ${clBassOn?'ON':'OFF — tap to turn ON'}</button>${clBassOn?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #06b6d4;border-top:1px solid #06b6d440;background:#06b6d410;display:flex;flex-direction:column;gap:8px"><div style="font-size:10px;font-weight:700;color:#06b6d4;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Instrument</div><div style="display:flex;flex-wrap:wrap;gap:5px">${BASS_VOICE_KEYS.map(v=>`<button data-bv="${v}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassVoice===v?'#f59e0b':'var(--line)'};background:${clBassVoice===v?'#f59e0b20':'transparent'};color:${clBassVoice===v?'#f59e0b':'var(--muted)'}">${v}</button>`).join('')}</div><div style="font-size:10px;font-weight:700;color:#06b6d4;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Pattern</div><div style="display:flex;flex-wrap:wrap;gap:5px">${Object.keys(BASS_PATTERNS).map(p=>`<button data-bp="${p}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassPattern===p?'#06b6d4':'var(--line)'};background:${clBassPattern===p?'#06b6d4':'transparent'};color:${clBassPattern===p?'#fff':'var(--muted)'}">${p==='Mixed'?'🔀 Mixed':p}</button>`).join('')}</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#06b6d4;font-weight:700;white-space:nowrap">🔊 Vol</span><input id="clBassVol" type="range" min="0" max="100" value="${volPct}" style="flex:1;accent-color:#06b6d4;height:4px"><span id="clBassVolLabel" style="font-size:11px;color:#06b6d4;font-weight:700;min-width:32px">${volPct}%</span></div></div>`:''}`;
+    wrap.innerHTML = `<button id="clBassBtn" style="width:100%;padding:9px;border-radius:${clBassOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clBassOn?'#06b6d4':'var(--line)'};border-bottom:${clBassOn?'none':'2px solid var(--line)'};background:${clBassOn?'#06b6d420':'var(--card)'};color:${clBassOn?'#06b6d4':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🎸 Bass ${clBassOn?'ON':'OFF — tap to turn ON'}</button>${clBassOn?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #06b6d4;border-top:1px solid #06b6d440;background:#06b6d410;display:flex;flex-direction:column;gap:8px"><div style="font-size:10px;font-weight:700;color:#06b6d4;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Instrument</div><div style="display:flex;flex-wrap:wrap;gap:5px">${BASS_VOICE_KEYS.map(v=>`<button data-bv="${v}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassVoice===v?'#f59e0b':'var(--line)'};background:${clBassVoice===v?'#f59e0b20':'transparent'};color:${clBassVoice===v?'#f59e0b':'var(--muted)'}">${v}</button>`).join('')}</div><div style="font-size:10px;font-weight:700;color:#06b6d4;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Pattern</div><div style="display:flex;flex-wrap:wrap;gap:5px">${Object.keys(BASS_PATTERNS).map(p=>`<button data-bp="${p}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassPattern===p?'#06b6d4':'var(--line)'};background:${clBassPattern===p?'#06b6d4':'transparent'};color:${clBassPattern===p?'#fff':'var(--muted)'}">${p==='Mixed'?'🔀 Mixed':p}</button>`).join('')}</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#06b6d4;font-weight:700;white-space:nowrap">🔊 Vol</span><input id="clBassVol" type="range" min="0" max="100" value="${volPct}" style="flex:1;accent-color:#06b6d4;height:4px"><span id="clBassVolLabel" style="font-size:11px;color:#06b6d4;font-weight:700;min-width:32px">${volPct}%</span><button id="clBassNumsBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clShowBassNums?'#22c55e':'var(--line)'};background:${clShowBassNums?'#22c55e20':'transparent'};color:${clShowBassNums?'#22c55e':'var(--muted)'}">1 2 3</button></div></div>`:''}`;
     wrap.querySelector('#clBassBtn')?.addEventListener('click', () => { clBassOn=!clBassOn; saveCLBass(); renderCLBassWrap(); });
     wrap.querySelectorAll('[data-bv]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); clBassVoice=b.dataset.bv; saveCLBass(); renderCLBassWrap(); }));
     wrap.querySelectorAll('[data-bp]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); clBassPattern=b.dataset.bp; clMixIdx=0; saveCLBass(); renderCLBassWrap(); }));
+    wrap.querySelector('#clBassNumsBtn')?.addEventListener('click',(e)=>{ e.stopPropagation(); clShowBassNums=!clShowBassNums; saveCLBass2(); renderCLBassWrap(); const kbEl=app.querySelector('#clNowKb'),kbEl2=app.querySelector('#clNowKb2'); if(kbEl&&kbEl._lastMidis)kbEl.innerHTML=fullKbSVG(kbEl._lastMidis,kbEl._lastCol,false,clBassActiveMidi); if(kbEl2&&kbEl2._lastMidis)kbEl2.innerHTML=fullKbSVG(kbEl2._lastMidis,kbEl2._lastCol,true,clBassActiveMidi); });
     const volSlider = wrap.querySelector('#clBassVol');
     if (volSlider) {
       volSlider.addEventListener('input', () => {

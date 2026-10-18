@@ -19238,7 +19238,6 @@ export const CHORDS_LIBRARY = [
       'Use Am as a pivot — resolve phrases back to E for a strong sense of home',
     ],
   },
-];
 
   // ── REGGAE ─────────────────────────────────────────────────────────────────
   {

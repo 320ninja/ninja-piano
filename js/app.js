@@ -3435,7 +3435,8 @@ views.chordsPractice = () => {
     const scSet=new Set(showScale?scalePCs:[]), chSet=new Set(chordMidis||[]);
     const bsSet=new Set((bassMidis||[]).map(m=>m%12));
     // shift next chord up one octave so it shows distinctly above current chord
-    const nxSet=new Set((nextMidis||[]).map(m=>m+12));
+    // force next chord into top octave (72-83) so it never overlaps current chord
+    const nxSet=new Set((nextMidis||[]).map(m=>{ let n=m; while(n<72)n+=12; while(n>83)n-=12; return n; }));
     const BASS_COL='#0891b2';
     const NEXT_COL='#22d3ee'; // cyan ghost for next chord
     const cCol=chordColor||'var(--p)';
@@ -4254,32 +4255,58 @@ views.chordsLibrarySong = (params, songId) => {
   // Bass pattern state
   const clBassSaved = JSON.parse(localStorage.getItem('np.clbass') || '{}');
   let clBassOn = clBassSaved.on || false;
-  let clBassPattern = clBassSaved.pat || 'root';
-  const saveCLBass = () => localStorage.setItem('np.clbass', JSON.stringify({on:clBassOn,pat:clBassPattern}));
+  let clBassPattern = clBassSaved.pat || 'Arp Up';
+  let clBassVol = clBassSaved.vol != null ? clBassSaved.vol : 0.6;
+  let clMixIdx = 0;
+  const saveCLBass = () => localStorage.setItem('np.clbass', JSON.stringify({on:clBassOn,pat:clBassPattern,vol:clBassVol}));
+
+  // Each step: 'R'=root, '3'=third, '5'=fifth, '8'=root+octave, '6'=sixth, '7'=7th, 0=rest
   const BASS_PATTERNS = {
-    'Root':    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    'On Beat': [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
-    'Root-5th':[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],
-    'Walking': [1,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0],
-    'Octave':  [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
-    'Bounce':  [1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    'Root':      ['R',0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+    'On Beat':   ['R',0,0,0, 'R',0,0,0, 'R',0,0,0, 'R',0,0,0],
+    'Root-5th':  ['R',0,0,0, 0,0,0,0, '5',0,0,0, 0,0,0,0],
+    'Arp Up':    ['R',0,'3',0, '5',0,'8',0, '5',0,'3',0, 'R',0,0,0],
+    'Arp Down':  ['8',0,'5',0, '3',0,'R',0, '3',0,'5',0, '8',0,0,0],
+    'Chord Walk':['R',0,'3',0, '5',0,'3',0, 'R',0,'5',0, '3',0,'R',0],
+    'Bounce':    ['R',0,0,'R', '5',0,0,'5', 'R',0,0,'R', '3',0,0,0],
+    'Walking':   ['R',0,0,0, '3',0,0,0, '5',0,0,0, '3',0,0,0],
+    'Syncopated':['R',0,'3',0, 0,'5',0,0, '8',0,0,'3', 0,'5',0,0],
+    'Boogie':    ['R','R',0,'5', 0,'5',0,'R', 'R','R',0,'5', 0,'5',0,0],
+    'Strum':     ['R','3','5','8', '5','3','R',0, 'R','3','5','8', '5','3',0,0],
+    'Pulse':     ['R',0,'R',0, '5',0,'R',0, 'R',0,'R',0, '5',0,'3',0],
+    'Mixed':     null,
   };
+
+  const BASS_PAT_KEYS = Object.keys(BASS_PATTERNS).filter(k => k !== 'Mixed');
+
   const clScheduleBass = (chordName, durSec) => {
     if (!clBassOn) return;
     const rootMidi = chordRootMidi(chordName);
-    const bassRoot = rootMidi < 48 ? rootMidi : rootMidi - 12;  // keep in bass register
-    const fifth = bassRoot + 7;
-    const octave = bassRoot + 12;
-    const pat = BASS_PATTERNS[clBassPattern] || BASS_PATTERNS['Root'];
+    let bassRoot = rootMidi;
+    while (bassRoot >= 48) bassRoot -= 12;
+    bassRoot += 12; // put in octave below middle C (36-47 range)
+    // derive chord tones from name quality
+    const isMinor = /m\b|min\b/.test(chordName.replace(/^[A-G][#b]?/,''));
+    const isDim   = /°|dim/.test(chordName);
+    const isAug   = /\+|aug/.test(chordName);
+    const third   = isDim||isMinor ? 3 : 4;
+    const fifth   = isDim ? 6 : isAug ? 8 : 7;
+    const sixth   = 9;
+    const seventh = /maj7|M7/.test(chordName) ? 11 : 10;
+    const noteMap = { 'R': bassRoot, '3': bassRoot+third, '5': bassRoot+fifth,
+                      '8': bassRoot+12, '6': bassRoot+sixth, '7': bassRoot+seventh };
+
+    let patKey = clBassPattern;
+    if (patKey === 'Mixed') {
+      patKey = BASS_PAT_KEYS[clMixIdx % BASS_PAT_KEYS.length];
+      clMixIdx++;
+    }
+    const steps = BASS_PATTERNS[patKey] || BASS_PATTERNS['Root'];
     const step = durSec / 16;
-    pat.forEach((hit, i) => {
-      if (!hit) return;
-      // alternate root / 5th / octave based on pattern position for variety
-      let note = bassRoot;
-      if (clBassPattern === 'Root-5th' && i >= 8) note = fifth;
-      if (clBassPattern === 'Octave' && i >= 8) note = octave;
-      if (clBassPattern === 'Walking') note = [bassRoot, bassRoot+2, bassRoot+4, bassRoot+5][Math.floor(i/4)%4] || bassRoot;
-      playNote(note, {duration: step * 3, velocity: 0.75, when: i * step, voice: 'grand', volume: 0.55});
+    steps.forEach((token, i) => {
+      if (!token) return;
+      const note = noteMap[token] ?? bassRoot;
+      playNote(note, {duration: step * 2.5, velocity: 0.8, when: i * step, voice: 'grand', volume: clBassVol});
     });
   };
 
@@ -4731,9 +4758,19 @@ views.chordsLibrarySong = (params, songId) => {
   const renderCLBassWrap = () => {
     const wrap = app.querySelector('#clBassWrap');
     if (!wrap) return;
-    wrap.innerHTML = `<button id="clBassBtn" style="width:100%;padding:9px;border-radius:${clBassOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clBassOn?'#06b6d4':'var(--line)'};border-bottom:${clBassOn?'none':'2px solid var(--line)'};background:${clBassOn?'#06b6d420':'var(--card)'};color:${clBassOn?'#06b6d4':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🎸 Bass ${clBassOn?'ON':'OFF — tap to turn ON'}</button>${clBassOn?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #06b6d4;border-top:1px solid #06b6d440;background:#06b6d410;display:flex;flex-wrap:wrap;gap:5px">${Object.keys(BASS_PATTERNS).map(p=>`<button data-bp="${p}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassPattern===p?'#06b6d4':'var(--line)'};background:${clBassPattern===p?'#06b6d4':'transparent'};color:${clBassPattern===p?'#fff':'var(--muted)'}">${p}</button>`).join('')}</div>`:''}`;
+    const volPct = Math.round(clBassVol * 100);
+    wrap.innerHTML = `<button id="clBassBtn" style="width:100%;padding:9px;border-radius:${clBassOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clBassOn?'#06b6d4':'var(--line)'};border-bottom:${clBassOn?'none':'2px solid var(--line)'};background:${clBassOn?'#06b6d420':'var(--card)'};color:${clBassOn?'#06b6d4':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🎸 Bass ${clBassOn?'ON':'OFF — tap to turn ON'}</button>${clBassOn?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #06b6d4;border-top:1px solid #06b6d440;background:#06b6d410;display:flex;flex-direction:column;gap:8px"><div style="display:flex;flex-wrap:wrap;gap:5px">${Object.keys(BASS_PATTERNS).map(p=>`<button data-bp="${p}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassPattern===p?'#06b6d4':'var(--line)'};background:${clBassPattern===p?'#06b6d4':'transparent'};color:${clBassPattern===p?'#fff':'var(--muted)'}">${p==='Mixed'?'🔀 Mixed':p}</button>`).join('')}</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#06b6d4;font-weight:700;white-space:nowrap">🔊 Vol</span><input id="clBassVol" type="range" min="0" max="100" value="${volPct}" style="flex:1;accent-color:#06b6d4;height:4px"><span id="clBassVolLabel" style="font-size:11px;color:#06b6d4;font-weight:700;min-width:32px">${volPct}%</span></div></div>`:''}`;
     wrap.querySelector('#clBassBtn')?.addEventListener('click', () => { clBassOn=!clBassOn; saveCLBass(); renderCLBassWrap(); });
-    wrap.querySelectorAll('[data-bp]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); clBassPattern=b.dataset.bp; saveCLBass(); renderCLBassWrap(); }));
+    wrap.querySelectorAll('[data-bp]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); clBassPattern=b.dataset.bp; clMixIdx=0; saveCLBass(); renderCLBassWrap(); }));
+    const volSlider = wrap.querySelector('#clBassVol');
+    if (volSlider) {
+      volSlider.addEventListener('input', () => {
+        clBassVol = parseInt(volSlider.value) / 100;
+        const lbl = wrap.querySelector('#clBassVolLabel');
+        if (lbl) lbl.textContent = volSlider.value + '%';
+        saveCLBass();
+      });
+    }
   };
   renderCLBassWrap();
 

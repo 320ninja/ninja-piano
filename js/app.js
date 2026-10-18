@@ -4146,11 +4146,16 @@ views.chordsLibrarySong = (params, songId) => {
     const bassLow  = bassNote >= 0 ? bassNote - 12 : -1;
     const BASS_ACTIVE_COL = '#00e5ff';
     // Chord interval numbers: sort midis, assign 1 3 5 7 by position
-    const sortedMidis = midis ? [...midis].sort((a,b)=>a-b) : [];
-    // sequential play-order numbers (1,2,3,4) like falling notes
-    const chordNumMap = new Map(sortedMidis.map((m,i) => [m, String(i+1)]));
-    // Bass: use pattern sequence number if available, else position
-    const bassNum = (m) => (clBassSeqMap && clBassSeqMap.has(m)) ? String(clBassSeqMap.get(m)) : '1';
+    // Bass upcoming sequence: playing=1, next unique upcoming=2, 3, 4...
+    const bassNumMap = new Map();
+    if (bassActiveMidi >= 0) bassNumMap.set(bassActiveMidi, 1);
+    if (clBassStepMidis.length && clBassCurrentStep >= 0) {
+      let num = 2;
+      for (let i = 1; i < 16 && num <= 4; i++) {
+        const m = clBassStepMidis[(clBassCurrentStep + i) % 16];
+        if (m && !bassNumMap.has(m)) { bassNumMap.set(m, num++); }
+      }
+    }
     const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
     let wkeys='', bkeys='', labels='', badges='', anims='';
     for (let oct=0; oct<OCT; oct++) {
@@ -4167,14 +4172,19 @@ views.chordsLibrarySong = (params, songId) => {
         if (isBassBlink) anims += `<animate href="#${rectId}" attributeName="opacity" values="1;0.4;1" dur="0.18s" repeatCount="1"/>`;
         if (isBassBlink||isBassLow||on) labels += `<text x="${cx}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
         else if (clShowLabels) labels += `<text x="${cx}" y="${WH-6}" font-size="${lblW}" font-weight="600" fill="#c43" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
-        // number badges: gold for chord, cyan for bass
-        if (on && chordNumMap.has(midi)) {
-          badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="#f59e0b"/>`;
-          badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${chordNumMap.get(midi)}</text>`;
-        } else if (isBassBlink||isBassLow) {
-          const bc = isBassBlink ? BASS_ACTIVE_COL : BASS_COL;
-          badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="${bc}"/>`;
-          badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="#002233" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${bassNum(isBassBlink?bassActiveMidi:bassNote)}</text>`;
+        // bass sequence badges only (no chord badges)
+        if (isBassBlink || isBassLow) {
+          const bm = isBassBlink ? bassActiveMidi : bassLow;
+          if (bassNumMap.has(bm)) {
+            const bc = isBassBlink ? BASS_ACTIVE_COL : BASS_COL;
+            badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="${bc}"/>`;
+            badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="#002233" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${bassNumMap.get(bm)}</text>`;
+          }
+        } else if (bassNumMap.has(midi) && !on) {
+          // upcoming non-chord bass note
+          const num = bassNumMap.get(midi);
+          badges += `<circle cx="${cx}" cy="${NR+3}" r="${NR}" fill="${BASS_COL}80"/>`;
+          badges += `<text x="${cx}" y="${NR+3+NF*0.38}" font-size="${NF}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${num}</text>`;
         }
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
@@ -4189,13 +4199,17 @@ views.chordsLibrarySong = (params, songId) => {
         if (isBassBlink) anims += `<animate href="#${rectId}" attributeName="opacity" values="1;0.3;1" dur="0.18s" repeatCount="1"/>`;
         if (isBassBlink||isBassLow||on) labels += `<text x="${cx}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
         const NRb=Math.max(NR-1,3), NFb=Math.max(NF-1,4);
-        if (on && chordNumMap.has(midi)) {
-          badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="#f59e0b"/>`;
-          badges += `<text x="${cx}" y="${NRb+2+NFb*0.38}" font-size="${NFb}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${chordNumMap.get(midi)}</text>`;
-        } else if (isBassBlink||isBassLow) {
-          const bc = isBassBlink ? BASS_ACTIVE_COL : BASS_COL;
-          badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="${bc}"/>`;
-          badges += `<text x="${cx}" y="${NRb+2+NFb*0.38}" font-size="${NFb}" font-weight="900" fill="#002233" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${bassNum(isBassBlink?bassActiveMidi:bassNote)}</text>`;
+        if (isBassBlink || isBassLow) {
+          const bm = isBassBlink ? bassActiveMidi : bassLow;
+          if (bassNumMap.has(bm)) {
+            const bc = isBassBlink ? BASS_ACTIVE_COL : BASS_COL;
+            badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="${bc}"/>`;
+            badges += `<text x="${cx}" y="${NRb+2+NFb*0.38}" font-size="${NFb}" font-weight="900" fill="#002233" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${bassNumMap.get(bm)}</text>`;
+          }
+        } else if (bassNumMap.has(midi) && !on) {
+          const num = bassNumMap.get(midi);
+          badges += `<circle cx="${cx}" cy="${NRb+2}" r="${NRb}" fill="${BASS_COL}80"/>`;
+          badges += `<text x="${cx}" y="${NRb+2+NFb*0.38}" font-size="${NFb}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${num}</text>`;
         }
       });
     }
@@ -4297,10 +4311,12 @@ views.chordsLibrarySong = (params, songId) => {
   let clMixIdx = 0;
   let clBassActiveMidi = -1; // currently blinking bass note
   let clBassBlinkTimers = [];
-  let clBassSeqMap = new Map(); // midi -> play-order number in current pattern
+  let clBassStepMidis = []; // resolved midi per step (0=rest) for upcoming display
+  let clBassCurrentStep = -1; // which step is currently playing
   const saveCLBass = () => localStorage.setItem('np.clbass', JSON.stringify({on:clBassOn,pat:clBassPattern,vol:clBassVol,voice:clBassVoice}));
-  const flashBassKey = (midi, stepMs) => {
+  const flashBassKey = (midi, stepMs, stepIdx) => {
     clBassActiveMidi = midi;
+    clBassCurrentStep = stepIdx;
     const kbEl = app.querySelector('#clNowKb'), kbEl2 = app.querySelector('#clNowKb2');
     if (kbEl && kbEl._lastMidis) { kbEl.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol, false, midi); }
     if (kbEl2 && kbEl2._lastMidis) { kbEl2.innerHTML = fullKbSVG(kbEl2._lastMidis, kbEl2._lastCol, true, midi); }
@@ -4312,7 +4328,7 @@ views.chordsLibrarySong = (params, songId) => {
     }, stepMs * 0.65);
     clBassBlinkTimers.push(off);
   };
-  const clearBassTimers = () => { clBassBlinkTimers.forEach(t => clearTimeout(t)); clBassBlinkTimers = []; };
+  const clearBassTimers = () => { clBassBlinkTimers.forEach(t => clearTimeout(t)); clBassBlinkTimers = []; clBassCurrentStep = -1; };
 
   // Each step: 'R'=root, '3'=third, '5'=fifth, '8'=root+octave, '6'=sixth, '7'=7th, 0=rest
   const BASS_PATTERNS = {
@@ -4356,14 +4372,8 @@ views.chordsLibrarySong = (params, songId) => {
       clMixIdx++;
     }
     const steps = BASS_PATTERNS[patKey] || BASS_PATTERNS['Root'];
-    // build play-order sequence map for badge display
-    clBassSeqMap = new Map();
-    let seqNum = 1;
-    steps.forEach(token => {
-      if (!token) return;
-      const note = noteMap[token] ?? bassRoot;
-      if (!clBassSeqMap.has(note)) clBassSeqMap.set(note, seqNum++);
-    });
+    // resolve full step midi array for upcoming badge display
+    clBassStepMidis = steps.map(token => token ? (noteMap[token] ?? bassRoot) : 0);
     const step = durSec / 16;
     const stepMs = step * 1000;
     clearBassTimers();
@@ -4372,7 +4382,7 @@ views.chordsLibrarySong = (params, songId) => {
       const note = noteMap[token] ?? bassRoot;
       playBassNote(note, {duration: step * 2.5, velocity: 0.9, when: i * step, voice: clBassVoice, volume: clBassVol});
       // schedule visual blink in sync with audio
-      const t = setTimeout(() => flashBassKey(note, stepMs), i * stepMs);
+      const t = setTimeout(() => flashBassKey(note, stepMs, i), i * stepMs);
       clBassBlinkTimers.push(t);
     });
   };

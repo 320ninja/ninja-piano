@@ -4147,12 +4147,10 @@ views.chordsLibrarySong = (params, songId) => {
     const BASS_ACTIVE_COL = '#00e5ff';
     // Chord interval numbers: sort midis, assign 1 3 5 7 by position
     const sortedMidis = midis ? [...midis].sort((a,b)=>a-b) : [];
-    const CHORD_NUMS = ['1','3','5','7','9'];
-    const chordNumMap = new Map(sortedMidis.map((m,i) => [m, CHORD_NUMS[i]||String(i+1)]));
-    // Bass interval from chord root
-    const chordRootPc = sortedMidis.length ? sortedMidis[0]%12 : -1;
-    const IMAP = {0:'1',2:'2',3:'3',4:'3',5:'4',6:'♭5',7:'5',8:'♭6',9:'6',10:'♭7',11:'7'};
-    const bassNum = (m) => chordRootPc >= 0 ? (IMAP[((m%12)-chordRootPc+12)%12]||'B') : 'B';
+    // sequential play-order numbers (1,2,3,4) like falling notes
+    const chordNumMap = new Map(sortedMidis.map((m,i) => [m, String(i+1)]));
+    // Bass: use pattern sequence number if available, else position
+    const bassNum = (m) => (clBassSeqMap && clBassSeqMap.has(m)) ? String(clBassSeqMap.get(m)) : '1';
     const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
     let wkeys='', bkeys='', labels='', badges='', anims='';
     for (let oct=0; oct<OCT; oct++) {
@@ -4299,6 +4297,7 @@ views.chordsLibrarySong = (params, songId) => {
   let clMixIdx = 0;
   let clBassActiveMidi = -1; // currently blinking bass note
   let clBassBlinkTimers = [];
+  let clBassSeqMap = new Map(); // midi -> play-order number in current pattern
   const saveCLBass = () => localStorage.setItem('np.clbass', JSON.stringify({on:clBassOn,pat:clBassPattern,vol:clBassVol,voice:clBassVoice}));
   const flashBassKey = (midi, stepMs) => {
     clBassActiveMidi = midi;
@@ -4357,6 +4356,14 @@ views.chordsLibrarySong = (params, songId) => {
       clMixIdx++;
     }
     const steps = BASS_PATTERNS[patKey] || BASS_PATTERNS['Root'];
+    // build play-order sequence map for badge display
+    clBassSeqMap = new Map();
+    let seqNum = 1;
+    steps.forEach(token => {
+      if (!token) return;
+      const note = noteMap[token] ?? bassRoot;
+      if (!clBassSeqMap.has(note)) clBassSeqMap.set(note, seqNum++);
+    });
     const step = durSec / 16;
     const stepMs = step * 1000;
     clearBassTimers();

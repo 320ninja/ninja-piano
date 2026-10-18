@@ -4140,27 +4140,33 @@ views.chordsLibrarySong = (params, songId) => {
   const fullKbSVG = (midis, activeColor, big = false) => {
     const WW = 15, WH = big ? 104 : 62, BW = 9, BH = big ? 64 : 38, OCT = 4, BASE = 48;
     const lblW = big ? 10 : 7.5, lblB = big ? 8 : 6;
-    const highSet = new Set(midis);
+    // Separate bass from chord: bass note shown one octave lower, chord notes stay in place
     const bassNote = (clShowBass && midis && midis.length) ? Math.min(...midis) : -1;
+    const bassDisplay = bassNote >= 0 ? bassNote - 12 : -1; // one octave lower
+    // chord = all notes except the bass (bass shows at bassDisplay position instead)
+    const chordSet = new Set(clShowBass && bassNote >= 0 ? midis.filter(m => m !== bassNote) : midis);
     const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
     let wkeys='', bkeys='', labels='';
     for (let oct=0; oct<OCT; oct++) {
       const base = BASE + oct*12, octX = oct*octW;
       WHITE_PCS_CL.forEach((pc,wi) => {
-        const midi = base+pc; const on = highSet.has(midi); const isBass = on && midi===bassNote;
+        const midi = base+pc;
+        const on = chordSet.has(midi);
+        const isBass = bassDisplay >= BASE && midi === bassDisplay;
         const fill = isBass ? BASS_COL : on ? activeColor : '#f7f7fa';
         const x = octX+wi*WW+1;
         wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${fill}" stroke="${isBass?BASS_COL:'#c8c8c8'}" stroke-width="${isBass?2:1}"/>`;
-        if (isBass) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
-        else if (on) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        if (isBass || on) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
         else if (clShowLabels) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="600" fill="#c43" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
-        const midi = base+pc; const on = highSet.has(midi); const isBass = on && midi===bassNote;
+        const midi = base+pc;
+        const on = chordSet.has(midi);
+        const isBass = bassDisplay >= BASE && midi === bassDisplay;
         const fill = isBass ? BASS_COL : on ? activeColor : '#1e1e2e';
         const x = octX+ox*WW-Math.floor(BW/2)+1;
         bkeys += `<rect x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${fill}" stroke="${isBass?BASS_COL:'#0f0f1a'}" stroke-width="1"/>`;
-        if (on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        if (isBass || on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
     }
     const sizing = big ? 'width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;width:92%;height:auto;margin:0 auto"' : `width="100%" height="${svgH}" preserveAspectRatio="xMidYMid meet"`;

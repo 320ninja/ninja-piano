@@ -4250,6 +4250,38 @@ views.chordsLibrarySong = (params, songId) => {
       if (pat.h[i]) playHihat(i * step, pat.h[i] * 0.22, false);
     }
   };
+  // Bass pattern state
+  const clBassSaved = JSON.parse(localStorage.getItem('np.clbass') || '{}');
+  let clBassOn = clBassSaved.on || false;
+  let clBassPattern = clBassSaved.pat || 'root';
+  const saveCLBass = () => localStorage.setItem('np.clbass', JSON.stringify({on:clBassOn,pat:clBassPattern}));
+  const BASS_PATTERNS = {
+    'Root':    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    'On Beat': [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    'Root-5th':[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0],
+    'Walking': [1,0,0,0,0,1,0,0,0,0,1,0,0,0,1,0],
+    'Octave':  [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    'Bounce':  [1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+  };
+  const clScheduleBass = (chordName, durSec) => {
+    if (!clBassOn) return;
+    const rootMidi = chordRootMidi(chordName);
+    const bassRoot = rootMidi < 48 ? rootMidi : rootMidi - 12;  // keep in bass register
+    const fifth = bassRoot + 7;
+    const octave = bassRoot + 12;
+    const pat = BASS_PATTERNS[clBassPattern] || BASS_PATTERNS['Root'];
+    const step = durSec / 16;
+    pat.forEach((hit, i) => {
+      if (!hit) return;
+      // alternate root / 5th / octave based on pattern position for variety
+      let note = bassRoot;
+      if (clBassPattern === 'Root-5th' && i >= 8) note = fifth;
+      if (clBassPattern === 'Octave' && i >= 8) note = octave;
+      if (clBassPattern === 'Walking') note = [bassRoot, bassRoot+2, bassRoot+4, bassRoot+5][Math.floor(i/4)%4] || bassRoot;
+      playNote(note, {duration: step * 3, velocity: 0.75, when: i * step, voice: 'grand', volume: 0.55});
+    });
+  };
+
   const setSecBtn = (si, ch) => { const b = app.querySelector(`.cl-sec-play[data-si="${si}"]`); if (b) b.textContent = ch; };
 
   // Now-playing bar updater. voicing = { name, qual, midis, inv, invName }
@@ -4338,6 +4370,7 @@ views.chordsLibrarySong = (params, songId) => {
     const chordDuration = (60/bpm) * speeds[currentSpeed];
     playMidisAudio(voicing.midis, chordDuration * 0.85);
     clScheduleDrums(chordDuration);
+    clScheduleBass(chord, chordDuration);
     const next = chordIdx + 1;
     if (fullSong && next >= sec.chords.length) {
       resetSecPills(activeSi);
@@ -4531,8 +4564,9 @@ views.chordsLibrarySong = (params, songId) => {
     <h3 class="sec"><span class="badge">💡</span><span class="gt">Improvisation Tips</span></h3>
     <div class="card pad">${improvHtml}</div>
 
-    <!-- Drums control above currently playing -->
-    <div id="clDrumsWrap" style="margin-bottom:10px"></div>
+    <!-- Drums + Bass controls above currently playing -->
+    <div id="clDrumsWrap" style="margin-bottom:8px"></div>
+    <div id="clBassWrap" style="margin-bottom:10px"></div>
 
     <!-- Currently playing keyboard (mirror, below tips) -->
     <div id="clNowPlayingBar2" style="display:none;margin-bottom:20px">
@@ -4556,7 +4590,6 @@ views.chordsLibrarySong = (params, songId) => {
         </div>
         <div id="clNowKb2" style="background:#dcdce4;border-radius:10px;padding:5px;overflow:hidden"></div>
         <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px">
-          <button id="clToggleBass" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;border:1.5px solid #06b6d4;background:#06b6d4;color:#fff;cursor:pointer">Bass: ON</button>
           <button id="clToggleLabels" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--p);color:#fff;cursor:pointer">Notes: ON</button>
         </div>
       </div>
@@ -4693,6 +4726,16 @@ views.chordsLibrarySong = (params, songId) => {
   };
   renderCLDrumsWrap();
 
+  // ── Bass pattern controls ─────────────────────────────────────────────
+  const renderCLBassWrap = () => {
+    const wrap = app.querySelector('#clBassWrap');
+    if (!wrap) return;
+    wrap.innerHTML = `<button id="clBassBtn" style="width:100%;padding:9px;border-radius:${clBassOn?'10px 10px 0 0':'10px'};font-size:13px;font-weight:700;cursor:pointer;border:2px solid ${clBassOn?'#06b6d4':'var(--line)'};border-bottom:${clBassOn?'none':'2px solid var(--line)'};background:${clBassOn?'#06b6d420':'var(--card)'};color:${clBassOn?'#06b6d4':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🎸 Bass ${clBassOn?'ON':'OFF — tap to turn ON'}</button>${clBassOn?`<div style="padding:10px;border-radius:0 0 10px 10px;border:2px solid #06b6d4;border-top:1px solid #06b6d440;background:#06b6d410;display:flex;flex-wrap:wrap;gap:5px">${Object.keys(BASS_PATTERNS).map(p=>`<button data-bp="${p}" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${clBassPattern===p?'#06b6d4':'var(--line)'};background:${clBassPattern===p?'#06b6d4':'transparent'};color:${clBassPattern===p?'#fff':'var(--muted)'}">${p}</button>`).join('')}</div>`:''}`;
+    wrap.querySelector('#clBassBtn')?.addEventListener('click', () => { clBassOn=!clBassOn; saveCLBass(); renderCLBassWrap(); });
+    wrap.querySelectorAll('[data-bp]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); clBassPattern=b.dataset.bp; saveCLBass(); renderCLBassWrap(); }));
+  };
+  renderCLBassWrap();
+
   // ── Transpose controls ────────────────────────────────────────────────
   const updateTransposeUI = () => {
     const tKey = transposeChord(song.key, clTranspose);
@@ -4719,16 +4762,6 @@ views.chordsLibrarySong = (params, songId) => {
     if (kbEl && kbEl._lastMidis) { kbEl.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol); if (kbEl2) kbEl2.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol, true); }
   });
 
-  app.querySelector('#clToggleBass')?.addEventListener('click', e => {
-    clShowBass = !clShowBass;
-    e.currentTarget.textContent = clShowBass ? 'Bass: ON' : 'Bass: OFF';
-    e.currentTarget.style.background = clShowBass ? '#06b6d4' : 'var(--solid)';
-    e.currentTarget.style.borderColor = clShowBass ? '#06b6d4' : 'var(--line)';
-    e.currentTarget.style.color = clShowBass ? '#fff' : 'var(--fg)';
-    const kbEl = app.querySelector('#clNowKb');
-    const kbEl2 = app.querySelector('#clNowKb2');
-    if (kbEl && kbEl._lastMidis) { kbEl.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol); if (kbEl2) kbEl2.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol, true); }
-  });
 
   // ── Clickable Now Playing pills — tap a chord to hear & see it ─────────
   const handleNowPillClick = (e) => {

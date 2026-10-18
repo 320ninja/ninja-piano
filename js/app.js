@@ -4133,23 +4133,31 @@ views.chordsLibrarySong = (params, songId) => {
   // Wide full keyboard (4 octaves) highlighting the currently-playing chord.
   // big=true renders a taller keyboard that fills the card width.
   let clShowLabels = true;
+  let clShowBass = true;
+  const BASS_COL = '#06b6d4';
   const fullKbSVG = (midis, activeColor, big = false) => {
     const WW = 15, WH = big ? 104 : 62, BW = 9, BH = big ? 64 : 38, OCT = 4, BASE = 48;
     const lblW = big ? 10 : 7.5, lblB = big ? 8 : 6;
     const highSet = new Set(midis);
+    const bassNote = (clShowBass && midis && midis.length) ? Math.min(...midis) : -1;
     const octW = 7*WW, svgW = OCT*octW+2, svgH = WH+4;
     let wkeys='', bkeys='', labels='';
     for (let oct=0; oct<OCT; oct++) {
       const base = BASE + oct*12, octX = oct*octW;
       WHITE_PCS_CL.forEach((pc,wi) => {
-        const on = highSet.has(base+pc); const x = octX+wi*WW+1;
-        wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${on?activeColor:'#f7f7fa'}" stroke="#c8c8c8" stroke-width="1"/>`;
-        if (on) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        const midi = base+pc; const on = highSet.has(midi); const isBass = on && midi===bassNote;
+        const fill = isBass ? BASS_COL : on ? activeColor : '#f7f7fa';
+        const x = octX+wi*WW+1;
+        wkeys += `<rect x="${x}" y="1" width="${WW-1}" height="${WH}" rx="2.5" fill="${fill}" stroke="${isBass?BASS_COL:'#c8c8c8'}" stroke-width="${isBass?2:1}"/>`;
+        if (isBass) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
+        else if (on) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
         else if (clShowLabels) labels += `<text x="${x+(WW-1)/2}" y="${WH-6}" font-size="${lblW}" font-weight="600" fill="#c43" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
       BLACK_DEF_CL.forEach(({pc,ox}) => {
-        const on = highSet.has(base+pc); const x = octX+ox*WW-Math.floor(BW/2)+1;
-        bkeys += `<rect x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${on?activeColor:'#1e1e2e'}" stroke="#0f0f1a" stroke-width="1"/>`;
+        const midi = base+pc; const on = highSet.has(midi); const isBass = on && midi===bassNote;
+        const fill = isBass ? BASS_COL : on ? activeColor : '#1e1e2e';
+        const x = octX+ox*WW-Math.floor(BW/2)+1;
+        bkeys += `<rect x="${x}" y="1" width="${BW}" height="${BH}" rx="1.5" fill="${fill}" stroke="${isBass?BASS_COL:'#0f0f1a'}" stroke-width="1"/>`;
         if (on) labels += `<text x="${x+BW/2}" y="${BH-4}" font-size="${lblB}" font-weight="900" fill="#fff" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif">${NOTE_NAMES_CL[pc]}</text>`;
       });
     }
@@ -4547,7 +4555,8 @@ views.chordsLibrarySong = (params, songId) => {
           </div>
         </div>
         <div id="clNowKb2" style="background:#dcdce4;border-radius:10px;padding:5px;overflow:hidden"></div>
-        <div style="text-align:right;margin-top:6px">
+        <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px">
+          <button id="clToggleBass" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;border:1.5px solid #06b6d4;background:#06b6d4;color:#fff;cursor:pointer">Bass: ON</button>
           <button id="clToggleLabels" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--p);color:#fff;cursor:pointer">Notes: ON</button>
         </div>
       </div>
@@ -4705,14 +4714,20 @@ views.chordsLibrarySong = (params, songId) => {
     e.currentTarget.textContent = clShowLabels ? 'Notes: ON' : 'Notes: OFF';
     e.currentTarget.style.background = clShowLabels ? 'var(--p)' : 'var(--solid)';
     e.currentTarget.style.color = clShowLabels ? '#fff' : 'var(--fg)';
-    // re-render keyboards if currently showing
     const kbEl = app.querySelector('#clNowKb');
     const kbEl2 = app.querySelector('#clNowKb2');
-    if (kbEl && kbEl.innerHTML) {
-      const last = kbEl._lastMidis;
-      const lastCol = kbEl._lastCol;
-      if (last) { kbEl.innerHTML = fullKbSVG(last, lastCol); if (kbEl2) kbEl2.innerHTML = fullKbSVG(last, lastCol, true); }
-    }
+    if (kbEl && kbEl._lastMidis) { kbEl.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol); if (kbEl2) kbEl2.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol, true); }
+  });
+
+  app.querySelector('#clToggleBass')?.addEventListener('click', e => {
+    clShowBass = !clShowBass;
+    e.currentTarget.textContent = clShowBass ? 'Bass: ON' : 'Bass: OFF';
+    e.currentTarget.style.background = clShowBass ? '#06b6d4' : 'var(--solid)';
+    e.currentTarget.style.borderColor = clShowBass ? '#06b6d4' : 'var(--line)';
+    e.currentTarget.style.color = clShowBass ? '#fff' : 'var(--fg)';
+    const kbEl = app.querySelector('#clNowKb');
+    const kbEl2 = app.querySelector('#clNowKb2');
+    if (kbEl && kbEl._lastMidis) { kbEl.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol); if (kbEl2) kbEl2.innerHTML = fullKbSVG(kbEl._lastMidis, kbEl._lastCol, true); }
   });
 
   // ── Clickable Now Playing pills — tap a chord to hear & see it ─────────

@@ -3434,7 +3434,8 @@ views.chordsPractice = () => {
   const buildKb = (scalePCs, chordMidis, chordColor, bassMidis, nextMidis) => {
     const scSet=new Set(showScale?scalePCs:[]), chSet=new Set(chordMidis||[]);
     const bsSet=new Set((bassMidis||[]).map(m=>m%12));
-    const nxSet=new Set((nextMidis||[]).map(m=>m%12));
+    // shift next chord up one octave so it shows distinctly above current chord
+    const nxSet=new Set((nextMidis||[]).map(m=>m+12));
     const BASS_COL='#0891b2';
     const NEXT_COL='#22d3ee'; // cyan ghost for next chord
     const cCol=chordColor||'var(--p)';
@@ -3443,7 +3444,7 @@ views.chordsPractice = () => {
       const ox=o*octW, base=KB0+o*12;
       wPC.forEach((pc,wi)=>{
         const midi=base+pc, gpc=midi%12, x=ox+wi*KW+1;
-        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isNx=nxSet.has(gpc)&&!isCh, isSc=scSet.has(gpc);
+        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isNx=nxSet.has(midi)&&!isCh, isSc=scSet.has(gpc);
         const fill=isCh?cCol:isBs?BASS_COL:isNx?'#cffafe':isSc?'#fecaca':'white';
         const stroke=isCh?cCol:isBs?BASS_COL:isNx?NEXT_COL:isSc?'#ef4444':'#ddd';
         const sw=isCh||isBs||isNx||isSc?1.5:0.5;
@@ -3452,7 +3453,7 @@ views.chordsPractice = () => {
       });
       bDef.forEach(({pc,ox:bx})=>{
         const midi=base+pc, gpc=midi%12;
-        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isNx=nxSet.has(gpc)&&!isCh, isSc=scSet.has(gpc);
+        const isCh=chSet.has(midi), isBs=bsSet.has(gpc), isNx=nxSet.has(midi)&&!isCh, isSc=scSet.has(gpc);
         const fill=isCh?cCol:isBs?BASS_COL:isNx?'#164e63':isSc?'#ef4444':'#1a1a1a';
         bk+=`<rect x="${ox+bx}" y="1" width="${BW}" height="${BH}" rx="1" fill="${fill}"/>`;
         if(isCh||isBs||isNx||isSc) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="${isNx?NEXT_COL:'#fff'}" font-weight="800">${nn(gpc)}</text>`;

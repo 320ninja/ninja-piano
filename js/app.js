@@ -3493,10 +3493,9 @@ views.chordsPractice = () => {
         ${noteChips}
         <button id="cpToggleScale" style="margin-left:auto;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid #ef444460;background:${showScale?'#ef444420':'var(--card)'};color:${showScale?'#ef4444':'var(--muted)'}">${showScale?'Scale ✓':'Scale'}</button>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)">
         <button id="cpLoopBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpLoop?'var(--p)':'var(--line)'};background:${cpLoop?'var(--p)':'transparent'};color:${cpLoop?'#fff':'var(--muted)'}">🔁 Loop</button>
         <button id="cpShuffleBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpShuffle?'var(--p)':'var(--line)'};background:${cpShuffle?'var(--p)':'transparent'};color:${cpShuffle?'#fff':'var(--muted)'}">🔀 Random</button>
-        <button id="cpDrumsBtn" style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid ${cpDrums?'#f97316':'var(--line)'};background:${cpDrums?'#f9731620':'transparent'};color:${cpDrums?'#f97316':'var(--muted)'}">🥁 Drums</button>
         <select id="cpInvSel" style="padding:4px 8px;border-radius:8px;font-size:11px;font-weight:600;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer">
           ${INV_OPTS.map(o=>`<option value="${o.v}"${String(o.v)===String(cpInversion)?' selected':''}>${o.l}</option>`).join('')}
         </select>
@@ -3509,6 +3508,9 @@ views.chordsPractice = () => {
           <span id="cpTempoVal" style="font-size:13px;font-weight:800;min-width:32px;text-align:center">${cpTempo}</span>
           <button id="cpTempoUp" style="width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">+</button>
         </div>
+      </div>
+      <div style="margin-bottom:14px">
+        <button id="cpDrumsBtn" style="width:100%;padding:10px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:2px solid ${cpDrums?'#f97316':'var(--line)'};background:${cpDrums?'#f9731620':'var(--card)'};color:${cpDrums?'#f97316':'var(--muted)'};display:flex;align-items:center;justify-content:center;gap:8px">🥁 Drums ${cpDrums?'ON — tap to turn OFF':'OFF — tap to turn ON'}</button>
       </div>
       ${chords.length?`
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">

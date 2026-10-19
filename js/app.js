@@ -245,6 +245,19 @@ const app = document.getElementById('app');
 const nav = document.getElementById('nav');
 let cleanup = () => {};
 
+/* Auto-hide nav after 3s of inactivity; show on scroll/mouse/touch */
+let navIdleTimer = null;
+const NAV_IDLE_MS = 3000;
+const showNav = () => {
+  nav.classList.remove('nav-idle');
+  clearTimeout(navIdleTimer);
+  navIdleTimer = setTimeout(() => { if (!nav.classList.contains('hide')) nav.classList.add('nav-idle'); }, NAV_IDLE_MS);
+};
+['scroll','mousemove','touchstart','touchmove','keydown'].forEach(ev =>
+  window.addEventListener(ev, showNav, { passive: true })
+);
+showNav();
+
 const toast = (msg) => {
   document.querySelector('.toast')?.remove();
   const t = document.createElement('div');
@@ -335,6 +348,7 @@ const setNav = (route) => {
   const hidden = ['welcome', 'done', 'practice-run'].includes(route);
   nav.classList.toggle('hide', hidden);
   document.body.classList.toggle('nonav', hidden);
+  if (!hidden) showNav();
   nav.querySelectorAll('a').forEach((a) => a.classList.toggle('on', a.dataset.r === map[route]));
   // Floating home button on full-screen practice pages
   let fab = document.getElementById('fabHome');

@@ -3431,32 +3431,30 @@ views.chordsPractice = () => {
   const wPC=[0,2,4,5,7,9,11];
   const bDef=[{pc:1,ox:10},{pc:3,ox:24},{pc:6,ox:52},{pc:8,ox:66},{pc:10,ox:80}];
 
-  const buildKb = (scalePCs, chordMidis, chordColor, bassMidis, nextMidis) => {
+  const buildKb = (scalePCs, chordMidis, chordColor, bassMidis) => {
     const scSet=new Set(showScale?scalePCs:[]);
     const chSet=new Set(chordMidis||[]);
     const bsSet=new Set((bassMidis||[]).map(m=>{ let n=m; while(n<48)n+=12; while(n>59)n-=12; return n; }));
-    const nxSet=new Set((nextMidis||[]).map(m=>{ let n=m; while(n<72)n+=12; while(n>83)n-=12; return n; }));
     const BASS_COL='#0891b2';
-    const NEXT_COL='#22d3ee'; // cyan ghost for next chord
     const cCol=chordColor||'var(--p)';
     let wk='', bk='', lb='';
     for(let o=0;o<nOcts;o++){
       const ox=o*octW, base=KB0+o*12;
       wPC.forEach((pc,wi)=>{
         const midi=base+pc, gpc=midi%12, x=ox+wi*KW+1;
-        const isCh=chSet.has(midi), isBs=bsSet.has(midi), isNx=nxSet.has(midi), isSc=scSet.has(gpc);
-        const fill=isCh?cCol:isBs?BASS_COL:isNx?'#cffafe':isSc?'#fecaca':'white';
-        const stroke=isCh?cCol:isBs?BASS_COL:isNx?NEXT_COL:isSc?'#ef4444':'#ddd';
-        const sw=isCh||isBs||isNx||isSc?1.5:0.5;
+        const isCh=chSet.has(midi), isBs=bsSet.has(midi), isSc=scSet.has(gpc);
+        const fill=isCh?cCol:isBs?BASS_COL:isSc?'#fecaca':'white';
+        const stroke=isCh?cCol:isBs?BASS_COL:isSc?'#ef4444':'#ddd';
+        const sw=isCh||isBs||isSc?1.5:0.5;
         wk+=`<rect x="${x}" y="1" width="${KW-1}" height="${KH}" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-        if(isCh||isBs||isNx||isSc) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh||isBs?'#fff':isNx?NEXT_COL:'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
+        if(isCh||isBs||isSc) lb+=`<text x="${x+(KW-1)/2}" y="${KH-3}" text-anchor="middle" font-size="7.5" fill="${isCh||isBs?'#fff':'#ef4444'}" font-weight="800">${nn(gpc)}</text>`;
       });
       bDef.forEach(({pc,ox:bx})=>{
         const midi=base+pc, gpc=midi%12;
-        const isCh=chSet.has(midi), isBs=bsSet.has(midi), isNx=nxSet.has(midi), isSc=scSet.has(gpc);
-        const fill=isCh?cCol:isBs?BASS_COL:isNx?'#164e63':isSc?'#ef4444':'#1a1a1a';
+        const isCh=chSet.has(midi), isBs=bsSet.has(midi), isSc=scSet.has(gpc);
+        const fill=isCh?cCol:isBs?BASS_COL:isSc?'#ef4444':'#1a1a1a';
         bk+=`<rect x="${ox+bx}" y="1" width="${BW}" height="${BH}" rx="1" fill="${fill}"/>`;
-        if(isCh||isBs||isNx||isSc) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="${isNx?NEXT_COL:'#fff'}" font-weight="800">${nn(gpc)}</text>`;
+        if(isCh||isBs||isSc) lb+=`<text x="${ox+bx+BW/2}" y="${BH-2}" text-anchor="middle" font-size="6" fill="#fff" font-weight="800">${nn(gpc)}</text>`;
       });
     }
     return `<svg width="100%" viewBox="0 0 ${TW} ${KH+2}" style="border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;display:block"><rect width="${TW}" height="${KH+2}" fill="#c8c8c8"/>${wk}${bk}${lb}</svg>`;
@@ -3537,15 +3535,7 @@ views.chordsPractice = () => {
     const activeMidis=activeChord?(rpChord?lastPlayedMidis:resolveInversion(activeChord.midis,selChordIdx>=0?maxInvTriad:maxInv7)):null;
     const activeColor=rpChord?CHORD_COLORS[rpActiveIdx%CHORD_COLORS.length]:selChordIdx>=0?CHORD_COLORS[selChordIdx%CHORD_COLORS.length]:selAdvIdx>=0?CHORD_COLORS[selAdvIdx%CHORD_COLORS.length]:null;
     const activeBass = rpBassOn && rpTimer !== null && rpCurrentBassMidis.length ? rpCurrentBassMidis : null;
-    // Next chord preview
-    let nextMidis = null;
-    if(playTimer && !cpShuffle) {
-      const nextPool = selChordIdx >= 0 ? chords : selAdvIdx >= 0 ? adv : null;
-      if(nextPool) { const ni = playIdx % nextPool.length; const nc = nextPool[ni]; if(nc) nextMidis = resolveInversion(nc.midis, selChordIdx>=0?maxInvTriad:maxInv7); }
-    } else if(rpTimer && rpSeq.length > rpPos) {
-      const nc = allPool[rpSeq[rpPos]]; if(nc) nextMidis = nc.midis;
-    }
-    const kbSvg=buildKb(scalePCs, activeMidis, activeColor, activeBass, null);
+    const kbSvg=buildKb(scalePCs, activeMidis, activeColor, activeBass);
     const scaleNotes=scalePCs.map(pc=>nn(pc));
 
     // Bass note names below keyboard

@@ -3433,8 +3433,7 @@ views.chordsPractice = () => {
 
   const buildKb = (scalePCs, chordMidis, chordColor, bassMidis, nextMidis) => {
     const scSet=new Set(showScale?scalePCs:[]);
-    // Each layer pinned to its own octave: bass=48-59, chord=60-71, next=72-83
-    const chSet=new Set((chordMidis||[]).map(m=>{ let n=m; while(n<60)n+=12; while(n>71)n-=12; return n; }));
+    const chSet=new Set(chordMidis||[]);
     const bsSet=new Set((bassMidis||[]).map(m=>{ let n=m; while(n<48)n+=12; while(n>59)n-=12; return n; }));
     const nxSet=new Set((nextMidis||[]).map(m=>{ let n=m; while(n<72)n+=12; while(n>83)n-=12; return n; }));
     const BASS_COL='#0891b2';

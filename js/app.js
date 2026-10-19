@@ -1,7 +1,7 @@
 import { THEMES, applyTheme } from './themes.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
 import { renderScore } from './score.js';
-import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat } from './audio.js';
+import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat, setEffect } from './audio.js';
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
@@ -13,7 +13,7 @@ const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } cat
 
 const DEFAULTS = {
   name: '', theme: 'ninja', mode: 'dark', showNames: true, keyLabels: true, highlight: true,
-  nameSystem: 'letters', tempo: 100, voice: 'grand', volume: 80, drumVolume: 80, metronome: false, waitMode: true, seenWelcome: false, fallingSound: true, colorNotes: true,
+  nameSystem: 'letters', tempo: 100, voice: 'grand', volume: 80, drumVolume: 80, effect: 'none', metronome: false, waitMode: true, seenWelcome: false, fallingSound: true, colorNotes: true,
 };
 const settings = { ...DEFAULTS, ...load('np.settings', {}) };
 const progress = load('np.progress', {});   // id -> { best, plays, done, last }
@@ -24,6 +24,8 @@ const saveProgress = () => save('np.progress', progress);
 
 applyTheme(settings.theme, settings.mode);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => applyTheme(settings.theme, settings.mode));
+// Apply saved effect on first audio interaction
+document.addEventListener('click', () => { if (settings.effect && settings.effect !== 'none') setEffect(settings.effect); }, { once: true });
 
 /* ---------- icons ---------- */
 const P = {
@@ -4995,6 +4997,10 @@ views.settings = () => {
       <div class="row" style="flex-wrap:wrap;padding:8px 0"><span>Drums Volume</span><b id="dvv">${settings.drumVolume}%</b><input type="range" min="0" max="100" step="5" value="${settings.drumVolume}" id="drumVol"></div>
       ${sw('metronome', 'Metronome on by default')}
       ${sw('waitMode', 'Practice waits for the right note')}</div>
+    <div class="card group"><h4>Effects</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:6px 0" id="fxGrid">
+        ${[['none','🎹 Dry'],['flanger','🌀 Flanger'],['phaser','🔄 Phaser'],['saw','⚡ Saw'],['pingpong','🏓 Ping‑Pong'],['reverb','🏛 Reverb'],['plucking','🪕 Plucking'],['mixed','✨ Mixed']].map(([id,label])=>`<button data-fx="${id}" style="padding:7px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid ${settings.effect===id?'var(--p)':'var(--line)'};background:${settings.effect===id?'color-mix(in srgb,var(--p) 14%,transparent)':'transparent'};color:${settings.effect===id?'var(--p)':'var(--muted)'};transition:all .18s">${label}</button>`).join('')}
+      </div></div>
     <div class="card group"><h4>Display</h4>
       <div class="row"><span>Theme</span><div class="seg" id="mode" style="width:230px"><button data-m="light">${icon('sun')}</button><button data-m="auto">Auto</button><button data-m="dark">${icon('moon')}</button></div></div>
       <div class="themes" id="themes">${themeGrid(settings.theme)}</div></div>
@@ -5010,6 +5016,17 @@ views.settings = () => {
   $('#tempo').oninput = (e) => { setSetting('tempo', Number(e.target.value)); $('#tv').textContent = e.target.value + '%'; };
   $('#vol').oninput = (e) => { setSetting('volume', Number(e.target.value)); $('#vv').textContent = e.target.value + '%'; };
   $('#drumVol').oninput = (e) => { setSetting('drumVolume', Number(e.target.value)); $('#dvv').textContent = e.target.value + '%'; };
+  $('#fxGrid').onclick = (e) => {
+    const fx = e.target.closest('[data-fx]')?.dataset.fx; if (!fx) return;
+    setSetting('effect', fx);
+    unlockAudio(); setEffect(fx === 'none' ? null : fx);
+    $('#fxGrid').querySelectorAll('[data-fx]').forEach(b => {
+      const on = b.dataset.fx === fx;
+      b.style.borderColor = on ? 'var(--p)' : 'var(--line)';
+      b.style.background = on ? 'color-mix(in srgb,var(--p) 14%,transparent)' : 'transparent';
+      b.style.color = on ? 'var(--p)' : 'var(--muted)';
+    });
+  };
   const modeBtns = () => $('#mode').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.m === settings.mode));
   modeBtns();
   $('#mode').onclick = (e) => { const m = e.target.closest('button')?.dataset.m; if (!m) return; setSetting('mode', m); applyTheme(settings.theme, m); modeBtns(); };

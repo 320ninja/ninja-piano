@@ -3546,7 +3546,7 @@ views.chordsPractice = () => {
     } else if(rpTimer && rpSeq.length > rpPos) {
       const nc = allPool[rpSeq[rpPos]]; if(nc) nextMidis = nc.midis;
     }
-    const kbSvg=buildKb(scalePCs, activeMidis, activeColor, activeBass, nextMidis);
+    const kbSvg=buildKb(scalePCs, activeMidis, activeColor, activeBass, null);
     const scaleNotes=scalePCs.map(pc=>nn(pc));
 
     // Bass note names below keyboard

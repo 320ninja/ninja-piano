@@ -13,7 +13,7 @@ const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } cat
 
 const DEFAULTS = {
   name: '', theme: 'ninja', mode: 'dark', showNames: true, keyLabels: true, highlight: true,
-  nameSystem: 'letters', tempo: 100, voice: 'grand', volume: 80, metronome: false, waitMode: true, seenWelcome: false, fallingSound: true, colorNotes: true,
+  nameSystem: 'letters', tempo: 100, voice: 'grand', volume: 80, drumVolume: 80, metronome: false, waitMode: true, seenWelcome: false, fallingSound: true, colorNotes: true,
 };
 const settings = { ...DEFAULTS, ...load('np.settings', {}) };
 const progress = load('np.progress', {});   // id -> { best, plays, done, last }
@@ -3431,10 +3431,11 @@ views.chordsPractice = () => {
     const pat = cpDrumPat === 'mixed' ? genre[cpDrumPatIdx % genre.length] : genre[Math.min(cpDrumPat, genre.length - 1)];
     cpDrumPatIdx++;
     const step = durSec / 16;
+    const dv = (settings.drumVolume ?? 80) / 100;
     for (let i = 0; i < 16; i++) {
-      if (pat.k[i]) playKick(i * step, pat.k[i] * 0.7);
-      if (pat.s[i]) playSnare(i * step, pat.s[i] * 0.5);
-      if (pat.h[i]) playHihat(i * step, pat.h[i] * 0.22, false);
+      if (pat.k[i]) playKick(i * step, pat.k[i] * 0.7 * dv);
+      if (pat.s[i]) playSnare(i * step, pat.s[i] * 0.5 * dv);
+      if (pat.h[i]) playHihat(i * step, pat.h[i] * 0.22 * dv, false);
     }
   };
   const startDrums = () => {};   // no-op — drums now fire per chord tick
@@ -4289,10 +4290,11 @@ views.chordsLibrarySong = (params, songId) => {
     const pat = clDrumPat === 'mixed' ? genre[clDrumPatIdx % genre.length] : genre[Math.min(clDrumPat, genre.length-1)];
     clDrumPatIdx++;
     const step = durSec / 16;
+    const dv = (settings.drumVolume ?? 80) / 100;
     for (let i = 0; i < 16; i++) {
-      if (pat.k[i]) playKick(i * step, pat.k[i] * 0.7);
-      if (pat.s[i]) playSnare(i * step, pat.s[i] * 0.5);
-      if (pat.h[i]) playHihat(i * step, pat.h[i] * 0.22, false);
+      if (pat.k[i]) playKick(i * step, pat.k[i] * 0.7 * dv);
+      if (pat.s[i]) playSnare(i * step, pat.s[i] * 0.5 * dv);
+      if (pat.h[i]) playHihat(i * step, pat.h[i] * 0.22 * dv, false);
     }
   };
   // Bass pattern state
@@ -4990,6 +4992,7 @@ views.settings = () => {
       <div class="row" style="flex-wrap:wrap;padding:8px 0"><span>Tempo</span><b id="tv">${settings.tempo}%</b><input type="range" min="40" max="150" step="5" value="${settings.tempo}" id="tempo"></div>
       <label class="row"><span>Sound</span><select data-k="voice"><option value="grand">Grand Piano</option><option value="bright">Bright Piano</option><option value="electric">Electric Piano</option><option value="soft">Soft Piano</option><option value="synth">Synth</option></select></label>
       <div class="row" style="flex-wrap:wrap;padding:8px 0"><span>Volume</span><b id="vv">${settings.volume}%</b><input type="range" min="0" max="100" step="5" value="${settings.volume}" id="vol"></div>
+      <div class="row" style="flex-wrap:wrap;padding:8px 0"><span>Drums Volume</span><b id="dvv">${settings.drumVolume}%</b><input type="range" min="0" max="100" step="5" value="${settings.drumVolume}" id="drumVol"></div>
       ${sw('metronome', 'Metronome on by default')}
       ${sw('waitMode', 'Practice waits for the right note')}</div>
     <div class="card group"><h4>Display</h4>
@@ -5006,6 +5009,7 @@ views.settings = () => {
   $('#name').onchange = (e) => setSetting('name', e.target.value.trim().slice(0, 30));
   $('#tempo').oninput = (e) => { setSetting('tempo', Number(e.target.value)); $('#tv').textContent = e.target.value + '%'; };
   $('#vol').oninput = (e) => { setSetting('volume', Number(e.target.value)); $('#vv').textContent = e.target.value + '%'; };
+  $('#drumVol').oninput = (e) => { setSetting('drumVolume', Number(e.target.value)); $('#dvv').textContent = e.target.value + '%'; };
   const modeBtns = () => $('#mode').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.m === settings.mode));
   modeBtns();
   $('#mode').onclick = (e) => { const m = e.target.closest('button')?.dataset.m; if (!m) return; setSetting('mode', m); applyTheme(settings.theme, m); modeBtns(); };

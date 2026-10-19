@@ -35,156 +35,183 @@ const ensure = () => {
 };
 
 // ── Effects ──────────────────────────────────────────────────────────────────
-// Disconnect old effect nodes, reconnect effectBus to master through new chain.
+let activeLFOs = []; // LFOs must be explicitly stopped or they pile up forever
+
 const applyEffect = (buildChain) => {
   ensure();
+  // Kill all running LFO oscillators from the previous effect
+  activeLFOs.forEach(o => { try { o.stop(0); } catch(_){} });
+  activeLFOs = [];
   effectNodes.forEach(n => { try { n.disconnect(); } catch(_){} });
   effectNodes = [];
-  effectBus.disconnect();
-  if (!buildChain) {
-    effectBus.connect(master);
-    return;
-  }
-  const { nodes, input, output } = buildChain(ctx, master);
-  effectNodes = nodes;
-  effectBus.connect(input);
-  output.connect(master);
+  try { effectBus.disconnect(); } catch(_){}
+  if (!buildChain) { effectBus.connect(master); return; }
+  const res = buildChain(ctx);
+  effectNodes = res.nodes;
+  activeLFOs = res.lfos || [];
+  effectBus.connect(res.input);
+  res.output.connect(master);
+};
+
+const makeLFO = (c, freq, type = 'sine') => {
+  const lfo = c.createOscillator();
+  lfo.type = type; lfo.frequency.value = freq;
+  lfo.start();
+  return lfo;
 };
 
 export const setEffect = (name) => {
   ensure();
   switch (name) {
+
+    // ── Flanger: LFO-modulated short delay mixed with dry ──────────────────
     case 'flanger': applyEffect((c) => {
-      const delay = c.createDelay(0.02);
-      delay.delayTime.value = 0.005;
-      const lfo = c.createOscillator();
-      const depth = c.createGain();
-      lfo.frequency.value = 0.4;
-      depth.gain.value = 0.003;
+      const input = c.createGain();
+      const out   = c.createGain();
+      const delay = c.createDelay(0.02); delay.delayTime.value = 0.007;
+      const fb    = c.createGain();      fb.gain.value = 0.6;
+      const wet   = c.createGain();      wet.gain.value = 0.7;
+      const dry   = c.createGain();      dry.gain.value = 0.7;
+      const lfo   = makeLFO(c, 0.35);
+      const depth = c.createGain();      depth.gain.value = 0.005;
       lfo.connect(depth).connect(delay.delayTime);
-      lfo.start();
-      const mix = c.createGain(); mix.gain.value = 0.7;
-      const wet = c.createGain(); wet.gain.value = 0.5;
-      const out = c.createGain();
+      // signal path: input → dry → out (dry)
+      //              input → delay → fb → delay (feedback loop)
+      //              delay → wet → out (wet)
+      input.connect(dry).connect(out);
+      input.connect(delay);
+      delay.connect(fb).connect(delay);   // feedback
       delay.connect(wet).connect(out);
-      mix.connect(out);
-      return { nodes: [delay, lfo, depth, mix, wet, out], input: mix, output: out };
+      return { nodes: [input, delay, fb, wet, dry, out, depth], lfos: [lfo], input, output: out };
     }); break;
 
+    // ── Phaser: 6-stage allpass sweep ──────────────────────────────────────
     case 'phaser': applyEffect((c) => {
-      const stages = [300, 700, 1500, 3000].map(f => {
+      const input = c.createGain();
+      const out   = c.createGain();
+      const dry   = c.createGain(); dry.gain.value = 0.7;
+      const wet   = c.createGain(); wet.gain.value = 0.7;
+      const freqs = [200, 450, 900, 1800, 3600, 7200];
+      const stages = freqs.map(f => {
         const ap = c.createBiquadFilter();
-        ap.type = 'allpass'; ap.frequency.value = f; ap.Q.value = 8;
+        ap.type = 'allpass'; ap.frequency.value = f; ap.Q.value = 10;
         return ap;
       });
-      for (let i = 0; i < stages.length - 1; i++) stages[i].connect(stages[i + 1]);
-      const lfo = c.createOscillator();
-      const depth = c.createGain();
-      lfo.frequency.value = 0.5; depth.gain.value = 400;
+      for (let i = 0; i < stages.length - 1; i++) stages[i].connect(stages[i+1]);
+      const lfo   = makeLFO(c, 0.5);
+      const depth = c.createGain(); depth.gain.value = 600;
       lfo.connect(depth);
       stages.forEach(s => depth.connect(s.frequency));
-      lfo.start();
-      const mix = c.createGain(); mix.gain.value = 0.7;
-      const wet = c.createGain(); wet.gain.value = 0.5;
-      const out = c.createGain();
-      mix.connect(stages[0]);
-      stages[stages.length - 1].connect(wet).connect(out);
-      mix.connect(out);
-      return { nodes: [lfo, depth, mix, wet, out, ...stages], input: mix, output: out };
+      input.connect(dry).connect(out);
+      input.connect(stages[0]);
+      stages[stages.length-1].connect(wet).connect(out);
+      return { nodes: [input, dry, wet, out, depth, ...stages], lfos: [lfo], input, output: out };
     }); break;
 
+    // ── Saw / Distortion: hard waveshaper + tone control ───────────────────
     case 'saw': applyEffect((c) => {
-      // Waveshaper distortion (soft-clip sawtooth-style)
-      const ws = c.createWaveShaper();
-      const n = 256; const curve = new Float32Array(n);
+      const input  = c.createGain();
+      const boost  = c.createGain(); boost.gain.value = 4; // pre-gain drives distortion harder
+      const ws     = c.createWaveShaper();
+      const n = 512; const curve = new Float32Array(n);
       for (let i = 0; i < n; i++) {
         const x = (i * 2) / n - 1;
-        curve[i] = (Math.PI + 200) * x / (Math.PI + 200 * Math.abs(x));
+        curve[i] = Math.tanh(3 * x); // tanh soft clip — sounds musical not harsh
       }
       ws.curve = curve; ws.oversample = '4x';
-      const hipass = c.createBiquadFilter();
-      hipass.type = 'highpass'; hipass.frequency.value = 200;
-      const out = c.createGain(); out.gain.value = 0.6;
-      ws.connect(hipass).connect(out);
-      return { nodes: [ws, hipass, out], input: ws, output: out };
+      const tone  = c.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = 4000;
+      const out   = c.createGain(); out.gain.value = 0.55;
+      input.connect(boost).connect(ws).connect(tone).connect(out);
+      return { nodes: [input, boost, ws, tone, out], lfos: [], input, output: out };
     }); break;
 
+    // ── Ping-Pong: two crossfed delays (no channel ops — works on mono) ────
     case 'pingpong': applyEffect((c) => {
-      const delL = c.createDelay(1); delL.delayTime.value = 0.3;
-      const delR = c.createDelay(1); delR.delayTime.value = 0.45;
-      const fbL = c.createGain(); fbL.gain.value = 0.4;
-      const fbR = c.createGain(); fbR.gain.value = 0.4;
-      const merger = c.createChannelMerger(2);
-      const splitter = c.createChannelSplitter(2);
-      const input = c.createGain();
-      const out = c.createGain(); out.gain.value = 0.85;
-      input.connect(delL); input.connect(out);
-      delL.connect(fbL).connect(delR);
-      delR.connect(fbR).connect(delL);
-      delL.connect(splitter, 0, 0);
-      delR.connect(splitter, 0, 1);
-      splitter.connect(merger, 0, 0);
-      splitter.connect(merger, 1, 1);
-      merger.connect(out);
-      return { nodes: [delL, delR, fbL, fbR, merger, splitter, out], input, output: out };
+      const input  = c.createGain();
+      const out    = c.createGain(); out.gain.value = 0.85;
+      const dry    = c.createGain(); dry.gain.value = 0.6;
+      const delA   = c.createDelay(1); delA.delayTime.value = 0.32;
+      const delB   = c.createDelay(1); delB.delayTime.value = 0.48;
+      const fbA    = c.createGain(); fbA.gain.value = 0.45;
+      const fbB    = c.createGain(); fbB.gain.value = 0.45;
+      const wetA   = c.createGain(); wetA.gain.value = 0.55;
+      const wetB   = c.createGain(); wetB.gain.value = 0.55;
+      // crossfeed: A feeds B, B feeds A
+      input.connect(delA);
+      delA.connect(fbA).connect(delB);
+      delB.connect(fbB).connect(delA);
+      delA.connect(wetA).connect(out);
+      delB.connect(wetB).connect(out);
+      input.connect(dry).connect(out);
+      return { nodes: [input, dry, delA, delB, fbA, fbB, wetA, wetB, out], lfos: [], input, output: out };
     }); break;
 
+    // ── Reverb: large hall, very wet ───────────────────────────────────────
     case 'reverb': applyEffect((c) => {
-      // Deep hall reverb — longer impulse
-      const conv = c.createConvolver();
-      const rLen = c.sampleRate * 3.5;
-      const rBuf = c.createBuffer(2, rLen, c.sampleRate);
+      const conv  = c.createConvolver();
+      const rLen  = c.sampleRate * 4;
+      const rBuf  = c.createBuffer(2, rLen, c.sampleRate);
       for (let ch = 0; ch < 2; ch++) {
         const d = rBuf.getChannelData(ch);
-        for (let i = 0; i < rLen; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / rLen, 1.8);
+        for (let i = 0; i < rLen; i++)
+          d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / rLen, 1.5);
       }
       conv.buffer = rBuf;
-      const dry = c.createGain(); dry.gain.value = 0.4;
-      const wet = c.createGain(); wet.gain.value = 0.7;
-      const out = c.createGain();
-      dry.connect(out);
-      dry.connect(conv);
-      conv.connect(wet).connect(out);
-      return { nodes: [conv, dry, wet, out], input: dry, output: out };
+      const input = c.createGain();
+      const dry   = c.createGain(); dry.gain.value = 0.3;
+      const wet   = c.createGain(); wet.gain.value = 0.85;
+      const out   = c.createGain();
+      input.connect(dry).connect(out);
+      input.connect(conv).connect(wet).connect(out);
+      return { nodes: [input, dry, wet, conv, out], lfos: [], input, output: out };
     }); break;
 
+    // ── Plucking: resonant bandpass + sharp attack sculpt ──────────────────
     case 'plucking': applyEffect((c) => {
-      // Karplus-Strong-ish: feedback delay + lowpass for pluck character
-      const delay = c.createDelay(0.05); delay.delayTime.value = 0.01;
-      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3500;
-      const fb = c.createGain(); fb.gain.value = 0.85;
-      delay.connect(lp).connect(fb).connect(delay);
-      const out = c.createGain(); out.gain.value = 0.9;
-      const input = c.createGain();
-      input.connect(delay);
-      input.connect(out);
-      delay.connect(out);
-      return { nodes: [delay, lp, fb, out], input, output: out };
+      // Brighten attack, cut sustain tail — plucky character
+      const input  = c.createGain();
+      const bp     = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = 2;
+      const hp     = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 120;
+      const dry    = c.createGain(); dry.gain.value = 0.5;
+      const wet    = c.createGain(); wet.gain.value = 0.65;
+      const out    = c.createGain();
+      // short comb delay for that snappy resonance
+      const comb   = c.createDelay(0.03); comb.delayTime.value = 0.008;
+      const combFb = c.createGain(); combFb.gain.value = 0.5;
+      comb.connect(combFb).connect(comb); // feedback comb
+      input.connect(hp).connect(bp).connect(wet).connect(out);
+      input.connect(comb);
+      comb.connect(wet);
+      input.connect(dry).connect(out);
+      return { nodes: [input, bp, hp, dry, wet, out, comb, combFb], lfos: [], input, output: out };
     }); break;
 
+    // ── Mixed: chorus + room reverb ────────────────────────────────────────
     case 'mixed': applyEffect((c) => {
-      // Chorus + light reverb + subtle delay
-      const chorus = c.createDelay(0.03); chorus.delayTime.value = 0.018;
-      const lfo = c.createOscillator(); lfo.frequency.value = 0.3;
-      const depth = c.createGain(); depth.gain.value = 0.006;
-      lfo.connect(depth).connect(chorus.delayTime);
-      lfo.start();
-      const conv = c.createConvolver();
-      const rLen = c.sampleRate * 1.2;
-      const rBuf = c.createBuffer(2, rLen, c.sampleRate);
+      const input  = c.createGain();
+      const out    = c.createGain(); out.gain.value = 0.8;
+      const dry    = c.createGain(); dry.gain.value = 0.6;
+      // Chorus
+      const cho    = c.createDelay(0.04); cho.delayTime.value = 0.022;
+      const lfo    = makeLFO(c, 0.28);
+      const depth  = c.createGain(); depth.gain.value = 0.009;
+      lfo.connect(depth).connect(cho.delayTime);
+      const wCho   = c.createGain(); wCho.gain.value = 0.5;
+      // Room reverb
+      const conv   = c.createConvolver();
+      const rLen   = c.sampleRate * 1.8;
+      const rBuf   = c.createBuffer(2, rLen, c.sampleRate);
       for (let ch = 0; ch < 2; ch++) {
         const d = rBuf.getChannelData(ch);
-        for (let i = 0; i < rLen; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / rLen, 2.5);
+        for (let i = 0; i < rLen; i++)
+          d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / rLen, 2.2);
       }
       conv.buffer = rBuf;
-      const wRev = c.createGain(); wRev.gain.value = 0.28;
-      const wCho = c.createGain(); wCho.gain.value = 0.4;
-      const out = c.createGain(); out.gain.value = 0.82;
-      const input = c.createGain();
-      input.connect(out);
-      input.connect(chorus); chorus.connect(wCho).connect(out);
-      input.connect(conv); conv.connect(wRev).connect(out);
-      return { nodes: [chorus, lfo, depth, conv, wRev, wCho, out], input, output: out };
+      const wRev   = c.createGain(); wRev.gain.value = 0.45;
+      input.connect(dry).connect(out);
+      input.connect(cho).connect(wCho).connect(out);
+      input.connect(conv).connect(wRev).connect(out);
+      return { nodes: [input, dry, cho, wCho, depth, conv, wRev, out], lfos: [lfo], input, output: out };
     }); break;
 
     default: applyEffect(null); break; // 'none' / dry
@@ -427,7 +454,8 @@ const ensure2 = () => { ensure(); return outGain; };
 
 export const stopAllAudio = () => {
   if (!ctx) return;
-  // Close and recreate the AudioContext to kill all in-flight nodes.
+  activeLFOs.forEach(o => { try { o.stop(0); } catch(_){} });
+  activeLFOs = [];
   ctx.close().catch(() => {});
   ctx = null; master = null; reverb = null; outGain = null; effectBus = null; effectNodes = [];
 };

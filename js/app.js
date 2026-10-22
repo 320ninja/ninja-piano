@@ -1,5 +1,5 @@
 import { THEMES, applyTheme } from './themes.js';
-import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js';
+import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js?v=191';
 import { renderScore } from './score.js';
 import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat, setEffect } from './audio.js';
 import { createKeyboard } from './keyboard.js?v=40';

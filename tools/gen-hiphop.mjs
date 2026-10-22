@@ -40,14 +40,20 @@ const INTERVALS = {
   maj:  [0, 4, 7],
   min:  [0, 3, 7],
   dim:  [0, 3, 6],
+  maj7: [0, 4, 7, 11],
+  min7: [0, 3, 7, 10],
+  dim7: [0, 3, 6, 10], // half-diminished (m7b5)
 };
 
-// Place triad with root in C4..B4 (midi 60..71). Everything stays in RH range (A3..C6).
-const voiceTriad = (key, degree) => {
+// Place chord (triad or 7th) with root in C4..B4 (midi 60..71). Stays in RH range A3..C6.
+const voiceChord = (key, degree, seventh = false) => {
   const { rootPc, quality } = diatonic(key, degree);
+  const kind = seventh
+    ? (quality === 'maj' ? 'maj7' : quality === 'min' ? 'min7' : 'dim7')
+    : quality;
   let root = 60 + rootPc;
   if (root > 71) root -= 12;
-  return INTERVALS[quality].map(i => root + i);
+  return INTERVALS[kind].map(i => root + i);
 };
 
 // Bass note in C2..B2 (midi 36..47). Always in LH range (C2..E4).
@@ -174,27 +180,54 @@ const TITLES_BY_STYLE = {
 // ---------- slug ----------
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-// ---------- compose one song ----------
+// ---------- compose one song (A-B form: intro + verse + hook + verse + hook + outro) ----------
 function makeSong(index) {
   const style = STYLES[index % STYLES.length];
-  const slot  = Math.floor(index / STYLES.length);           // 0..6
+  const slot  = Math.floor(index / STYLES.length);                            // 0..6
   const titleList = TITLES_BY_STYLE[style.id];
   const title = titleList[slot % titleList.length];
-  const prog  = PROGS[(index * 3 + slot) % PROGS.length];    // mix progressions across styles
+  const progA = PROGS[(index * 3 + slot) % PROGS.length];                     // verse
+  const progB = PROGS[(index * 3 + slot + 5) % PROGS.length];                 // hook (contrasting)
   const key   = KEY_ROTATION[(index * 7 + slot * 2) % KEY_ROTATION.length];
   const bpm   = style.bpms[slot % style.bpms.length];
   const id    = `hiphop-${String(index + 1).padStart(3, '0')}-${slug(title)}`;
 
-  const BARS = 48; // 12x loop of a 4-chord progression
   const rh = [];
   const lh = [];
-  for (let b = 0; b < BARS; b++) {
-    const degree = prog[b % 4];
-    const chord  = voiceTriad(key, degree);
-    const bassM  = bassNote(key, degree);
-    rh.push(style.rh(chord, key));
-    lh.push(style.lh(bassM, key));
+
+  // Intro — 4 bars, sustained whole notes: i → v → i → v
+  for (const d of [1, 5, 1, 5]) {
+    const c = voiceChord(key, d, false);
+    const b = bassNote(key, d);
+    rh.push(`${nameTok(c, key)}/w`);
+    lh.push(`${nameTok([b], key)}/w`);
   }
+
+  // Section runner — pushes `cycles` cycles of a 4-chord progression using the style groove.
+  const pushSection = (prog, cycles, seventh) => {
+    for (let i = 0; i < cycles * 4; i++) {
+      const d = prog[i % 4];
+      const c = voiceChord(key, d, seventh);
+      const b = bassNote(key, d);
+      rh.push(style.rh(c, key));
+      lh.push(style.lh(b, key));
+    }
+  };
+
+  pushSection(progA, 3, false);  // Verse 1 — 12 bars, triads
+  pushSection(progB, 3, true);   // Hook 1  — 12 bars, 7th chords (richer, contrasting)
+  pushSection(progA, 3, false);  // Verse 2 — 12 bars
+  pushSection(progB, 3, true);   // Hook 2  — 12 bars
+
+  // Outro — 4 bars cadence: iv → v → i → i
+  for (const d of [4, 5, 1, 1]) {
+    const c = voiceChord(key, d, false);
+    const b = bassNote(key, d);
+    rh.push(`${nameTok(c, key)}/w`);
+    lh.push(`${nameTok([b], key)}/w`);
+  }
+
+  // Total bars: 4 + 12 + 12 + 12 + 12 + 4 = 56
 
   return {
     id,

@@ -17,7 +17,7 @@ Each `songs/<category>.json` file is a JSON array of songs:
 }
 ```
 
-- `cat`: one of Kids, Classical, Pop, Folk, Holiday, Hymns, Exercises, Jazz, Blues, Rock, EDM, Fingerstyle
+- `cat`: one of Kids, Classical, Pop, Folk, Holiday, Hymns, Exercises, Jazz, Blues, Rock, Hiphop, EDM, Fingerstyle
 - `level`: Easy, Medium or Hard
 - `key`: a major key (C G D A E F Bb Eb Ab) or a minor key (Am Em Bm Dm Gm Cm)
 - `time`: 2/4, 3/4, 4/4 or 6/8
@@ -27,7 +27,7 @@ Each `songs/<category>.json` file is a JSON array of songs:
 - Rest: `r/q`. Chord: `(C3 E3 G3)/h`.
 - Every bar must add up exactly to the time signature, except a pickup bar (anacrusis) as the very first bar, which may be shorter in both hands as long as both hands match.
 - Right-hand range is A3–C6. Left-hand range is C2–E4.
-- Only use music in the public domain: traditional, folk, or composers who died before 1955.
+- Only use music in the public domain: traditional, folk, or composers who died before 1955. Hiphop songs are Ninja Piano originals in modern hip-hop styles (boom-bap, trap, lo-fi, g-funk, drill, phonk, etc.) and are safe to ship.
 
 Run `node tools/validate.mjs` to check every file.
 

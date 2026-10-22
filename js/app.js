@@ -69,6 +69,7 @@ const CAT_ART = {
   Jazz:        ['🎷', '#d97706', '#92400e'],
   Blues:       ['🎸', '#1d4ed8', '#1e3a8a'],
   Rock:        ['🤘', '#dc2626', '#111827'],
+  Hiphop:      ['🎙️', '#f59e0b', '#1f2937'],
   EDM:         ['🎧', '#7c3aed', '#0891b2'],
   Fingerstyle: ['🖐️', '#0d9488', '#065f46'],
   Exercises:   ['🎯', '#4f46e5', '#7c3aed'],
@@ -126,6 +127,18 @@ const CAT_SVG = {
   EDM: `<circle cx="29" cy="29" r="24" fill="rgba(255,255,255,.07)"/>
     <path d="M10 29 Q14 18 18 29 Q22 40 26 29 Q30 18 34 29 Q38 40 42 29 Q46 18 50 29" stroke="rgba(255,255,255,.9)" stroke-width="3" fill="none" stroke-linecap="round"/>
     <circle cx="29" cy="29" r="6" fill="rgba(255,255,255,.25)"/>`,
+  Hiphop: `<circle cx="29" cy="29" r="24" fill="rgba(255,255,255,.07)"/>
+    <!-- Studio microphone capsule -->
+    <ellipse cx="29" cy="20" rx="9" ry="11" fill="rgba(255,255,255,.92)"/>
+    <line x1="23" y1="17" x2="35" y2="17" stroke="rgba(0,0,0,.18)" stroke-width="0.8"/>
+    <line x1="22" y1="20" x2="36" y2="20" stroke="rgba(0,0,0,.18)" stroke-width="0.8"/>
+    <line x1="23" y1="23" x2="35" y2="23" stroke="rgba(0,0,0,.18)" stroke-width="0.8"/>
+    <!-- Mic yoke / collar -->
+    <path d="M18 25 Q18 32 29 32 Q40 32 40 25" stroke="rgba(255,255,255,.75)" stroke-width="1.8" fill="none"/>
+    <!-- Handle -->
+    <rect x="27" y="32" width="4" height="12" rx="1.5" fill="rgba(255,255,255,.78)"/>
+    <!-- Base -->
+    <ellipse cx="29" cy="47" rx="9" ry="2.5" fill="rgba(255,255,255,.85)"/>`,
   Fingerstyle: `<circle cx="29" cy="29" r="24" fill="rgba(255,255,255,.07)"/>
     <rect x="18" y="24" width="5" height="20" rx="2.5" fill="rgba(255,255,255,.85)"/>
     <rect x="25" y="18" width="5" height="26" rx="2.5" fill="rgba(255,255,255,.85)"/>

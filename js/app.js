@@ -5,7 +5,7 @@ import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSus
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
-import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=9';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=10';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };

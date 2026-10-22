@@ -4,7 +4,7 @@ const STEP = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 const SHARP_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 export const CATEGORIES = ['Kids', 'Classical', 'Pop', 'Folk', 'Holiday', 'Hymns', 'Jazz', 'Blues', 'Rock', 'Hiphop', 'EDM', 'Fingerstyle', 'Exercises'];
-export const SONG_FILES = ['kids', 'classical', 'classical-100', 'pop', 'folk', 'holiday', 'hymns', 'jazz', 'blues', 'blues-patterns', 'rock', 'hiphop', 'edm', 'fingerstyle', 'hard', 'jazz-hard', 'blues-hard', 'exercises', 'pack-100'];
+export const SONG_FILES = ['kids', 'classical', 'classical-100', 'pop', 'folk', 'holiday', 'hymns', 'jazz', 'blues', 'blues-patterns', 'rock', 'hiphop', 'edm', 'fingerstyle', 'hard', 'jazz-hard', 'blues-hard', 'exercises', 'pack-100', 'pack-260', 'pack-156'];
 
 // Key signatures: sharps/flats each letter takes by default.
 const KEY_SIG = {

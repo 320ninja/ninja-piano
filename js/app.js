@@ -1,4 +1,6 @@
 import { THEMES, applyTheme } from './themes.js';
+import { signUpEmail, signInEmail, signInGoogle, signOut, getUser, onAuthChange } from './auth.js';
+import { initRevenueCat, isPremium, purchasePremium, restorePurchases, refreshPremiumStatus } from './premium.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js?v=197';
 import { renderScore } from './score.js';
 import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat, setEffect } from './audio.js';
@@ -279,6 +281,38 @@ const app = document.getElementById('app');
 const nav = document.getElementById('nav');
 let cleanup = () => {};
 
+/* ---------- Auth + Premium state ---------- */
+let currentUser = null;
+
+// Boot: restore session and initialise RevenueCat
+(async () => {
+  currentUser = await getUser();
+  if (currentUser) await initRevenueCat(currentUser.id);
+  // Keep session in sync for the lifetime of the tab
+  onAuthChange(async (user) => {
+    currentUser = user;
+    if (user) await initRevenueCat(user.id);
+    else {
+      // User signed out — re-render settings if open
+      if (location.hash.startsWith('#/settings')) views.settings();
+    }
+    // Refresh ad visibility
+    updateAdVisibility();
+  });
+})();
+
+const updateAdVisibility = async () => {
+  if (!window._adMobInitialised) return;
+  try {
+    const { AdMob } = await import('@capacitor-community/admob');
+    if (isPremium()) {
+      await AdMob.hideBanner().catch(() => {});
+    } else {
+      await AdMob.resumeBanner().catch(() => {});
+    }
+  } catch (_) {}
+};
+
 /* Auto-hide nav after 3s of inactivity; show on scroll/mouse/touch */
 let navIdleTimer = null;
 const NAV_IDLE_MS = 3000;
@@ -403,6 +437,212 @@ const setNav = (route) => {
 
 /* ---------- views ---------- */
 const views = {};
+
+/* ---- Auth view (sign up / sign in) ---- */
+views.auth = (params) => {
+  const next = params?.get('next') || '#/settings';
+  let mode = 'signin'; // 'signin' | 'signup'
+  setNav('settings');
+
+  const render = () => {
+    const isSignup = mode === 'signup';
+    app.innerHTML = `<section class="view" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px">
+      <div style="width:100%;max-width:400px">
+        <div style="text-align:center;margin-bottom:28px">
+          <div style="font-size:40px;margin-bottom:8px">🎹</div>
+          <h1 style="font-size:24px;font-weight:800;margin:0 0 4px">Piano Learners</h1>
+          <p style="color:var(--muted);font-size:14px;margin:0">${isSignup ? 'Create your free account' : 'Welcome back'}</p>
+        </div>
+
+        <div style="display:flex;border-radius:14px;background:var(--card);border:1px solid var(--line);overflow:hidden;margin-bottom:20px">
+          <button id="tabSignin" style="flex:1;padding:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;background:${!isSignup ? 'var(--p)' : 'transparent'};color:${!isSignup ? '#fff' : 'var(--muted)'};transition:all .2s">Sign In</button>
+          <button id="tabSignup" style="flex:1;padding:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;background:${isSignup ? 'var(--p)' : 'transparent'};color:${isSignup ? '#fff' : 'var(--muted)'};transition:all .2s">Sign Up</button>
+        </div>
+
+        <div class="card pad" style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px">EMAIL</label>
+            <input id="authEmail" type="email" placeholder="you@example.com" autocomplete="email"
+              style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--solid);color:var(--ink);font-size:15px;box-sizing:border-box;outline:none;font-family:inherit">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px">PASSWORD${isSignup ? ' (min 8 chars)' : ''}</label>
+            <input id="authPass" type="password" placeholder="••••••••" autocomplete="${isSignup ? 'new-password' : 'current-password'}"
+              style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--solid);color:var(--ink);font-size:15px;box-sizing:border-box;outline:none;font-family:inherit">
+          </div>
+          <div id="authError" style="display:none;color:#ef4444;font-size:13px;font-weight:600;padding:10px 14px;background:#ef444415;border-radius:10px"></div>
+          <button id="authSubmit" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;font-size:16px;font-weight:800;cursor:pointer">
+            ${isSignup ? 'Create Account' : 'Sign In'}
+          </button>
+
+          <div style="display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px">
+            <div style="flex:1;height:1px;background:var(--line)"></div>or<div style="flex:1;height:1px;background:var(--line)"></div>
+          </div>
+
+          <button id="authGoogle" style="width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--line);background:var(--solid);color:var(--ink);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Continue with Google
+          </button>
+        </div>
+
+        <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:16px">
+          By continuing you agree to our <a href="#/privacy" style="color:var(--p)">Privacy Policy</a>.
+        </p>
+        <div style="text-align:center;margin-top:8px">
+          <a href="${next}" style="color:var(--muted);font-size:13px">Skip for now</a>
+        </div>
+      </div>
+    </section>`;
+
+    const showError = (msg) => {
+      const el = app.querySelector('#authError');
+      el.textContent = msg; el.style.display = 'block';
+    };
+    const setLoading = (on) => {
+      const btn = app.querySelector('#authSubmit');
+      btn.disabled = on; btn.textContent = on ? '…' : (isSignup ? 'Create Account' : 'Sign In');
+    };
+
+    app.querySelector('#tabSignin').onclick = () => { mode = 'signin'; render(); };
+    app.querySelector('#tabSignup').onclick = () => { mode = 'signup'; render(); };
+    app.querySelector('#authGoogle').onclick = async () => {
+      try { await signInGoogle(); } catch (e) { showError(e.message); }
+    };
+    app.querySelector('#authSubmit').onclick = async () => {
+      const email = app.querySelector('#authEmail').value.trim();
+      const pass  = app.querySelector('#authPass').value;
+      if (!email || !pass) return showError('Please enter email and password.');
+      if (isSignup && pass.length < 8) return showError('Password must be at least 8 characters.');
+      setLoading(true);
+      try {
+        if (isSignup) await signUpEmail(email, pass);
+        else await signInEmail(email, pass);
+        location.hash = next;
+      } catch (e) {
+        setLoading(false);
+        showError(e.message || 'Authentication failed. Please try again.');
+      }
+    };
+    // Submit on Enter
+    app.querySelectorAll('#authEmail,#authPass').forEach(el => {
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter') app.querySelector('#authSubmit').click(); });
+    });
+  };
+  render();
+};
+
+/* ---- Premium paywall view ---- */
+views.premium = () => {
+  setNav('settings');
+  const premium = isPremium();
+  const user = currentUser;
+
+  app.innerHTML = `<section class="view" style="min-height:100dvh;display:flex;flex-direction:column">
+    <div class="top">
+      <a class="iconbtn" href="#/settings">${icon('back')}</a>
+      <h1>Piano Learners Premium</h1>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:24px;gap:20px">
+
+      ${premium ? `
+      <div style="text-align:center;padding:24px">
+        <div style="font-size:56px;margin-bottom:12px">👑</div>
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 8px">You're Premium!</h2>
+        <p style="color:var(--muted);margin:0">Enjoy ad-free learning. Thank you for supporting Piano Learners.</p>
+      </div>` : `
+      <!-- Hero -->
+      <div style="text-align:center;padding:8px 0 4px">
+        <div style="font-size:56px;margin-bottom:12px">👑</div>
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 8px">Go Ad-Free</h2>
+        <div style="font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px">$4.99<span style="font-size:16px;font-weight:600">/month</span></div>
+        <p style="color:var(--muted);font-size:13px;margin:0">Cancel anytime in Google Play</p>
+      </div>
+
+      <!-- Benefits -->
+      <div class="card pad" style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px">
+        ${[
+          ['🚫 No ads', 'Zero banners, interstitials or pop-ups — ever'],
+          ['♾️ Unlimited practice', 'All songs, all modes, all tools'],
+          ['⚡ Faster experience', 'No ad loading delays'],
+          ['❤️ Support the app', 'Keep Piano Learners growing'],
+        ].map(([title, desc]) => `
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="font-size:22px;flex-shrink:0">${title.split(' ')[0]}</span>
+            <div>
+              <div style="font-weight:700;font-size:14px">${title.slice(title.indexOf(' ')+1)}</div>
+              <div style="color:var(--muted);font-size:13px">${desc}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+
+      <!-- CTA -->
+      <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px">
+        ${!user ? `
+          <a href="#/auth?next=%23/premium" style="display:block;width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;font-size:17px;font-weight:800;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box">
+            Sign In to Subscribe
+          </a>
+          <p style="text-align:center;color:var(--muted);font-size:12px;margin:0">You need a free account to manage your subscription</p>
+        ` : `
+          <button id="premiumBuy" style="width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--p),var(--a));color:#fff;font-size:17px;font-weight:800;cursor:pointer">
+            Start Premium — $4.99/month
+          </button>
+          <button id="premiumRestore" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:transparent;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer">
+            Restore Purchases
+          </button>
+        `}
+        <div id="premiumMsg" style="display:none;text-align:center;font-size:13px;font-weight:600;padding:10px;border-radius:10px"></div>
+      </div>
+      `}
+
+      <p style="color:var(--muted);font-size:11px;text-align:center;max-width:340px;margin:0">
+        Subscription renews monthly. Manage or cancel at any time in your Google Play account.
+        ${user ? `Signed in as <b>${esc(user.email)}</b>. <button id="signOutBtn" style="border:none;background:none;color:var(--p);font-size:11px;cursor:pointer;font-weight:700;padding:0">Sign out</button>` : ''}
+      </p>
+    </div>
+  </section>`;
+
+  if (premium) return;
+
+  const showMsg = (msg, ok) => {
+    const el = app.querySelector('#premiumMsg');
+    el.style.display = 'block';
+    el.style.background = ok ? '#22c55e20' : '#ef444420';
+    el.style.color = ok ? '#22c55e' : '#ef4444';
+    el.textContent = msg;
+  };
+
+  app.querySelector('#premiumBuy')?.addEventListener('click', async () => {
+    const btn = app.querySelector('#premiumBuy');
+    btn.disabled = true; btn.textContent = 'Opening billing…';
+    try {
+      const ok = await purchasePremium();
+      if (ok) { toast('🎉 Premium activated!'); views.premium(); }
+      else showMsg('Purchase not completed.', false);
+    } catch (e) {
+      showMsg(e.message || 'Purchase failed. Please try again.', false);
+      btn.disabled = false; btn.textContent = 'Start Premium — $4.99/month';
+    }
+    updateAdVisibility();
+  });
+
+  app.querySelector('#premiumRestore')?.addEventListener('click', async () => {
+    const btn = app.querySelector('#premiumRestore');
+    btn.disabled = true; btn.textContent = 'Restoring…';
+    try {
+      const ok = await restorePurchases();
+      if (ok) { toast('✅ Premium restored!'); views.premium(); }
+      else showMsg('No active subscription found.', false);
+    } catch (e) {
+      showMsg(e.message || 'Restore failed.', false);
+    }
+    btn.disabled = false; btn.textContent = 'Restore Purchases';
+    updateAdVisibility();
+  });
+
+  app.querySelector('#signOutBtn')?.addEventListener('click', async () => {
+    await signOut(); views.premium();
+  });
+};
 
 views.welcome = () => {
   setNav('welcome');
@@ -5042,6 +5282,15 @@ views.settings = () => {
   const sw = (k, label) => `<label class="row"><span>${label}</span><span class="sw"><input type="checkbox" data-k="${k}" ${settings[k] ? 'checked' : ''}><span></span></span></label>`;
   app.innerHTML = `<section class="view">
     <div class="top"><div class="brand"><span class="logo">${LOGO}</span>Settings</div>${THEME_BTN}</div>
+    <!-- Premium / account banner -->
+    <a href="#/premium" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:var(--r);background:${isPremium() ? 'linear-gradient(135deg,#6d28d920,#22c55e20)' : 'linear-gradient(135deg,var(--p),var(--a))'};border:1.5px solid ${isPremium() ? 'var(--p)' : 'transparent'};margin-bottom:2px;text-decoration:none;color:${isPremium() ? 'var(--ink)' : '#fff'}">
+      <span style="font-size:28px">${isPremium() ? '👑' : '🚀'}</span>
+      <div style="flex:1">
+        <div style="font-weight:800;font-size:15px">${isPremium() ? 'Premium — Ad-Free' : 'Go Premium'}</div>
+        <div style="font-size:12px;opacity:.85">${isPremium() ? (currentUser ? `Signed in as ${esc(currentUser.email)}` : 'Active subscription') : 'Ad-free · $4.99/month · Cancel anytime'}</div>
+      </div>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+    </a>
     <div class="card group"><h4>You</h4>
       <label class="row"><span>Your name</span><input id="name" value="${esc(settings.name)}" placeholder="Optional" style="border:1px solid var(--line);background:var(--solid);border-radius:12px;height:38px;padding:0 12px;width:150px"></label></div>
     <div class="card group"><h4>Music display</h4>
@@ -5157,6 +5406,10 @@ let _AdMob = null;
 
     await _AdMob.initialize({ initializeForTesting: false });
     admobReady = true;
+    window._adMobInitialised = true;
+
+    // Skip all ads for premium users
+    if (isPremium()) return;
 
     // App Open ad — shown once when the app first launches
     try {
@@ -5191,7 +5444,7 @@ const showRewardedAd = () => new Promise((resolve) => {
 
 // Interstitial: call after song completion (fires only when unit ID is set)
 const showInterstitialAd = async () => {
-  if (!admobReady || !_AdMob || !ADMOB_INTERSTITIAL_ID) return;
+  if (!admobReady || !_AdMob || !ADMOB_INTERSTITIAL_ID || isPremium()) return;
   try {
     await _AdMob.prepareInterstitial({ adId: ADMOB_INTERSTITIAL_ID, isTesting: false });
     await _AdMob.showInterstitial();
@@ -5219,6 +5472,8 @@ const route = async () => {
   if (name === 'chordsLibrary' && id) return views.chordsLibrarySong(params, decodeURIComponent(id));
   if (name === 'chordsLibrary') return views.chordsLibrary(params);
   if (name === 'favs') return views.favs(params);
+  if (name === 'auth') return views.auth(params);
+  if (name === 'premium') return views.premium();
   (map[name] || views.home)(params, id && decodeURIComponent(id));
 };
 addEventListener('hashchange', route);

@@ -17,6 +17,8 @@
     "@capacitor/ios": "^7.0.0"
   },
   "dependencies": {
-    "@capacitor-community/admob": "^8.3.0"
+    "@capacitor-community/admob": "^8.3.0",
+    "@revenuecat/purchases-capacitor": "^14.0.0",
+    "@supabase/supabase-js": "^2.118.0"
   }
 }

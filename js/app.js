@@ -1,6 +1,6 @@
 import { THEMES, applyTheme } from './themes.js';
 import { signUpEmail, signInEmail, signInGoogle, signOut, getUser, onAuthChange } from './auth.js';
-import { initRevenueCat, isPremium, purchasePremium, restorePurchases, refreshPremiumStatus } from './premium.js';
+import { initPremium, isPremium, purchasePremium, restorePurchases, refreshPremiumStatus } from './premium.js';
 import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js?v=197';
 import { renderScore } from './score.js';
 import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat, setEffect } from './audio.js';
@@ -287,11 +287,11 @@ let currentUser = null;
 // Boot: restore session and initialise RevenueCat
 (async () => {
   currentUser = await getUser();
-  if (currentUser) await initRevenueCat(currentUser.id);
+  if (currentUser) await initPremium(currentUser.id);
   // Keep session in sync for the lifetime of the tab
   onAuthChange(async (user) => {
     currentUser = user;
-    if (user) await initRevenueCat(user.id);
+    if (user) await initPremium(user.id);
     else {
       // User signed out — re-render settings if open
       if (location.hash.startsWith('#/settings')) views.settings();

@@ -1,57 +1,119 @@
-// RevenueCat subscription management.
-// Public SDK keys are safe to ship in the app — they only allow
-// purchases/lookups for the authenticated user, never server-side writes.
+// Google Play Billing via cordova-plugin-purchase.
+// Premium status is verified server-side (Supabase Edge Function) and
+// cached in Supabase — defaults to DENY on any error or network failure.
 
-import { RC_API_KEY_ANDROID, RC_ENTITLEMENT_ID } from './config.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 
-let _Purchases = null;
-let _premiumStatus = false; // default DENY — never grant on error or unknown state
+const PRODUCT_ID  = 'piano_learners_premium_monthly';
+const VERIFY_URL  = `${SUPABASE_URL}/functions/v1/verify-purchase`;
 
-// Call once after the user signs in (or on cold start if already signed in).
-export const initRevenueCat = async (userId) => {
+let _premiumStatus = false; // DENY by default
+let _userId        = null;
+let _sb            = null;
+
+const _getSupabase = () => {
+  if (!_sb && window.supabase) _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return _sb;
+};
+
+// Call once after sign-in. Safe to call on web (no-op).
+export const initPremium = async (userId) => {
+  _userId = userId;
+  _premiumStatus = false;
   try {
-    const mod = await import('@revenuecat/purchases-capacitor');
-    _Purchases = mod.Purchases;
-    await _Purchases.configure({ apiKey: RC_API_KEY_ANDROID });
-    if (userId) await _Purchases.logIn({ appUserID: userId });
-    await _refreshStatus();
+    await refreshPremiumStatus();
+    _initStore(); // warm up the billing store in background
   } catch (_) {
-    // Not running in Capacitor (web) or plugin unavailable — deny premium
     _premiumStatus = false;
   }
 };
 
-// Internal: fetches entitlement from RevenueCat servers (no cache trusted)
-const _refreshStatus = async () => {
-  if (!_Purchases) { _premiumStatus = false; return; }
+// Re-query Supabase for current premium status.
+export const refreshPremiumStatus = async () => {
+  if (!_userId) return;
   try {
-    const { customerInfo } = await _Purchases.getCustomerInfo();
-    _premiumStatus = !!customerInfo.entitlements.active[RC_ENTITLEMENT_ID];
+    const sb = _getSupabase();
+    if (!sb) return;
+    const { data, error } = await sb
+      .from('premium_users')
+      .select('is_active, expires_at')
+      .eq('user_id', _userId)
+      .single();
+    if (error || !data) { _premiumStatus = false; return; }
+    const notExpired = !data.expires_at || new Date(data.expires_at) > new Date();
+    _premiumStatus = !!(data.is_active && notExpired);
   } catch (_) {
-    // Network error or RevenueCat down → deny. NEVER grant on failure.
-    _premiumStatus = false;
+    _premiumStatus = false; // network failure → deny
   }
 };
 
-export const refreshPremiumStatus = _refreshStatus;
-
-// Synchronous check for use in UI rendering — updated by initRevenueCat
+// Synchronous — updated by init/refresh. Use in UI rendering.
 export const isPremium = () => _premiumStatus;
 
-// Trigger Google Play purchase flow
-export const purchasePremium = async () => {
-  if (!_Purchases) throw new Error('Billing not available on this platform');
-  const { current: offering } = await _Purchases.getOfferings();
-  if (!offering?.monthly) throw new Error('No monthly package configured in RevenueCat');
-  const { customerInfo } = await _Purchases.purchasePackage({ aPackage: offering.monthly });
-  _premiumStatus = !!customerInfo.entitlements.active[RC_ENTITLEMENT_ID];
-  return _premiumStatus;
+// Register product and initialise Google Play store (idempotent).
+const _initStore = () => {
+  const CdvPurchase = window.CdvPurchase;
+  if (!CdvPurchase?.store) return; // web or plugin not loaded
+  CdvPurchase.store.register([{
+    id: PRODUCT_ID,
+    type: CdvPurchase.ProductType.PAID_SUBSCRIPTION,
+    platform: CdvPurchase.Platform.GOOGLE_PLAY,
+  }]);
+  CdvPurchase.store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]).catch(() => {});
 };
 
-// Restore purchases (required by app store policy)
-export const restorePurchases = async () => {
-  if (!_Purchases) throw new Error('Billing not available on this platform');
-  const { customerInfo } = await _Purchases.restorePurchases();
-  _premiumStatus = !!customerInfo.entitlements.active[RC_ENTITLEMENT_ID];
-  return _premiumStatus;
+// Open Google Play purchase sheet for the subscription.
+export const purchasePremium = () => new Promise((resolve, reject) => {
+  const CdvPurchase = window.CdvPurchase;
+  if (!CdvPurchase?.store) {
+    reject(new Error('In-app purchases are not available on this platform.'));
+    return;
+  }
+
+  // Listen once for approval
+  const unsub = CdvPurchase.store.when().approved(async (tx) => {
+    unsub(); // remove listener
+    try {
+      await _verifyWithServer(tx.purchaseId || tx.transactionId);
+      await tx.finish();
+      await refreshPremiumStatus();
+      resolve(_premiumStatus);
+    } catch (e) {
+      reject(e);
+    }
+  });
+
+  CdvPurchase.store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]).then(() => {
+    const product = CdvPurchase.store.get(PRODUCT_ID, CdvPurchase.Platform.GOOGLE_PLAY);
+    if (!product) { reject(new Error('Subscription product not found. Check Google Play Console.')); return; }
+    const offer = product.getOffer?.();
+    if (!offer) { reject(new Error('No offer available for this product.')); return; }
+    offer.order().then((err) => { if (err) reject(new Error(err.message || 'Purchase failed')); });
+  }).catch(reject);
+});
+
+// Restore existing Google Play purchases.
+export const restorePurchases = () => new Promise((resolve, reject) => {
+  const CdvPurchase = window.CdvPurchase;
+  if (!CdvPurchase?.store) { resolve(false); return; }
+  CdvPurchase.store.restorePurchases().then(async () => {
+    await refreshPremiumStatus();
+    resolve(_premiumStatus);
+  }).catch(reject);
+});
+
+// Send purchase token to Supabase Edge Function for server-side verification.
+const _verifyWithServer = async (purchaseToken) => {
+  if (!_userId) throw new Error('Must be signed in to verify purchase.');
+  const resp = await fetch(VERIFY_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify({ userId: _userId, purchaseToken, productId: PRODUCT_ID }),
+  });
+  if (!resp.ok) throw new Error('Server verification failed. Please try again.');
+  const { premium } = await resp.json();
+  if (!premium) throw new Error('Purchase could not be verified. Contact support.');
 };

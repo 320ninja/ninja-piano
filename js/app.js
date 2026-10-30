@@ -1,5 +1,5 @@
 import { THEMES, applyTheme } from './themes.js';
-import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js?v=196';
+import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js?v=197';
 import { renderScore } from './score.js';
 import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat, setEffect } from './audio.js';
 import { createKeyboard } from './keyboard.js?v=40';
@@ -2944,7 +2944,10 @@ views.scan = () => {
 
       let res;
       try {
-        res = await fetch(`/api/scan`, { method: 'POST', body: fd });
+        // Prod/native: hit the pasted server directly (it sends CORS *).
+        // Dev: tools/serve.py proxies /api/* to the local OMR server.
+        const endpoint = /^https?:\/\//i.test(url) ? `${url}/scan` : `/api/scan`;
+        res = await fetch(endpoint, { method: 'POST', body: fd });
       } catch (networkErr) {
         clearInterval(ticker);
         throw new Error('Cannot reach the OMR server. Make sure it is running: cd server && uvicorn main:app');

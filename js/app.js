@@ -303,7 +303,8 @@ const toast = (msg) => {
 
 const songRow = (s, opts = {}) => {
   const p = progress[s.id];
-  const [, c1, c2] = CAT_ART[s.cat] || CAT_ART.Kids;
+  const _sh = strHash(s.id || s.title || '');
+  const [c1, c2] = THUMB_PALETTES[_sh % THUMB_PALETTES.length];
   return `<a class="song" href="#/song/${s.id}" style="--c1:${c1};--c2:${c2}">
     ${thumb(s)}
     <div class="meta"><div class="t">${esc(s.title)}</div>
@@ -1801,10 +1802,10 @@ views.progressions = (params) => {
     </div>
     <div class="list" id="plist">
       ${filtered.length === 0 ? `<div style="padding:32px;text-align:center;color:var(--muted);font-size:14px">No favourites yet.<br>Tap ❤️ on any progression to save it.</div>` :
-      filtered.map(p=>`
-        <div class="song" data-prog-id="${p.id}" style="cursor:default">
+      filtered.map(p=>{ const _ph=strHash(p.id||p.name||''); const [_pc1,_pc2]=THUMB_PALETTES[_ph%THUMB_PALETTES.length]; return `
+        <div class="song" data-prog-id="${p.id}" style="cursor:default;--c1:${_pc1};--c2:${_pc2}">
           <a href="#/progressionPlay/${p.id}" style="display:contents">
-          <div class="thumb" style="background:linear-gradient(135deg,${MOOD_COLORS[p.mood[0]]||'#6d5dfc'},${MOOD_COLORS[p.mood[1]]||'#22c55e'});font-size:28px;display:flex;align-items:center;justify-content:center">
+          <div class="thumb" style="background:linear-gradient(135deg,${_pc1},${_pc2});font-size:28px;display:flex;align-items:center;justify-content:center">
             ${{happy:'😊',sad:'😢',emotional:'💫',epic:'🔥',jazz:'🎷',blues:'🎸',romantic:'💕',dark:'🌙'}[p.mood[0]]||'🎼'}
           </div>
           <div class="meta">
@@ -1815,7 +1816,7 @@ views.progressions = (params) => {
           </a>
           <button class="fav-btn" data-fav-id="${p.id}" style="background:none;border:none;cursor:pointer;font-size:20px;padding:8px;flex-shrink:0" title="Favourite">${favs.has(p.id)?'❤️':'🤍'}</button>
           <a class="play" href="#/progressionPlay/${p.id}">${icon('play')}</a>
-        </div>`).join('')}
+        </div>`; }).join('')}
     </div>
   </section>`;
   app.querySelector('#moodChips').onclick = (e) => {
@@ -3999,9 +4000,9 @@ views.chordsLibrary = (params) => {
     return `<button class="chip cc ${on ? 'on' : ''}" data-clg="${genre}" style="--c1:#f59e0b;--c2:#d97706">${genre}</button>`;
   }).join('');
 
-  const songRows = shown.map(s => `
-    <a class="song" href="#/chordsLibrary/${encodeURIComponent(s.id)}" style="text-decoration:none">
-      <div class="thumb" style="background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+  const songRows = shown.map(s => { const _ch=strHash(s.id||s.title||''); const [_cc1,_cc2]=THUMB_PALETTES[_ch%THUMB_PALETTES.length]; return `
+    <a class="song" href="#/chordsLibrary/${encodeURIComponent(s.id)}" style="text-decoration:none;--c1:${_cc1};--c2:${_cc2}">
+      <div class="thumb" style="background:linear-gradient(135deg,${_cc1},${_cc2});display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
         <div style="font-size:10px;font-weight:800;color:#fff;opacity:.9;text-align:center;padding:0 4px;line-height:1.2;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.key)}</div>
         <div style="font-size:7px;color:rgba(255,255,255,.75);font-weight:600">${esc(s.genre)}</div>
       </div>
@@ -4016,7 +4017,7 @@ views.chordsLibrary = (params) => {
       </div>
       <button class="cl-fav-btn" data-id="${s.id}" title="Favourite" style="background:none;border:none;cursor:pointer;font-size:20px;line-height:1;padding:4px 6px;color:${clFavs.has(s.id)?'#ef4444':'var(--muted)'};align-self:center">${clFavs.has(s.id)?'♥':'♡'}</button>
       <span class="play">${icon('arrowR')}</span>
-    </a>`).join('');
+    </a>`; }).join('');
 
   app.innerHTML = `<section class="view">
     <div class="top">
@@ -4082,6 +4083,8 @@ views.chordsLibrarySong = (params, songId) => {
   if (!song) { location.hash = '#/chordsLibrary'; return; }
   const prevSongId = CHORDS_LIBRARY[(songIdx - 1 + CHORDS_LIBRARY.length) % CHORDS_LIBRARY.length].id;
   const nextSongId = CHORDS_LIBRARY[(songIdx + 1) % CHORDS_LIBRARY.length].id;
+  const _clh = strHash(song.id || song.title || '');
+  const [_clc1, _clc2] = THUMB_PALETTES[_clh % THUMB_PALETTES.length];
 
   const PILL_COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f43f5e'];
   const NOTE_COLORS_MAP = { C:'#ef4444',D:'#f97316',E:'#eab308',F:'#22c55e',G:'#06b6d4',A:'#3b82f6',B:'#8b5cf6' };
@@ -4606,7 +4609,7 @@ views.chordsLibrarySong = (params, songId) => {
 
     <!-- Info card -->
     <div class="card pad" style="display:flex;gap:14px;align-items:flex-start">
-      <div style="width:58px;height:58px;flex-shrink:0;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);
+      <div style="width:58px;height:58px;flex-shrink:0;border-radius:14px;background:linear-gradient(135deg,${_clc1},${_clc2});
                   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0">
         <div style="font-size:15px;font-weight:900;color:#fff;line-height:1">${esc(song.key)}</div>
         <div style="font-size:8px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.05em">KEY</div>

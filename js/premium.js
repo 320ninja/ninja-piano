@@ -123,13 +123,15 @@ export const restorePurchases = () => new Promise((resolve, reject) => {
 // Send purchase token to Supabase Edge Function for server-side verification.
 const _verifyWithServer = async (purchaseToken, productId) => {
   if (!_userId) throw new Error('Must be signed in to verify purchase.');
+  const ua = navigator.userAgent;
+  const platform = /iphone|ipad|ipod/i.test(ua) ? 'apple' : 'google';
   const resp = await fetch(VERIFY_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
     },
-    body: JSON.stringify({ userId: _userId, purchaseToken, productId }),
+    body: JSON.stringify({ userId: _userId, purchaseToken, productId, platform }),
   });
   if (!resp.ok) throw new Error('Server verification failed. Please try again.');
   const { premium } = await resp.json();

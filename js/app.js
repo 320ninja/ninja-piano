@@ -1717,11 +1717,14 @@ views.favs = () => {
   app.innerHTML = `<section class="view">
     <div class="top"><a class="iconbtn" href="#/home">${icon('back')}</a><h1>Favourites</h1><span style="width:42px"></span></div>
     ${list.length
-      ? `<div class="list grid2">${list.map(s => songRow(s,{time:true})).join('')}</div>`
+      ? `<div class="list grid2">${list.map(s => songRow(s,{time:true})).join('')}
+           <div style="text-align:center;padding:12px 16px 20px;font-size:11px;color:var(--muted)">💾 Favourites are saved on this device — no account needed</div>
+         </div>`
       : `<div style="text-align:center;padding:60px 20px">
           <div style="font-size:48px">💔</div>
           <div style="margin-top:12px;font-size:17px;font-weight:700">No favourites yet</div>
           <div class="muted" style="margin-top:6px">Tap ♥ on any song to save it here</div>
+          <div style="margin-top:8px;font-size:11px;color:var(--muted)">💾 Saved on this device — no account needed</div>
           <a class="btn" href="#/library" style="margin-top:20px;display:inline-flex">Browse songs</a>
         </div>`}
   </section>`;
@@ -5336,7 +5339,16 @@ views.settings = () => {
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
     </a>
     <div class="card group"><h4>You</h4>
-      <label class="row"><span>Your name</span><input id="name" value="${esc(settings.name)}" placeholder="Optional" style="border:1px solid var(--line);background:var(--solid);border-radius:12px;height:38px;padding:0 12px;width:150px"></label></div>
+      <label class="row"><span>Your name</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <input id="name" value="${esc(settings.name)}" placeholder="Enter your name" style="border:1px solid var(--line);background:var(--solid);border-radius:12px;height:38px;padding:0 12px;width:150px">
+          <span id="nameSaved" style="font-size:10px;color:#22c55e;font-weight:700;opacity:0;transition:opacity .3s">✓ Saved</span>
+        </div>
+      </label>
+      <div class="row" style="font-size:11px;color:var(--muted);padding:2px 0 4px">
+        💾 Saved on this device automatically — no account needed
+      </div>
+    </div>
     <div class="card group"><h4>Music display</h4>
       ${sw('showNames', 'Show note names on sheet')}
       ${sw('keyLabels', 'Show note names on keys')}
@@ -5365,7 +5377,15 @@ views.settings = () => {
   const $ = (s) => app.querySelector(s);
   app.querySelectorAll('input[type=checkbox][data-k]').forEach((i) => { i.onchange = () => setSetting(i.dataset.k, i.checked); });
   app.querySelectorAll('select[data-k]').forEach((s) => { s.value = settings[s.dataset.k]; s.onchange = () => { setSetting(s.dataset.k, s.value); if (s.dataset.k === 'voice') { unlockAudio(); playNote(60, { voice: s.value, volume: settings.volume / 100 }); } }; });
-  $('#name').onchange = (e) => setSetting('name', e.target.value.trim().slice(0, 30));
+  let _nameTimer;
+  $('#name').oninput = (e) => {
+    clearTimeout(_nameTimer);
+    _nameTimer = setTimeout(() => {
+      setSetting('name', e.target.value.trim().slice(0, 30));
+      const badge = $('#nameSaved');
+      if (badge) { badge.style.opacity = '1'; setTimeout(() => { badge.style.opacity = '0'; }, 1500); }
+    }, 400);
+  };
   $('#tempo').oninput = (e) => { setSetting('tempo', Number(e.target.value)); $('#tv').textContent = e.target.value + '%'; };
   $('#vol').oninput = (e) => { setSetting('volume', Number(e.target.value)); $('#vv').textContent = e.target.value + '%'; };
   $('#drumVol').oninput = (e) => { setSetting('drumVolume', Number(e.target.value)); $('#dvv').textContent = e.target.value + '%'; };

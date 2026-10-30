@@ -3,7 +3,7 @@
 @property --a{syntax:'<color>';inherits:true;initial-value:#22c55e}
 @property --deep{syntax:'<color>';inherits:true;initial-value:#120e2e}
 :root{transition:--p .6s ease,--a .6s ease,--deep .6s ease}
-/* Ninja Piano — theme system shared with the Real Estate / Travel apps:
+/* Piano Learners — theme system shared with the Real Estate / Travel apps:
    glass cards, 22px radius, Plus Jakarta Sans, theme tokens --p / --a. */
 :root{
   --p:#6d5dfc;--a:#22c55e;--t1:#e0dcff;--t2:#dcfce7;--deep:#120e2e;

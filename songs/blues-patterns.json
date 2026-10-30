@@ -2,7 +2,7 @@
   {
     "id": "bluesp-boogie-octaves",
     "title": "Boogie Pattern 1: Eighth-Note Octaves",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 100,
@@ -14,7 +14,7 @@
   {
     "id": "bluesp-boogie-walk",
     "title": "Boogie Pattern 2: Walking Eighths",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 110,
@@ -26,7 +26,7 @@
   {
     "id": "bluesp-boogie-56",
     "title": "Boogie Pattern 3: Fifth-Sixth Rock",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 96,
@@ -38,7 +38,7 @@
   {
     "id": "bluesp-boogie-broken",
     "title": "Boogie Pattern 4: Dotted Broken Octaves",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 104,
@@ -50,7 +50,7 @@
   {
     "id": "bluesp-walking-bass",
     "title": "Walking Blues Bass in F",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 92,
@@ -62,7 +62,7 @@
   {
     "id": "bluesp-shuffle-c",
     "title": "Dotted Shuffle Pattern in C",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 100,
@@ -74,7 +74,7 @@
   {
     "id": "bluesp-stride",
     "title": "Stride Blues in Eb",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 112,
@@ -86,7 +86,7 @@
   {
     "id": "bluesp-chicago",
     "title": "Chicago Blues Comping in A",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 108,
@@ -98,7 +98,7 @@
   {
     "id": "bluesp-slow68",
     "title": "Slow 12/8-Feel Blues in C",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 56,
@@ -110,7 +110,7 @@
   {
     "id": "bluesp-slow68-minor",
     "title": "Slow 12/8-Feel Minor Blues in Dm",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 54,
@@ -122,7 +122,7 @@
   {
     "id": "bluesp-quick-change",
     "title": "Quick-Change Blues in Bb",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 112,
@@ -134,7 +134,7 @@
   {
     "id": "bluesp-minor-walk",
     "title": "Minor Blues Walking Bass in Gm",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 100,
@@ -146,7 +146,7 @@
   {
     "id": "bluesp-eight-bar",
     "title": "8-Bar Blues in G",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 96,
@@ -158,7 +158,7 @@
   {
     "id": "bluesp-sixteen-bar",
     "title": "16-Bar Blues in D",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 104,
@@ -170,7 +170,7 @@
   {
     "id": "bluesp-gospel",
     "title": "Gospel Blues in Ab",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 84,
@@ -182,7 +182,7 @@
   {
     "id": "bluesp-yancey",
     "title": "Yancey-Style Bass in C",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 96,
@@ -194,7 +194,7 @@
   {
     "id": "bluesp-ammons",
     "title": "Rolling Bass Boogie in G",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 132,
@@ -206,7 +206,7 @@
   {
     "id": "bluesp-tremolo",
     "title": "Tremolo Licks in C",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 100,
@@ -218,7 +218,7 @@
   {
     "id": "bluesp-turnarounds",
     "title": "Blues Turnarounds in C",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 96,
@@ -230,7 +230,7 @@
   {
     "id": "bluesp-intros-endings",
     "title": "Blues Intros and Endings in F",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 90,
@@ -242,7 +242,7 @@
   {
     "id": "bluesp-scale-f",
     "title": "Blues Scale Runs in F",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 84,
@@ -254,7 +254,7 @@
   {
     "id": "bluesp-scale-g",
     "title": "Blues Scale Runs in G",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 88,
@@ -266,7 +266,7 @@
   {
     "id": "bluesp-scale-bb",
     "title": "Blues Scale Runs in Bb",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 96,
@@ -278,7 +278,7 @@
   {
     "id": "bluesp-scale-em",
     "title": "Blues Scale Runs in E minor",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 96,
@@ -290,7 +290,7 @@
   {
     "id": "bluesp-scale-c-hard",
     "title": "Blues Scale Runs in C with Boogie Bass",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 120,
@@ -302,7 +302,7 @@
   {
     "id": "bluesp-call-response",
     "title": "Call-and-Response Riffs in C",
-    "composer": "Traditional blues pattern (Ninja Piano lesson)",
+    "composer": "Traditional blues pattern (Piano Learners lesson)",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 92,
@@ -314,7 +314,7 @@
   {
     "id": "bluesp-midnight-train",
     "title": "Midnight Freight Train",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 126,
@@ -326,7 +326,7 @@
   {
     "id": "bluesp-rainy-porch",
     "title": "Rainy Porch Blues",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 80,
@@ -338,7 +338,7 @@
   {
     "id": "bluesp-crossroads-shuffle",
     "title": "Dusty Crossroads Shuffle",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 104,
@@ -350,7 +350,7 @@
   {
     "id": "bluesp-catfish",
     "title": "Catfish on Sunday",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 88,
@@ -362,7 +362,7 @@
   {
     "id": "bluesp-neon-alley",
     "title": "Neon Alley Boogie",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 140,
@@ -374,7 +374,7 @@
   {
     "id": "bluesp-delta-dawn",
     "title": "Delta Morning (Slow Blues)",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 52,
@@ -386,7 +386,7 @@
   {
     "id": "bluesp-lonesome-river",
     "title": "Lonesome River Blues",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 84,
@@ -398,7 +398,7 @@
   {
     "id": "bluesp-back-porch-stride",
     "title": "Back Porch Stride",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 120,
@@ -410,7 +410,7 @@
   {
     "id": "bluesp-coffee-cup",
     "title": "Cold Coffee Blues",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 90,
@@ -422,7 +422,7 @@
   {
     "id": "bluesp-rattlesnake",
     "title": "Rattlesnake Rag Boogie",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 144,
@@ -434,7 +434,7 @@
   {
     "id": "bluesp-southside",
     "title": "Southside Strut",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 108,
@@ -446,7 +446,7 @@
   {
     "id": "bluesp-blue-monday",
     "title": "Another Blue Monday",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 86,
@@ -458,7 +458,7 @@
   {
     "id": "bluesp-night-owl",
     "title": "Night Owl Minor Blues",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 92,
@@ -470,7 +470,7 @@
   {
     "id": "bluesp-steamboat",
     "title": "Steamboat Landing Blues",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 100,
@@ -482,7 +482,7 @@
   {
     "id": "bluesp-sunday-gospel",
     "title": "Sunday Gospel Shout",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 96,
@@ -494,7 +494,7 @@
   {
     "id": "bluesp-ninja-boogie",
     "title": "Ninja Boogie",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 150,
@@ -506,7 +506,7 @@
   {
     "id": "bluesp-two-tears",
     "title": "Two Tears in a Bucket (Slow Minor)",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 50,
@@ -518,7 +518,7 @@
   {
     "id": "bluesp-mule-train",
     "title": "Mule Train Eight-Bar",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 96,
@@ -530,7 +530,7 @@
   {
     "id": "bluesp-streetcar",
     "title": "Streetcar Sixteen",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 110,
@@ -542,7 +542,7 @@
   {
     "id": "bluesp-rolling-mill",
     "title": "Rolling Mill Boogie",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 136,
@@ -554,7 +554,7 @@
   {
     "id": "bluesp-quick-step",
     "title": "Quick-Step Blues",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 118,
@@ -566,7 +566,7 @@
   {
     "id": "bluesp-honky-tonk-dawn",
     "title": "Honky-Tonk Sunrise",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 126,
@@ -578,7 +578,7 @@
   {
     "id": "bluesp-riverboat-ending",
     "title": "Last Call at the Riverboat",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 116,
@@ -590,7 +590,7 @@
   {
     "id": "bluesp-hard-rain",
     "title": "Hard Rain Chicago Blues",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Hard",
     "bpm": 112,

@@ -4,8 +4,11 @@
 
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 
-const PRODUCT_ID  = 'piano_learners_premium_monthly';
-const VERIFY_URL  = `${SUPABASE_URL}/functions/v1/verify-purchase`;
+const PRODUCTS = {
+  weekly:  'piano_learners_premium_weekly',
+  monthly: 'piano_learners_premium_monthly',
+};
+const VERIFY_URL = `${SUPABASE_URL}/functions/v1/verify-purchase`;
 
 let _premiumStatus = false; // DENY by default
 let _userId        = null;
@@ -50,31 +53,31 @@ export const refreshPremiumStatus = async () => {
 // Synchronous — updated by init/refresh. Use in UI rendering.
 export const isPremium = () => _premiumStatus;
 
-// Register product and initialise Google Play store (idempotent).
+// Register all products and initialise Google Play store (idempotent).
 const _initStore = () => {
   const CdvPurchase = window.CdvPurchase;
   if (!CdvPurchase?.store) return; // web or plugin not loaded
-  CdvPurchase.store.register([{
-    id: PRODUCT_ID,
+  CdvPurchase.store.register(Object.values(PRODUCTS).map((id) => ({
+    id,
     type: CdvPurchase.ProductType.PAID_SUBSCRIPTION,
     platform: CdvPurchase.Platform.GOOGLE_PLAY,
-  }]);
+  })));
   CdvPurchase.store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]).catch(() => {});
 };
 
-// Open Google Play purchase sheet for the subscription.
-export const purchasePremium = () => new Promise((resolve, reject) => {
+// Open Google Play purchase sheet. plan: 'weekly' | 'monthly'
+export const purchasePremium = (plan = 'monthly') => new Promise((resolve, reject) => {
   const CdvPurchase = window.CdvPurchase;
   if (!CdvPurchase?.store) {
     reject(new Error('In-app purchases are not available on this platform.'));
     return;
   }
+  const productId = PRODUCTS[plan] || PRODUCTS.monthly;
 
-  // Listen once for approval
   const unsub = CdvPurchase.store.when().approved(async (tx) => {
-    unsub(); // remove listener
+    unsub();
     try {
-      await _verifyWithServer(tx.purchaseId || tx.transactionId);
+      await _verifyWithServer(tx.purchaseId || tx.transactionId, productId);
       await tx.finish();
       await refreshPremiumStatus();
       resolve(_premiumStatus);
@@ -84,7 +87,7 @@ export const purchasePremium = () => new Promise((resolve, reject) => {
   });
 
   CdvPurchase.store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]).then(() => {
-    const product = CdvPurchase.store.get(PRODUCT_ID, CdvPurchase.Platform.GOOGLE_PLAY);
+    const product = CdvPurchase.store.get(productId, CdvPurchase.Platform.GOOGLE_PLAY);
     if (!product) { reject(new Error('Subscription product not found. Check Google Play Console.')); return; }
     const offer = product.getOffer?.();
     if (!offer) { reject(new Error('No offer available for this product.')); return; }
@@ -103,7 +106,7 @@ export const restorePurchases = () => new Promise((resolve, reject) => {
 });
 
 // Send purchase token to Supabase Edge Function for server-side verification.
-const _verifyWithServer = async (purchaseToken) => {
+const _verifyWithServer = async (purchaseToken, productId) => {
   if (!_userId) throw new Error('Must be signed in to verify purchase.');
   const resp = await fetch(VERIFY_URL, {
     method: 'POST',
@@ -111,7 +114,7 @@ const _verifyWithServer = async (purchaseToken) => {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
     },
-    body: JSON.stringify({ userId: _userId, purchaseToken, productId: PRODUCT_ID }),
+    body: JSON.stringify({ userId: _userId, purchaseToken, productId }),
   });
   if (!resp.ok) throw new Error('Server verification failed. Please try again.');
   const { premium } = await resp.json();

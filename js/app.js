@@ -537,6 +537,22 @@ views.premium = () => {
   const premium = isPremium();
   const user = currentUser;
 
+  const PLANS = [
+    { key: 'weekly',  price: '$2',    period: 'week',  label: 'Weekly',  badge: '',          sub: 'Try it out — cancel anytime' },
+    { key: 'monthly', price: '$4.99', period: 'month', label: 'Monthly', badge: 'Best Value', sub: 'Save 50% vs weekly' },
+  ];
+
+  const planCards = PLANS.map((p) => `
+    <div class="card pad premium-plan${p.badge ? ' premium-plan--best' : ''}" data-plan="${p.key}" style="flex:1;min-width:140px;cursor:pointer;position:relative;border:2px solid ${p.badge ? 'var(--p)' : 'var(--line)'};transition:border-color .15s">
+      ${p.badge ? `<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;font-size:10px;font-weight:800;padding:2px 10px;border-radius:99px;white-space:nowrap">${p.badge}</div>` : ''}
+      <div style="text-align:center;padding:4px 0">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px">${p.label}</div>
+        <div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1">${p.price}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">per ${p.period}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">${p.sub}</div>
+      </div>
+    </div>`).join('');
+
   app.innerHTML = `<section class="view" style="min-height:100dvh;display:flex;flex-direction:column">
     <div class="top">
       <a class="iconbtn" href="#/settings">${icon('back')}</a>
@@ -551,11 +567,15 @@ views.premium = () => {
         <p style="color:var(--muted);margin:0">Enjoy ad-free learning. Thank you for supporting Piano Learners.</p>
       </div>` : `
       <!-- Hero -->
-      <div style="text-align:center;padding:8px 0 4px">
-        <div style="font-size:56px;margin-bottom:12px">👑</div>
-        <h2 style="font-size:22px;font-weight:800;margin:0 0 8px">Go Ad-Free</h2>
-        <div style="font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px">$4.99<span style="font-size:16px;font-weight:600">/month</span></div>
+      <div style="text-align:center;padding:8px 0 0">
+        <div style="font-size:48px;margin-bottom:10px">👑</div>
+        <h2 style="font-size:22px;font-weight:800;margin:0 0 4px">Go Ad-Free</h2>
         <p style="color:var(--muted);font-size:13px;margin:0">Cancel anytime in Google Play</p>
+      </div>
+
+      <!-- Plan selector -->
+      <div style="width:100%;max-width:400px;display:flex;gap:12px" id="planSelector">
+        ${planCards}
       </div>
 
       <!-- Benefits -->
@@ -595,13 +615,27 @@ views.premium = () => {
       `}
 
       <p style="color:var(--muted);font-size:11px;text-align:center;max-width:340px;margin:0">
-        Subscription renews monthly. Manage or cancel at any time in your Google Play account.
+        Manage or cancel at any time in your Google Play account.
         ${user ? `Signed in as <b>${esc(user.email)}</b>. <button id="signOutBtn" style="border:none;background:none;color:var(--p);font-size:11px;cursor:pointer;font-weight:700;padding:0">Sign out</button>` : ''}
       </p>
     </div>
   </section>`;
 
   if (premium) return;
+
+  // Plan selection logic
+  let selectedPlan = 'monthly';
+  const planEls = app.querySelectorAll('.premium-plan');
+  planEls.forEach((el) => {
+    el.addEventListener('click', () => {
+      selectedPlan = el.dataset.plan;
+      planEls.forEach((e) => e.style.borderColor = 'var(--line)');
+      el.style.borderColor = 'var(--p)';
+      const plan = PLANS.find((p) => p.key === selectedPlan);
+      const buyBtn = app.querySelector('#premiumBuy');
+      if (buyBtn) buyBtn.textContent = `Start Premium — ${plan.price}/${plan.period}`;
+    });
+  });
 
   const showMsg = (msg, ok) => {
     const el = app.querySelector('#premiumMsg');
@@ -613,14 +647,15 @@ views.premium = () => {
 
   app.querySelector('#premiumBuy')?.addEventListener('click', async () => {
     const btn = app.querySelector('#premiumBuy');
+    const plan = PLANS.find((p) => p.key === selectedPlan);
     btn.disabled = true; btn.textContent = 'Opening billing…';
     try {
-      const ok = await purchasePremium();
+      const ok = await purchasePremium(selectedPlan);
       if (ok) { toast('🎉 Premium activated!'); views.premium(); }
       else showMsg('Purchase not completed.', false);
     } catch (e) {
       showMsg(e.message || 'Purchase failed. Please try again.', false);
-      btn.disabled = false; btn.textContent = 'Start Premium — $4.99/month';
+      btn.disabled = false; btn.textContent = `Start Premium — ${plan.price}/${plan.period}`;
     }
     updateAdVisibility();
   });
@@ -5287,7 +5322,7 @@ views.settings = () => {
       <span style="font-size:28px">${isPremium() ? '👑' : '🚀'}</span>
       <div style="flex:1">
         <div style="font-weight:800;font-size:15px">${isPremium() ? 'Premium — Ad-Free' : 'Go Premium'}</div>
-        <div style="font-size:12px;opacity:.85">${isPremium() ? (currentUser ? `Signed in as ${esc(currentUser.email)}` : 'Active subscription') : 'Ad-free · $4.99/month · Cancel anytime'}</div>
+        <div style="font-size:12px;opacity:.85">${isPremium() ? (currentUser ? `Signed in as ${esc(currentUser.email)}` : 'Active subscription') : 'Ad-free · from $2/week · Cancel anytime'}</div>
       </div>
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
     </a>

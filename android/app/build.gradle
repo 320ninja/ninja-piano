@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+// Release signing is read from android/keystore.properties (gitignored).
+// Copy keystore.properties.example to keystore.properties and fill it in.
+def keystorePropsFile = rootProject.file("keystore.properties")
+def keystoreProps = new Properties()
+def hasKeystore = keystorePropsFile.exists()
+if (hasKeystore) {
+    keystoreProps.load(new FileInputStream(keystorePropsFile))
+}
+
 android {
     namespace "com.techagent247.ninjapiano"
     compileSdk rootProject.ext.compileSdkVersion
@@ -16,10 +25,25 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (hasKeystore) {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // Only sign with the release key when keystore.properties is present;
+            // otherwise Gradle falls back to the debug signature (local builds/CI).
+            if (hasKeystore) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

@@ -411,7 +411,7 @@ views.welcome = () => {
       </g>
       ${petals}
     </svg>
-    <h2>Ninja Piano</h2>
+    <h2>Piano Learners</h2>
     <div class="sub">Learn piano, step by step</div>
     <div class="feat"><i>🎼</i>Read real sheet music</div>
     <div class="feat"><i>🔤</i>See the note name on every note</div>
@@ -444,7 +444,7 @@ views.home = () => {
   </svg></div>`;
 
   app.innerHTML = `<section class="view">
-    <div class="top" style="margin-bottom:0"><div class="brand"><span class="logo">${LOGO}</span>Ninja Piano</div>
+    <div class="top" style="margin-bottom:0"><div class="brand"><span class="logo">${LOGO}</span>Piano Learners</div>
       ${THEME_BTN}<a class="iconbtn fav-btn ${favs.size?'has-fav':''}" href="#/favs" aria-label="Favourites">${icon('heart')}<span class="fav-count">${favs.size||''}</span></a><a class="iconbtn" href="#/library?focus=1" aria-label="Search">${icon('search')}</a></div>
     ${PIANO_SVG}
     ${heading('📷', 'Scan sheet music')}

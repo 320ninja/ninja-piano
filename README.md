@@ -1,4 +1,4 @@
-# Ninja Piano
+# Piano Learners
 
 Learn piano step by step. Real sheet music (treble and bass clef) with the note name under every note, a playable keyboard, play-along and guided practice. It works offline on iPhone, Android and desktop.
 

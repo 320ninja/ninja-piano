@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 import tempfile, os, shutil, pathlib, subprocess
 
-app = FastAPI(title="Ninja Piano OMR")
+app = FastAPI(title="Piano Learners OMR")
 
 # CORS: default to "*" (public demo server) but allow locking down via env.
 # e.g. ALLOWED_ORIGINS="https://320ninja.github.io,https://ninja-piano.app"
@@ -23,7 +23,7 @@ API_KEY = os.environ.get("OMR_API_KEY", "").strip()
 
 @app.get("/")
 def root():
-    return {"status": "ok", "service": "Ninja Piano OMR"}
+    return {"status": "ok", "service": "Piano Learners OMR"}
 
 
 @app.post("/scan")

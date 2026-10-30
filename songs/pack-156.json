@@ -998,7 +998,7 @@
   {
     "id": "p4-blues-dust-my-broom",
     "title": "Blues Pattern in A",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 108,
@@ -1154,7 +1154,7 @@
   {
     "id": "p4-rock-folk-rock-g",
     "title": "Folk Rock in G",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 112,
@@ -1166,7 +1166,7 @@
   {
     "id": "p4-rock-prog-am",
     "title": "Prog Rock in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 100,
@@ -1178,7 +1178,7 @@
   {
     "id": "p4-rock-latin-rock",
     "title": "Latin Rock",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 108,
@@ -1190,7 +1190,7 @@
   {
     "id": "p4-rock-funk-rock",
     "title": "Funk Rock",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 108,
@@ -1202,7 +1202,7 @@
   {
     "id": "p4-rock-ballad-e",
     "title": "Rock Ballad in E",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 76,
@@ -1214,7 +1214,7 @@
   {
     "id": "p4-rock-stomp-c",
     "title": "Rock Stomp in C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 120,
@@ -1226,7 +1226,7 @@
   {
     "id": "p4-rock-ride-bm",
     "title": "Rock Ride in Bm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 132,
@@ -1238,7 +1238,7 @@
   {
     "id": "p4-rock-anthem-d",
     "title": "Rock Anthem in D",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 120,
@@ -1250,7 +1250,7 @@
   {
     "id": "p4-rock-driving-gm",
     "title": "Driving Rock in Gm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 132,
@@ -1262,7 +1262,7 @@
   {
     "id": "p4-rock-indie-pop",
     "title": "Indie Pop Rock",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 108,
@@ -1274,7 +1274,7 @@
   {
     "id": "p4-rock-acoustic-f",
     "title": "Acoustic Rock in F",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 100,
@@ -1286,7 +1286,7 @@
   {
     "id": "p4-rock-emo-ballad",
     "title": "Emo Ballad in Em",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 80,
@@ -1298,7 +1298,7 @@
   {
     "id": "p4-hiphop-boom-bap-dm",
     "title": "Boom-Bap in Dm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 92,
@@ -1310,7 +1310,7 @@
   {
     "id": "p4-hiphop-trap-fm",
     "title": "Trap in Fm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 142,
@@ -1322,7 +1322,7 @@
   {
     "id": "p4-hiphop-lofi-am",
     "title": "Lo-Fi in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 72,
@@ -1334,7 +1334,7 @@
   {
     "id": "p4-hiphop-chill-trap",
     "title": "Chill Trap in Gm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 80,
@@ -1346,7 +1346,7 @@
   {
     "id": "p4-hiphop-boom-bap-gm",
     "title": "Boom-Bap in Gm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 90,
@@ -1358,7 +1358,7 @@
   {
     "id": "p4-hiphop-drill-cm",
     "title": "Drill in Cm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 140,
@@ -1370,7 +1370,7 @@
   {
     "id": "p4-hiphop-phonk-am",
     "title": "Phonk in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 134,
@@ -1382,7 +1382,7 @@
   {
     "id": "p4-hiphop-cloud-em",
     "title": "Cloud Rap in Em",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 70,
@@ -1394,7 +1394,7 @@
   {
     "id": "p4-hiphop-jazz-rap-f",
     "title": "Jazz-Rap in F",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 90,
@@ -1406,7 +1406,7 @@
   {
     "id": "p4-hiphop-dirty-south-2",
     "title": "Dirty South in Em",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 76,
@@ -1418,7 +1418,7 @@
   {
     "id": "p4-hiphop-west-am",
     "title": "West Coast in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 94,
@@ -1430,7 +1430,7 @@
   {
     "id": "p4-hiphop-trap-soul-g",
     "title": "Trap Soul in Gm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 84,
@@ -1442,7 +1442,7 @@
   {
     "id": "p4-edm-trance-cm",
     "title": "Trance in Cm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 138,
@@ -1454,7 +1454,7 @@
   {
     "id": "p4-edm-house-am",
     "title": "House in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 126,
@@ -1466,7 +1466,7 @@
   {
     "id": "p4-edm-tech-house",
     "title": "Tech House",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 124,
@@ -1478,7 +1478,7 @@
   {
     "id": "p4-edm-dubstep",
     "title": "Dubstep in Bm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Medium",
     "bpm": 140,
@@ -1490,7 +1490,7 @@
   {
     "id": "p4-edm-electro-fm",
     "title": "Electro House in Fm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -1502,7 +1502,7 @@
   {
     "id": "p4-edm-synth-anthem-eb",
     "title": "Synth Anthem in Eb",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -1514,7 +1514,7 @@
   {
     "id": "p4-edm-chill-trap",
     "title": "Chill Trap EDM",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 142,
@@ -1526,7 +1526,7 @@
   {
     "id": "p4-edm-garage-house",
     "title": "Garage House",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Medium",
     "bpm": 130,
@@ -1538,7 +1538,7 @@
   {
     "id": "p4-edm-ambient-dm",
     "title": "Ambient Pad in Dm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 72,
@@ -1550,7 +1550,7 @@
   {
     "id": "p4-edm-progressive-am",
     "title": "Progressive in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -1562,7 +1562,7 @@
   {
     "id": "p4-edm-synthpop-g",
     "title": "Synthpop in G",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 120,
@@ -1574,7 +1574,7 @@
   {
     "id": "p4-edm-piano-house",
     "title": "Piano House in Fm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 126,
@@ -1730,7 +1730,7 @@
   {
     "id": "p4-ex-f-major-scale",
     "title": "F Major Scale",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1742,7 +1742,7 @@
   {
     "id": "p4-ex-bb-major-scale",
     "title": "Bb Major Scale",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1754,7 +1754,7 @@
   {
     "id": "p4-ex-e-minor-scale",
     "title": "E Minor Scale (Natural)",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1766,7 +1766,7 @@
   {
     "id": "p4-ex-d-minor-scale",
     "title": "D Minor Scale (Natural)",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1778,7 +1778,7 @@
   {
     "id": "p4-ex-c-minor-scale",
     "title": "C Minor Scale (Natural)",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1790,7 +1790,7 @@
   {
     "id": "p4-ex-d-arpeggio",
     "title": "D Major Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1802,7 +1802,7 @@
   {
     "id": "p4-ex-bb-arpeggio",
     "title": "Bb Major Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1814,7 +1814,7 @@
   {
     "id": "p4-ex-am-arpeggio",
     "title": "A Minor Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1826,7 +1826,7 @@
   {
     "id": "p4-ex-em-arpeggio",
     "title": "E Minor Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -1838,7 +1838,7 @@
   {
     "id": "p4-ex-staccato-c",
     "title": "Staccato C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 120,
@@ -1850,7 +1850,7 @@
   {
     "id": "p4-ex-trill-g",
     "title": "Trill Prep G",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 108,
@@ -1862,7 +1862,7 @@
   {
     "id": "p4-ex-wrist-staccato",
     "title": "Wrist Staccato",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 108,

@@ -1,5 +1,5 @@
-// Generates songs/hiphop.json — 100 Ninja Piano original hip-hop beats.
-// All music is original (composer: "Ninja Piano Original") and public-domain safe.
+// Generates songs/hiphop.json — 100 Piano Learners original hip-hop beats.
+// All music is original (composer: "Piano Learners Original") and public-domain safe.
 // Run: node tools/gen-hiphop.mjs
 import { writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -232,7 +232,7 @@ function makeSong(index) {
   return {
     id,
     title,
-    composer: 'Ninja Piano Original',
+    composer: 'Piano Learners Original',
     cat: 'Hiphop',
     level: 'Medium',
     bpm,

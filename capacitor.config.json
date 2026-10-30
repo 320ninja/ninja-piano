@@ -1,6 +1,6 @@
 {
   "appId": "com.techagent247.ninjapiano",
-  "appName": "Ninja Piano",
+  "appName": "Piano Learners",
   "webDir": "www",
   "backgroundColor": "#120e2e",
   "ios": { "contentInset": "never" },

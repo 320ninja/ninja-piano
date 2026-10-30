@@ -1,6 +1,6 @@
 {
-  "name": "Ninja Piano",
-  "short_name": "Ninja Piano",
+  "name": "Piano Learners",
+  "short_name": "Piano Learners",
   "description": "Learn piano step by step with note names on real sheet music.",
   "start_url": "./#/home",
   "scope": "./",

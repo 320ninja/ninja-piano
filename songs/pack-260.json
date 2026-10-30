@@ -1550,7 +1550,7 @@
   {
     "id": "p3-blues-12bar-am",
     "title": "12-Bar Blues in A Minor",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 100,
@@ -1562,7 +1562,7 @@
   {
     "id": "p3-blues-shuffle-bb",
     "title": "Shuffle in Bb",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 100,
@@ -1574,7 +1574,7 @@
   {
     "id": "p3-blues-boogie-e",
     "title": "Boogie-Woogie in E",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 132,
@@ -1586,7 +1586,7 @@
   {
     "id": "p3-blues-slow-dm",
     "title": "Slow Blues in D Minor",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 60,
@@ -1610,7 +1610,7 @@
   {
     "id": "p3-blues-stroll",
     "title": "Blues Stroll",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 72,
@@ -1622,7 +1622,7 @@
   {
     "id": "p3-blues-honky-tonk",
     "title": "Honky Tonk Blues",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 108,
@@ -1634,7 +1634,7 @@
   {
     "id": "p3-blues-walking-bb",
     "title": "Walking Blues in Bb",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Medium",
     "bpm": 108,
@@ -1646,7 +1646,7 @@
   {
     "id": "p3-blues-cry-g",
     "title": "Blues Cry in G",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 68,
@@ -1658,7 +1658,7 @@
   {
     "id": "p3-blues-chicago-am",
     "title": "Chicago Blues in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 108,
@@ -1670,7 +1670,7 @@
   {
     "id": "p3-blues-funky-c",
     "title": "Funky Blues in C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Blues",
     "level": "Easy",
     "bpm": 100,
@@ -1922,7 +1922,7 @@
   {
     "id": "p3-rock-grunge-anthem",
     "title": "Grunge Anthem",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 112,
@@ -1934,7 +1934,7 @@
   {
     "id": "p3-rock-arena-ballad",
     "title": "Arena Ballad",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 76,
@@ -1946,7 +1946,7 @@
   {
     "id": "p3-rock-50s-rock-roll-2",
     "title": "Rock-n-Roll Study",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 160,
@@ -1958,7 +1958,7 @@
   {
     "id": "p3-rock-bluesy-rock",
     "title": "Bluesy Rock",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 120,
@@ -1970,7 +1970,7 @@
   {
     "id": "p3-rock-driving-f",
     "title": "Driving Rock in F",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 132,
@@ -1982,7 +1982,7 @@
   {
     "id": "p3-rock-slow-ballad-am",
     "title": "Slow Ballad in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 72,
@@ -1994,7 +1994,7 @@
   {
     "id": "p3-rock-stadium-c",
     "title": "Stadium Rock in C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 120,
@@ -2006,7 +2006,7 @@
   {
     "id": "p3-rock-heavy-dm",
     "title": "Heavy Rock in Dm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 108,
@@ -2018,7 +2018,7 @@
   {
     "id": "p3-rock-punk-sprint",
     "title": "Punk Sprint",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 180,
@@ -2030,7 +2030,7 @@
   {
     "id": "p3-rock-indie-g",
     "title": "Indie Rock in G",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 108,
@@ -2042,7 +2042,7 @@
   {
     "id": "p3-rock-garage-am",
     "title": "Garage Rock in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 132,
@@ -2054,7 +2054,7 @@
   {
     "id": "p3-rock-piano-ballad-f",
     "title": "Piano Ballad in F",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 76,
@@ -2066,7 +2066,7 @@
   {
     "id": "p3-rock-epic-cm",
     "title": "Epic Rock in Cm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 100,
@@ -2078,7 +2078,7 @@
   {
     "id": "p3-rock-steady-eighths",
     "title": "Steady Eighths Rock",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 120,
@@ -2090,7 +2090,7 @@
   {
     "id": "p3-rock-pop-rock-c",
     "title": "Pop Rock in C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 108,
@@ -2102,7 +2102,7 @@
   {
     "id": "p3-rock-blues-rock",
     "title": "Blues Rock in E",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 108,
@@ -2114,7 +2114,7 @@
   {
     "id": "p3-rock-southern-g",
     "title": "Southern Rock in G",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 108,
@@ -2126,7 +2126,7 @@
   {
     "id": "p3-rock-metal-em",
     "title": "Metal Riff in Em",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 160,
@@ -2138,7 +2138,7 @@
   {
     "id": "p3-rock-happy-anthem",
     "title": "Happy Rock Anthem",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Easy",
     "bpm": 132,
@@ -2150,7 +2150,7 @@
   {
     "id": "p3-rock-riff-dm",
     "title": "Minor Riff in Dm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Rock",
     "level": "Medium",
     "bpm": 108,
@@ -2162,7 +2162,7 @@
   {
     "id": "p3-hiphop-boom-bap-am",
     "title": "Boom-Bap Loop in Am",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 90,
@@ -2174,7 +2174,7 @@
   {
     "id": "p3-hiphop-trap-cm",
     "title": "Trap Vibe in Cm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 140,
@@ -2186,7 +2186,7 @@
   {
     "id": "p3-hiphop-lofi-f",
     "title": "Lo-Fi Study in F",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 75,
@@ -2198,7 +2198,7 @@
   {
     "id": "p3-hiphop-drill-em",
     "title": "Drill Shadow in Em",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 142,
@@ -2210,7 +2210,7 @@
   {
     "id": "p3-hiphop-phonk-dm",
     "title": "Phonk Garage in Dm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 134,
@@ -2222,7 +2222,7 @@
   {
     "id": "p3-hiphop-cloud-rap",
     "title": "Cloud Rap Dream",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 70,
@@ -2234,7 +2234,7 @@
   {
     "id": "p3-hiphop-jazz-rap",
     "title": "Jazz-Rap Lounge",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 92,
@@ -2246,7 +2246,7 @@
   {
     "id": "p3-hiphop-west-coast",
     "title": "West Coast Cruise",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 94,
@@ -2258,7 +2258,7 @@
   {
     "id": "p3-hiphop-memphis",
     "title": "Memphis Haze",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 72,
@@ -2270,7 +2270,7 @@
   {
     "id": "p3-hiphop-dirty-south",
     "title": "Dirty South Trunk",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 78,
@@ -2282,7 +2282,7 @@
   {
     "id": "p3-hiphop-east-coast",
     "title": "East Coast Vinyl",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 88,
@@ -2294,7 +2294,7 @@
   {
     "id": "p3-hiphop-g-funk",
     "title": "G-Funk Garden",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 96,
@@ -2306,7 +2306,7 @@
   {
     "id": "p3-hiphop-trap-soul",
     "title": "Trap Soul Candle",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 84,
@@ -2318,7 +2318,7 @@
   {
     "id": "p3-hiphop-hyphy",
     "title": "Hyphy Bay",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 102,
@@ -2330,7 +2330,7 @@
   {
     "id": "p3-hiphop-uk-drill",
     "title": "UK Drill Shadow",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 142,
@@ -2342,7 +2342,7 @@
   {
     "id": "p3-hiphop-soul-sample",
     "title": "Soul Sample Flip",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 86,
@@ -2354,7 +2354,7 @@
   {
     "id": "p3-hiphop-chill-type",
     "title": "Chill Type Beat",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 78,
@@ -2366,7 +2366,7 @@
   {
     "id": "p3-hiphop-conscious",
     "title": "Conscious Rap",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 88,
@@ -2378,7 +2378,7 @@
   {
     "id": "p3-hiphop-dark-trap",
     "title": "Dark Trap in Bm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Medium",
     "bpm": 140,
@@ -2390,7 +2390,7 @@
   {
     "id": "p3-hiphop-neo-soul",
     "title": "Neo-Soul Keys",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Hiphop",
     "level": "Easy",
     "bpm": 82,
@@ -2402,7 +2402,7 @@
   {
     "id": "p3-edm-festival-stab",
     "title": "Festival Chord Stab",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -2414,7 +2414,7 @@
   {
     "id": "p3-edm-trance-arp",
     "title": "Trance Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 138,
@@ -2426,7 +2426,7 @@
   {
     "id": "p3-edm-house-piano",
     "title": "House Piano Loop",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 126,
@@ -2438,7 +2438,7 @@
   {
     "id": "p3-edm-deep-house",
     "title": "Deep House Groove",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 122,
@@ -2450,7 +2450,7 @@
   {
     "id": "p3-edm-future-bass",
     "title": "Future Bass Chords",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 150,
@@ -2462,7 +2462,7 @@
   {
     "id": "p3-edm-tropical-house",
     "title": "Tropical House Hook",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 105,
@@ -2474,7 +2474,7 @@
   {
     "id": "p3-edm-big-room",
     "title": "Big Room Drop",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -2486,7 +2486,7 @@
   {
     "id": "p3-edm-progressive-c",
     "title": "Progressive House in C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -2498,7 +2498,7 @@
   {
     "id": "p3-edm-melodic-techno",
     "title": "Melodic Techno in Dm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 124,
@@ -2510,7 +2510,7 @@
   {
     "id": "p3-edm-synthwave",
     "title": "Synthwave in Fm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 110,
@@ -2522,7 +2522,7 @@
   {
     "id": "p3-edm-chill-lofi",
     "title": "Chill Lo-Fi Chords",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 80,
@@ -2534,7 +2534,7 @@
   {
     "id": "p3-edm-pluck-loop",
     "title": "Pluck Loop in C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -2546,7 +2546,7 @@
   {
     "id": "p3-edm-dub-step-stabs",
     "title": "Dubstep Stabs in Em",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Medium",
     "bpm": 140,
@@ -2558,7 +2558,7 @@
   {
     "id": "p3-edm-euphoric-build",
     "title": "Euphoric Build",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -2570,7 +2570,7 @@
   {
     "id": "p3-edm-dnb-pattern",
     "title": "Drum & Bass Pattern",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Medium",
     "bpm": 172,
@@ -2582,7 +2582,7 @@
   {
     "id": "p3-edm-slap-house",
     "title": "Slap House in Fm",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 122,
@@ -2594,7 +2594,7 @@
   {
     "id": "p3-edm-ambient",
     "title": "Ambient Drift",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 68,
@@ -2606,7 +2606,7 @@
   {
     "id": "p3-edm-big-chord-anthem",
     "title": "Big Chord Anthem",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -2618,7 +2618,7 @@
   {
     "id": "p3-edm-chord-pump",
     "title": "Pumping Chords",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 128,
@@ -2630,7 +2630,7 @@
   {
     "id": "p3-edm-trap-edm",
     "title": "Trap EDM in Em",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "EDM",
     "level": "Easy",
     "bpm": 140,
@@ -2870,7 +2870,7 @@
   {
     "id": "p3-fs-folk-ballad",
     "title": "Folk Ballad in Em",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Fingerstyle",
     "level": "Easy",
     "bpm": 80,
@@ -2882,7 +2882,7 @@
   {
     "id": "p3-ex-c-major-scale",
     "title": "C Major Scale (Both Hands)",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -2894,7 +2894,7 @@
   {
     "id": "p3-ex-c-arpeggio",
     "title": "C Major Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -2906,7 +2906,7 @@
   {
     "id": "p3-ex-g-major-scale",
     "title": "G Major Scale",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -2918,7 +2918,7 @@
   {
     "id": "p3-ex-d-major-scale",
     "title": "D Major Scale",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -2930,7 +2930,7 @@
   {
     "id": "p3-ex-a-minor-scale",
     "title": "A Minor Scale (Harmonic)",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -2942,7 +2942,7 @@
   {
     "id": "p3-ex-hanon-no1",
     "title": "Hanon No. 1 (Pattern)",
-    "composer": "Ninja Piano Original (after Hanon)",
+    "composer": "Piano Learners Original (after Hanon)",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 108,
@@ -2954,7 +2954,7 @@
   {
     "id": "p3-ex-chromatic",
     "title": "Chromatic Scale",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -2966,7 +2966,7 @@
   {
     "id": "p3-ex-contrary-motion",
     "title": "Contrary Motion C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -2978,7 +2978,7 @@
   {
     "id": "p3-ex-g-arpeggio",
     "title": "G Major Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -2990,7 +2990,7 @@
   {
     "id": "p3-ex-f-arpeggio",
     "title": "F Major Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -3002,7 +3002,7 @@
   {
     "id": "p3-ex-d-minor-arp",
     "title": "D Minor Arpeggio",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -3014,7 +3014,7 @@
   {
     "id": "p3-ex-five-finger-c",
     "title": "Five-Finger C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 120,
@@ -3026,7 +3026,7 @@
   {
     "id": "p3-ex-five-finger-g",
     "title": "Five-Finger G",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 120,
@@ -3038,7 +3038,7 @@
   {
     "id": "p3-ex-octave-leaps",
     "title": "Octave Leaps C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Medium",
     "bpm": 100,
@@ -3050,7 +3050,7 @@
   {
     "id": "p3-ex-triad-inv-c",
     "title": "C Triad Inversions",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -3062,7 +3062,7 @@
   {
     "id": "p3-ex-triad-inv-g",
     "title": "G Triad Inversions",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 100,
@@ -3074,7 +3074,7 @@
   {
     "id": "p3-ex-trill-prep",
     "title": "Trill Prep",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 108,
@@ -3086,7 +3086,7 @@
   {
     "id": "p3-ex-thirds",
     "title": "Thirds C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Medium",
     "bpm": 100,
@@ -3098,7 +3098,7 @@
   {
     "id": "p3-ex-sixths",
     "title": "Sixths C",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Medium",
     "bpm": 100,
@@ -3110,7 +3110,7 @@
   {
     "id": "p3-ex-legato-study",
     "title": "Legato Study in F",
-    "composer": "Ninja Piano Original",
+    "composer": "Piano Learners Original",
     "cat": "Exercises",
     "level": "Easy",
     "bpm": 76,

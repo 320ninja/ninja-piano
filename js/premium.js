@@ -53,16 +53,28 @@ export const refreshPremiumStatus = async () => {
 // Synchronous — updated by init/refresh. Use in UI rendering.
 export const isPremium = () => _premiumStatus;
 
-// Register all products and initialise Google Play store (idempotent).
+// Detect platform at runtime so the same code works on Android and iOS.
+const _platform = () => {
+  const CdvPurchase = window.CdvPurchase;
+  if (!CdvPurchase) return null;
+  const ua = navigator.userAgent;
+  if (/android/i.test(ua)) return CdvPurchase.Platform.GOOGLE_PLAY;
+  if (/iphone|ipad|ipod/i.test(ua)) return CdvPurchase.Platform.APPLE_APPSTORE;
+  return null;
+};
+
+// Register all products and initialise the store (idempotent).
 const _initStore = () => {
   const CdvPurchase = window.CdvPurchase;
   if (!CdvPurchase?.store) return; // web or plugin not loaded
+  const platform = _platform();
+  if (!platform) return;
   CdvPurchase.store.register(Object.values(PRODUCTS).map((id) => ({
     id,
     type: CdvPurchase.ProductType.PAID_SUBSCRIPTION,
-    platform: CdvPurchase.Platform.GOOGLE_PLAY,
+    platform,
   })));
-  CdvPurchase.store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]).catch(() => {});
+  CdvPurchase.store.initialize([platform]).catch(() => {});
 };
 
 // Open Google Play purchase sheet. plan: 'weekly' | 'monthly'
@@ -73,6 +85,9 @@ export const purchasePremium = (plan = 'monthly') => new Promise((resolve, rejec
     return;
   }
   const productId = PRODUCTS[plan] || PRODUCTS.monthly;
+
+  const platform = _platform();
+  if (!platform) { reject(new Error('In-app purchases are not available on this platform.')); return; }
 
   const unsub = CdvPurchase.store.when().approved(async (tx) => {
     unsub();
@@ -86,8 +101,8 @@ export const purchasePremium = (plan = 'monthly') => new Promise((resolve, rejec
     }
   });
 
-  CdvPurchase.store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]).then(() => {
-    const product = CdvPurchase.store.get(productId, CdvPurchase.Platform.GOOGLE_PLAY);
+  CdvPurchase.store.initialize([platform]).then(() => {
+    const product = CdvPurchase.store.get(productId, platform);
     if (!product) { reject(new Error('Subscription product not found. Check Google Play Console.')); return; }
     const offer = product.getOffer?.();
     if (!offer) { reject(new Error('No offer available for this product.')); return; }
@@ -98,7 +113,7 @@ export const purchasePremium = (plan = 'monthly') => new Promise((resolve, rejec
 // Restore existing Google Play purchases.
 export const restorePurchases = () => new Promise((resolve, reject) => {
   const CdvPurchase = window.CdvPurchase;
-  if (!CdvPurchase?.store) { resolve(false); return; }
+  if (!CdvPurchase?.store || !_platform()) { resolve(false); return; }
   CdvPurchase.store.restorePurchases().then(async () => {
     await refreshPremiumStatus();
     resolve(_premiumStatus);

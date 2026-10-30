@@ -5144,7 +5144,7 @@ const notFound = () => { app.innerHTML = '<div class="empty view">Song not found
 const ADMOB_BANNER_ID        = 'ca-app-pub-9614655242471444/9667217312';
 const ADMOB_REWARDED_ID      = 'ca-app-pub-9614655242471444/1764676569';
 const ADMOB_APP_OPEN_ID      = 'ca-app-pub-9614655242471444/9475645628';
-const ADMOB_INTERSTITIAL_ID  = null; // set once unit is created
+const ADMOB_INTERSTITIAL_ID  = 'ca-app-pub-9614655242471444/1238062952';
 
 let admobReady = false;
 let _AdMob = null;

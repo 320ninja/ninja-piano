@@ -3908,6 +3908,10 @@ views.done = (params, id) => {
   const r = JSON.parse(sessionStorage.getItem('np.result') || 'null');
   if (!song || !r) return (location.hash = '#/home');
   setNav('done');
+  // Show interstitial after every 3rd song completion to avoid overloading the user
+  const doneCount = (parseInt(sessionStorage.getItem('np.doneCount') || '0') + 1);
+  sessionStorage.setItem('np.doneCount', doneCount);
+  if (doneCount % 3 === 0) showInterstitialAd();
   const stars = r.acc >= 95 ? 3 : r.acc >= 75 ? 2 : 1;
   const idx = SONGS.indexOf(song);
   const next = SONGS.slice(idx + 1).find((s) => s.cat === song.cat) || SONGS[(idx + 1) % SONGS.length];
@@ -5137,8 +5141,10 @@ document.addEventListener('click', (e) => {
 const notFound = () => { app.innerHTML = '<div class="empty view">Song not found. <a href="#/library" style="color:var(--p)">Browse songs</a></div>'; };
 
 /* ---------- AdMob (native Android/iOS only) ---------- */
-const ADMOB_BANNER_ID   = 'ca-app-pub-9614655242471444/9667217312';
-const ADMOB_REWARDED_ID = 'ca-app-pub-9614655242471444/1764676569';
+const ADMOB_BANNER_ID        = 'ca-app-pub-9614655242471444/9667217312';
+const ADMOB_REWARDED_ID      = 'ca-app-pub-9614655242471444/1764676569';
+const ADMOB_APP_OPEN_ID      = 'ca-app-pub-9614655242471444/9475645628';
+const ADMOB_INTERSTITIAL_ID  = null; // set once unit is created
 
 let admobReady = false;
 let _AdMob = null;
@@ -5152,7 +5158,13 @@ let _AdMob = null;
     await _AdMob.initialize({ initializeForTesting: false });
     admobReady = true;
 
-    // Bottom banner — always visible in the native app
+    // App Open ad — shown once when the app first launches
+    try {
+      await _AdMob.prepareAppOpenAd({ adId: ADMOB_APP_OPEN_ID, isTesting: false });
+      await _AdMob.showAppOpenAd();
+    } catch (_) { /* ad not ready yet — silent */ }
+
+    // Bottom banner — always visible
     await _AdMob.showBanner({
       adId: ADMOB_BANNER_ID,
       adSize: BannerAdSize.ADAPTIVE_BANNER,
@@ -5161,14 +5173,14 @@ let _AdMob = null;
       isTesting: false,
     });
 
-    // Push content up so the nav bar isn't behind the banner
+    // Push nav bar above the banner
     document.documentElement.style.setProperty('--admob-banner-h', '60px');
   } catch (_) {
     // Not running inside Capacitor (PWA/browser) — silently skip
   }
 })();
 
-// Call from any view: resolves true if the user watched the full ad, false otherwise
+// Rewarded: resolves true when user finishes watching
 const showRewardedAd = () => new Promise((resolve) => {
   if (!admobReady || !_AdMob) return resolve(false);
   _AdMob.prepareRewardVideoAd({ adId: ADMOB_REWARDED_ID, isTesting: false })
@@ -5176,6 +5188,15 @@ const showRewardedAd = () => new Promise((resolve) => {
     .then(() => resolve(true))
     .catch(() => resolve(false));
 });
+
+// Interstitial: call after song completion (fires only when unit ID is set)
+const showInterstitialAd = async () => {
+  if (!admobReady || !_AdMob || !ADMOB_INTERSTITIAL_ID) return;
+  try {
+    await _AdMob.prepareInterstitial({ adId: ADMOB_INTERSTITIAL_ID, isTesting: false });
+    await _AdMob.showInterstitial();
+  } catch (_) { /* silent */ }
+};
 
 /* ---------- router ---------- */
 const route = async () => {

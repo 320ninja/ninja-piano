@@ -570,7 +570,7 @@ views.premium = () => {
       <div style="text-align:center;padding:8px 0 0">
         <div style="font-size:48px;margin-bottom:10px">👑</div>
         <h2 style="font-size:22px;font-weight:800;margin:0 0 4px">Go Ad-Free</h2>
-        <p style="color:var(--muted);font-size:13px;margin:0">Cancel anytime in Google Play</p>
+        <p style="color:var(--muted);font-size:13px;margin:0">Cancel anytime through your store account</p>
       </div>
 
       <!-- Plan selector -->
@@ -614,8 +614,17 @@ views.premium = () => {
       </div>
       `}
 
+      <!-- Refund policy -->
+      <div style="width:100%;max-width:400px;background:var(--bg2,rgba(0,0,0,.04));border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:12px;font-weight:700;color:var(--fg)">About this subscription</div>
+        <p style="font-size:11px;color:var(--muted);margin:0;line-height:1.6">
+          Piano Learners is <b>completely free</b> to use. To help us keep the platform running and continue adding new songs and features, we offer an optional <b>ad-free Premium subscription</b>.<br><br>
+          By subscribing you agree that <b>all payments are final and non-refundable</b>. We do not offer refunds or credits for partial subscription periods, unused time, or accidental purchases. You may cancel at any time through your Google Play or App Store account to prevent future charges.
+        </p>
+      </div>
+
       <p style="color:var(--muted);font-size:11px;text-align:center;max-width:340px;margin:0">
-        Manage or cancel at any time in your Google Play account.
+        Manage or cancel at any time in your Google Play or App Store account.
         ${user ? `Signed in as <b>${esc(user.email)}</b>. <button id="signOutBtn" style="border:none;background:none;color:var(--p);font-size:11px;cursor:pointer;font-weight:700;padding:0">Sign out</button>` : ''}
       </p>
     </div>

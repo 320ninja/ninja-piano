@@ -523,9 +523,9 @@ h3.sec::after{animation:lineGrow .9s var(--ease) .2s forwards}
 
 /* Piano deco background pulse */
 .piano-deco{animation:fadeSlideUp .5s var(--ease) both}
-.piano-deco svg rect:not([fill*="0,0,0"]){animation:pianoPulse 3s ease-in-out infinite alternate}
-.piano-deco svg rect:nth-child(3n){animation-delay:.3s}
-.piano-deco svg rect:nth-child(3n+1){animation-delay:.6s}
+.piano-deco svg pattern rect:not([fill*="0,0,0"]){animation:pianoPulse 3s ease-in-out infinite alternate}
+.piano-deco svg pattern rect:nth-of-type(3n){animation-delay:.3s}
+.piano-deco svg pattern rect:nth-of-type(3n+1){animation-delay:.6s}
 @keyframes pianoPulse{from{fill:rgba(255,255,255,.08)}to{fill:rgba(255,255,255,.18)}}
 
 /* ── Mini score in kb-info bar ─────────────────────────── */

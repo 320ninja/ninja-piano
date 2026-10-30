@@ -438,9 +438,14 @@ views.home = () => {
   const hour = new Date().getHours();
   const hi = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
-  const PIANO_SVG = `<div class="piano-deco" aria-hidden="true"><svg viewBox="0 0 320 48" xmlns="http://www.w3.org/2000/svg">
-    ${Array.from({length:18},(_,i)=>`<rect x="${i*17+1}" y="2" width="15" height="40" rx="3" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.08)" stroke-width=".5"/>`).join('')}
-    ${[1,2,4,5,6,8,9,11,12,13,15,16].map(i=>`<rect x="${i*17+10}" y="2" width="10" height="26" rx="2" fill="rgba(0,0,0,.35)"/>`).join('')}
+  // Full-width piano strip: one octave tiled edge to edge at a fixed key size,
+  // so it covers the whole header on any screen width.
+  const PIANO_SVG = `<div class="piano-deco" aria-hidden="true"><svg width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs><pattern id="pkeys" width="119" height="48" patternUnits="userSpaceOnUse">
+      ${Array.from({length:7},(_,i)=>`<rect x="${i*17+1}" y="2" width="15" height="40" rx="3" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.08)" stroke-width=".5"/>`).join('')}
+      ${[0,1,3,4,5].map(i=>`<rect x="${i*17+10}" y="2" width="10" height="26" rx="2" fill="rgba(0,0,0,.35)"/>`).join('')}
+    </pattern></defs>
+    <rect width="100%" height="100%" fill="url(#pkeys)"/>
   </svg></div>`;
 
   app.innerHTML = `<section class="view">

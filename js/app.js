@@ -1,11 +1,11 @@
 import { THEMES, applyTheme } from './themes.js';
-import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js?v=195';
+import { CATEGORIES, SONG_FILES, parseSong, buildTimeline, buildSteps, labelFor, midiName, durationSeconds, fmtTime, chordName } from './music.js?v=196';
 import { renderScore } from './score.js';
 import { playNote, playBassNote, playClick, unlockAudio, now, setSustain, getSustain, stopAllAudio, playKick, playSnare, playHihat, setEffect } from './audio.js';
 import { createKeyboard } from './keyboard.js?v=40';
 import { createFalling } from './falling.js';
 import { parseMusicXML } from './musicxml.js';
-import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=13';
+import { CHORDS_LIBRARY, CL_GENRES } from './chords-library.js?v=14';
 
 /* ---------- storage ---------- */
 const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };

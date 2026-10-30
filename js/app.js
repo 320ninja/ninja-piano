@@ -59,6 +59,7 @@ const icon = (n, extra = '') => `<svg class="i" viewBox="0 0 24 24" ${extra}>${P
 const LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3" fill="currentColor"/><circle cx="18" cy="16" r="3" fill="currentColor"/></svg>';
 
 // Category art: [emoji, gradientA, gradientB]
+// emoji only — colors come from THUMB_PALETTES per-song hash
 const CAT_ART = {
   Kids:        ['🎹', '#f59e0b', '#ef4444'],
   Classical:   ['🎻', '#7c3aed', '#4338ca'],
@@ -74,6 +75,25 @@ const CAT_ART = {
   Fingerstyle: ['🖐️', '#0d9488', '#065f46'],
   Exercises:   ['🎯', '#4f46e5', '#7c3aed'],
 };
+// 16 vivid gradient pairs — picked per-song via hash so every card looks different
+const THUMB_PALETTES = [
+  ['#f59e0b','#ef4444'], // amber → red
+  ['#ec4899','#8b5cf6'], // pink → violet
+  ['#06b6d4','#3b82f6'], // cyan → blue
+  ['#22c55e','#0d9488'], // green → teal
+  ['#f97316','#dc2626'], // orange → crimson
+  ['#6d28d9','#0891b2'], // purple → sky
+  ['#eab308','#65a30d'], // yellow → lime
+  ['#db2777','#7c3aed'], // rose → purple
+  ['#0ea5e9','#6366f1'], // sky → indigo
+  ['#10b981','#0284c7'], // emerald → blue
+  ['#f43f5e','#f97316'], // rose → orange
+  ['#8b5cf6','#ec4899'], // violet → pink
+  ['#14b8a6','#22c55e'], // teal → green
+  ['#3b82f6','#6d28d9'], // blue → indigo
+  ['#a855f7','#06b6d4'], // fuchsia → cyan
+  ['#d97706','#b45309'], // amber → brown-gold
+];
 
 // SVG artwork per category — music-themed silhouettes / symbols
 const CAT_SVG = {
@@ -155,11 +175,10 @@ const CAT_SVG = {
 const strHash = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
 
 const thumb = (s) => {
-  const [, c1, c2] = CAT_ART[s.cat] || CAT_ART.Kids;
   const art = CAT_SVG[s.cat] || CAT_SVG.Kids;
   const h = strHash(s.id || s.title || '');
+  const [c1, c2] = THUMB_PALETTES[h % THUMB_PALETTES.length];
   const angle = 120 + (h % 80);
-  // Per-song rotation offset for variety within the same category
   const rot = (h % 30) - 15;
   return `<div class="thumb" style="background:linear-gradient(${angle}deg,${c1},${c2})">
     <svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;transform:rotate(${rot}deg) scale(1.05)">${art}</svg>

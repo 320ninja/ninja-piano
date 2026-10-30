@@ -4,5 +4,11 @@
   "webDir": "www",
   "backgroundColor": "#120e2e",
   "ios": { "contentInset": "never" },
-  "android": { "allowMixedContent": false }
+  "android": { "allowMixedContent": false },
+  "plugins": {
+    "AdMob": {
+      "appId": "ca-app-pub-9614655242471444~8719425166",
+      "isTesting": false
+    }
+  }
 }

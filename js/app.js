@@ -5136,6 +5136,47 @@ document.addEventListener('click', (e) => {
 
 const notFound = () => { app.innerHTML = '<div class="empty view">Song not found. <a href="#/library" style="color:var(--p)">Browse songs</a></div>'; };
 
+/* ---------- AdMob (native Android/iOS only) ---------- */
+const ADMOB_BANNER_ID   = 'ca-app-pub-9614655242471444/9667217312';
+const ADMOB_REWARDED_ID = 'ca-app-pub-9614655242471444/1764676569';
+
+let admobReady = false;
+let _AdMob = null;
+
+(async () => {
+  try {
+    const mod = await import('@capacitor-community/admob');
+    _AdMob = mod.AdMob;
+    const { BannerAdSize, BannerAdPosition } = mod;
+
+    await _AdMob.initialize({ initializeForTesting: false });
+    admobReady = true;
+
+    // Bottom banner — always visible in the native app
+    await _AdMob.showBanner({
+      adId: ADMOB_BANNER_ID,
+      adSize: BannerAdSize.ADAPTIVE_BANNER,
+      position: BannerAdPosition.BOTTOM_CENTER,
+      margin: 0,
+      isTesting: false,
+    });
+
+    // Push content up so the nav bar isn't behind the banner
+    document.documentElement.style.setProperty('--admob-banner-h', '60px');
+  } catch (_) {
+    // Not running inside Capacitor (PWA/browser) — silently skip
+  }
+})();
+
+// Call from any view: resolves true if the user watched the full ad, false otherwise
+const showRewardedAd = () => new Promise((resolve) => {
+  if (!admobReady || !_AdMob) return resolve(false);
+  _AdMob.prepareRewardVideoAd({ adId: ADMOB_REWARDED_ID, isTesting: false })
+    .then(() => _AdMob.showRewardVideoAd())
+    .then(() => resolve(true))
+    .catch(() => resolve(false));
+});
+
 /* ---------- router ---------- */
 const route = async () => {
   cleanup(); cleanup = () => {};

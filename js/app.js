@@ -740,8 +740,25 @@ views.welcome = () => {
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 24px;position:relative;z-index:1;text-align:center">
 
       <!-- Piano visual -->
-      <div style="width:220px;height:80px;border-radius:16px;background:linear-gradient(135deg,#1e1b4b,#312e81);display:flex;overflow:hidden;margin-bottom:28px;box-shadow:0 8px 40px rgba(139,92,246,.5);animation:wlPulse 3s ease-in-out infinite;border:1px solid rgba(139,92,246,.3)">
-        ${keys}
+      <div style="margin-bottom:28px;filter:drop-shadow(0 8px 24px rgba(139,92,246,.6));animation:wlPulse 3s ease-in-out infinite">
+        <svg viewBox="0 0 280 110" width="280" height="110" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="wkGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#e8e0ff"/>
+              <stop offset="100%" stop-color="#c4b5fd"/>
+            </linearGradient>
+            <linearGradient id="bkGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2e1065"/>
+              <stop offset="100%" stop-color="#4c1d95"/>
+            </linearGradient>
+          </defs>
+          <!-- Body -->
+          <rect x="0" y="0" width="280" height="110" rx="10" fill="#1e1b4b"/>
+          <!-- White keys: C D E F G A B C D E F G A B C D (16 keys) -->
+          ${Array.from({length:16},(_,i)=>`<rect x="${4+i*17}" y="4" width="15" height="98" rx="3" fill="url(#wkGrad)" stroke="#8b5cf6" stroke-width="0.5"/>`).join('')}
+          <!-- Black keys pattern: skip 3,7,10,14 (E-F and B-C gaps) -->
+          ${[1,2,4,5,6,8,9,11,12,13,15].filter(i=>i<16).map(i=>`<rect x="${4+i*17-5}" y="4" width="10" height="62" rx="2" fill="url(#bkGrad)"/>`).join('')}
+        </svg>
       </div>
 
       <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#8b5cf6;margin-bottom:10px">Learn Piano Today</div>

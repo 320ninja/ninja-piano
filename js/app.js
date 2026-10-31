@@ -690,14 +690,22 @@ views.premium = () => {
 
 views.welcome = () => {
   setNav('welcome');
-  const notes = ['C','D','E','F','G','A','B'];
-  const noteColors = ['#f59e0b','#ec4899','#06b6d4','#22c55e','#8b5cf6','#f97316','#3b82f6'];
-  const floatingNotes = Array.from({length:18},(_,i)=>{
-    const n = notes[i%7]; const c = noteColors[i%7];
-    const x = 5 + (i*5.5)%90; const delay = (i*0.4)%6; const dur = 4+i%4;
-    const size = 14+i%10;
-    return `<div style="position:absolute;left:${x}%;top:${85+Math.sin(i)*12}%;font-size:${size}px;color:${c};opacity:.7;animation:floatUp ${dur}s ${delay}s infinite ease-in-out;pointer-events:none;user-select:none;font-weight:900">${n}</div>`;
+  const musicSymbols = ['♪','♫','♬','♩','♪','♫','♬','♩','♪','♫','♬','♪','♫','♬','♩','♪','♫','♬','♩','♪'];
+  const noteColors = ['#a78bfa','#ec4899','#06b6d4','#22c55e','#f59e0b','#f97316','#3b82f6','#e879f9','#34d399'];
+  const floatingNotes = Array.from({length:20},(_,i)=>{
+    const sym = musicSymbols[i%musicSymbols.length];
+    const c = noteColors[i%noteColors.length];
+    const x = 3 + (i*4.7)%93;
+    const delay = -(i*0.8)%8;
+    const dur = 5 + (i*0.6)%5;
+    const size = 16 + (i*3)%18;
+    return `<div style="position:absolute;left:${x}%;bottom:-10%;font-size:${size}px;color:${c};animation:riseNote ${dur}s ${delay}s infinite linear;pointer-events:none;user-select:none;text-shadow:0 0 12px ${c}">${sym}</div>`;
   }).join('');
+
+  // Sound wave ripples
+  const ripples = Array.from({length:4},(_,i)=>`
+    <div style="position:absolute;width:${80+i*60}px;height:${80+i*60}px;border-radius:50%;border:1.5px solid rgba(139,92,246,${0.3-i*0.06});top:50%;left:50%;transform:translate(-50%,-50%);animation:rippleOut 3s ${i*0.75}s infinite ease-out;pointer-events:none"></div>
+  `).join('');
 
   const keys = Array.from({length:14},(_,i)=>`<div style="display:inline-block;width:${100/14}%;height:100%;background:rgba(255,255,255,${0.06+i%2*0.04});border-right:1px solid rgba(255,255,255,.06)"></div>`).join('');
 
@@ -710,7 +718,8 @@ views.welcome = () => {
 
   app.innerHTML = `
   <style>
-    @keyframes floatUp{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-22px) rotate(5deg)}}
+    @keyframes riseNote{0%{transform:translateY(0) rotate(-8deg) scale(1);opacity:0}10%{opacity:.85}80%{opacity:.6}100%{transform:translateY(-110vh) rotate(12deg) scale(.7);opacity:0}}
+    @keyframes rippleOut{0%{transform:translate(-50%,-50%) scale(.3);opacity:.8}100%{transform:translate(-50%,-50%) scale(1.8);opacity:0}}
     @keyframes wlPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
     @keyframes wlSlideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
     @keyframes wlGlow{0%,100%{box-shadow:0 0 30px rgba(139,92,246,.4),0 0 60px rgba(6,182,212,.2)}50%{box-shadow:0 0 50px rgba(139,92,246,.7),0 0 100px rgba(6,182,212,.4)}}
@@ -720,7 +729,7 @@ views.welcome = () => {
   </style>
   <section style="min-height:100dvh;display:flex;flex-direction:column;background:linear-gradient(160deg,#0f0c29 0%,#1a1040 40%,#0d1b3e 100%);overflow:hidden;position:relative">
 
-    <!-- Floating note letters -->
+    <!-- Rising musical notes -->
     <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none">${floatingNotes}</div>
 
     <!-- Glow orbs -->
@@ -739,8 +748,9 @@ views.welcome = () => {
     <!-- Hero -->
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 24px;position:relative;z-index:1;text-align:center">
 
-      <!-- Piano visual -->
-      <div style="margin-bottom:28px;filter:drop-shadow(0 8px 24px rgba(139,92,246,.6));animation:wlPulse 3s ease-in-out infinite">
+      <!-- Piano visual with ripples -->
+      <div style="margin-bottom:28px;position:relative;filter:drop-shadow(0 8px 24px rgba(139,92,246,.6));animation:wlPulse 3s ease-in-out infinite">
+        ${ripples}
         <svg viewBox="0 0 280 110" width="280" height="110" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="wkGrad" x1="0" y1="0" x2="0" y2="1">

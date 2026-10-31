@@ -710,10 +710,10 @@ views.welcome = () => {
   const keys = Array.from({length:14},(_,i)=>`<div style="display:inline-block;width:${100/14}%;height:100%;background:rgba(255,255,255,${0.06+i%2*0.04});border-right:1px solid rgba(255,255,255,.06)"></div>`).join('');
 
   const features = [
-    {icon:'🎹', color:'#8b5cf6', bg:'rgba(139,92,246,.15)', title:'Interactive Piano', desc:'Full keyboard, play any song'},
-    {icon:'🎼', color:'#06b6d4', bg:'rgba(6,182,212,.15)', title:'Real Sheet Music', desc:'With note names on every note'},
-    {icon:'📈', color:'#22c55e', bg:'rgba(34,197,94,.15)', title:'Track Progress', desc:'Streaks, scores, achievements'},
-    {icon:'🎵', color:'#f59e0b', bg:'rgba(245,158,11,.15)', title:'10,000+ Songs', desc:'Pop, classical, jazz & more'},
+    {icon:'🎹', anim:'iconBounce 1.8s ease-in-out infinite', grad:'linear-gradient(135deg,#7c3aed,#a855f7)', border:'rgba(167,139,250,.5)', glow:'rgba(139,92,246,.4)', title:'Interactive Piano', desc:'Full keyboard, play any song'},
+    {icon:'🎼', anim:'iconWave 2s ease-in-out infinite', grad:'linear-gradient(135deg,#0891b2,#22d3ee)', border:'rgba(34,211,238,.5)', glow:'rgba(6,182,212,.4)', title:'Real Sheet Music', desc:'Note names on every note'},
+    {icon:'📈', anim:'iconPulse 2.2s ease-in-out infinite', grad:'linear-gradient(135deg,#16a34a,#4ade80)', border:'rgba(74,222,128,.5)', glow:'rgba(34,197,94,.4)', title:'Track Progress', desc:'Streaks, scores, achievements'},
+    {icon:'🎵', anim:'iconBounce 1.5s ease-in-out infinite .3s', grad:'linear-gradient(135deg,#d97706,#fbbf24)', border:'rgba(251,191,36,.5)', glow:'rgba(245,158,11,.4)', title:'10,000+ Songs', desc:'Pop, classical, jazz & more'},
   ];
 
   app.innerHTML = `
@@ -723,8 +723,13 @@ views.welcome = () => {
     @keyframes wlPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
     @keyframes wlSlideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
     @keyframes wlGlow{0%,100%{box-shadow:0 0 30px rgba(139,92,246,.4),0 0 60px rgba(6,182,212,.2)}50%{box-shadow:0 0 50px rgba(139,92,246,.7),0 0 100px rgba(6,182,212,.4)}}
-    .wl-feat{animation:wlSlideUp .5s ease both}
-    .wl-feat:nth-child(2){animation-delay:.1s}.wl-feat:nth-child(3){animation-delay:.2s}.wl-feat:nth-child(4){animation-delay:.3s}
+    @keyframes iconBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.15)}}
+    @keyframes iconSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    @keyframes iconPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.2);filter:brightness(1.4)}}
+    @keyframes iconWave{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+    @keyframes cardShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .wl-feat{animation:wlSlideUp .5s ease both;transition:transform .2s}
+    .wl-feat:nth-child(1){animation-delay:.05s}.wl-feat:nth-child(2){animation-delay:.15s}.wl-feat:nth-child(3){animation-delay:.25s}.wl-feat:nth-child(4){animation-delay:.35s}
     .wl-cta{animation:wlGlow 3s ease-in-out infinite}
   </style>
   <section style="min-height:100dvh;display:flex;flex-direction:column;background:linear-gradient(160deg,#0f0c29 0%,#1a1040 40%,#0d1b3e 100%);overflow:hidden;position:relative">
@@ -778,10 +783,16 @@ views.welcome = () => {
       <!-- Feature grid -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:380px;margin-bottom:32px">
         ${features.map(f=>`
-        <div class="wl-feat" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 12px;text-align:left;backdrop-filter:blur(10px)">
-          <div style="font-size:22px;margin-bottom:8px">${f.icon}</div>
-          <div style="font-weight:700;font-size:13px;color:#fff;margin-bottom:3px">${f.title}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.4">${f.desc}</div>
+        <div class="wl-feat" style="position:relative;border:1px solid ${f.border};border-radius:18px;padding:16px 12px;text-align:left;backdrop-filter:blur(12px);overflow:hidden;box-shadow:0 4px 24px ${f.glow}">
+          <div style="position:absolute;inset:0;background:${f.grad};opacity:.12;border-radius:18px"></div>
+          <div style="position:absolute;top:-30px;right:-30px;width:80px;height:80px;border-radius:50%;background:${f.grad};opacity:.15;filter:blur(20px)"></div>
+          <div style="position:relative;z-index:1">
+            <div style="width:42px;height:42px;border-radius:12px;background:${f.grad};display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;box-shadow:0 4px 12px ${f.glow}">
+              <span style="animation:${f.anim};display:inline-block">${f.icon}</span>
+            </div>
+            <div style="font-weight:800;font-size:13px;color:#fff;margin-bottom:4px;letter-spacing:-.2px">${f.title}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.4">${f.desc}</div>
+          </div>
         </div>`).join('')}
       </div>
 

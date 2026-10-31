@@ -690,39 +690,87 @@ views.premium = () => {
 
 views.welcome = () => {
   setNav('welcome');
-  const petals = Array.from({ length: 14 }, (_, i) =>
-    `<span class="petal" style="left:${10 + i * 7}%;top:${Math.random() * 30}%;animation-duration:${6 + Math.random() * 6}s;animation-delay:${-Math.random() * 8}s"></span>`).join('');
-  app.innerHTML = `<section class="view welcome">
-    <svg class="art" viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <circle cx="285" cy="110" r="56" fill="#fef3c7" opacity=".9"/><circle cx="285" cy="110" r="90" fill="#fef3c7" opacity=".08"/>
-      <path d="M0 330 Q80 280 160 320 T400 300 V420 H0Z" fill="#000" opacity=".35"/>
-      <g fill="#f472b6" opacity=".55"><circle cx="40" cy="60" r="26"/><circle cx="70" cy="40" r="22"/><circle cx="20" cy="95" r="20"/><circle cx="85" cy="80" r="18"/></g>
-      <path d="M0 140 Q50 100 95 70" stroke="#3b1d2e" stroke-width="5" fill="none"/>
-      <g transform="translate(150 230)">
-        <path d="M20 40 Q120 -10 220 30 L230 70 L10 70Z" fill="#0a0a14"/><rect x="10" y="70" width="220" height="16" rx="3" fill="#15152a"/>
-        <g fill="#f8fafc">${Array.from({ length: 13 }, (_, i) => `<rect x="${14 + i * 16.5}" y="72" width="15" height="12" rx="1.5"/>`).join('')}</g>
-        <rect x="30" y="86" width="6" height="60" fill="#0a0a14"/><rect x="205" y="86" width="6" height="60" fill="#0a0a14"/>
-      </g>
-      <g transform="translate(70 250)">
-        <ellipse cx="40" cy="110" rx="34" ry="8" fill="#000" opacity=".3"/>
-        <path d="M14 60 Q40 40 66 60 L72 108 H8Z" fill="#1e1b4b"/>
-        <circle cx="40" cy="36" r="24" fill="#1e1b4b"/>
-        <rect x="18" y="30" width="44" height="11" rx="5.5" fill="#fde7c7"/>
-        <circle cx="32" cy="35.5" r="2.4" fill="#111"/><circle cx="48" cy="35.5" r="2.4" fill="#111"/>
-        <path d="M62 28 L84 20 L80 30 L92 30" stroke="var(--p)" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <rect x="16" y="26" width="48" height="5" fill="var(--p)"/>
-        <path d="M60 70 Q80 66 92 58" stroke="#1e1b4b" stroke-width="9" fill="none" stroke-linecap="round"/>
-      </g>
-      ${petals}
-    </svg>
-    <h2>Piano Learners</h2>
-    <div class="sub">Learn piano, step by step</div>
-    <div class="feat"><i>🎼</i>Read real sheet music</div>
-    <div class="feat"><i>🔤</i>See the note name on every note</div>
-    <div class="feat"><i>🎹</i>Play along and improve</div>
-    <a class="btn block" href="#/home" id="start">Get Started ${icon('arrowR')}</a>
-    <a class="link" href="#/library" id="explore">Explore Songs</a>
+  const notes = ['C','D','E','F','G','A','B'];
+  const noteColors = ['#f59e0b','#ec4899','#06b6d4','#22c55e','#8b5cf6','#f97316','#3b82f6'];
+  const floatingNotes = Array.from({length:18},(_,i)=>{
+    const n = notes[i%7]; const c = noteColors[i%7];
+    const x = 5 + (i*5.5)%90; const delay = (i*0.4)%6; const dur = 4+i%4;
+    const size = 14+i%10;
+    return `<div style="position:absolute;left:${x}%;top:${85+Math.sin(i)*12}%;font-size:${size}px;color:${c};opacity:.7;animation:floatUp ${dur}s ${delay}s infinite ease-in-out;pointer-events:none;user-select:none;font-weight:900">${n}</div>`;
+  }).join('');
+
+  const keys = Array.from({length:14},(_,i)=>`<div style="display:inline-block;width:${100/14}%;height:100%;background:rgba(255,255,255,${0.06+i%2*0.04});border-right:1px solid rgba(255,255,255,.06)"></div>`).join('');
+
+  const features = [
+    {icon:'🎹', color:'#8b5cf6', bg:'rgba(139,92,246,.15)', title:'Interactive Piano', desc:'Full keyboard, play any song'},
+    {icon:'🎼', color:'#06b6d4', bg:'rgba(6,182,212,.15)', title:'Real Sheet Music', desc:'With note names on every note'},
+    {icon:'📈', color:'#22c55e', bg:'rgba(34,197,94,.15)', title:'Track Progress', desc:'Streaks, scores, achievements'},
+    {icon:'🎵', color:'#f59e0b', bg:'rgba(245,158,11,.15)', title:'500+ Songs', desc:'Pop, classical, jazz & more'},
+  ];
+
+  app.innerHTML = `
+  <style>
+    @keyframes floatUp{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-22px) rotate(5deg)}}
+    @keyframes wlPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+    @keyframes wlSlideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes wlGlow{0%,100%{box-shadow:0 0 30px rgba(139,92,246,.4),0 0 60px rgba(6,182,212,.2)}50%{box-shadow:0 0 50px rgba(139,92,246,.7),0 0 100px rgba(6,182,212,.4)}}
+    .wl-feat{animation:wlSlideUp .5s ease both}
+    .wl-feat:nth-child(2){animation-delay:.1s}.wl-feat:nth-child(3){animation-delay:.2s}.wl-feat:nth-child(4){animation-delay:.3s}
+    .wl-cta{animation:wlGlow 3s ease-in-out infinite}
+  </style>
+  <section style="min-height:100dvh;display:flex;flex-direction:column;background:linear-gradient(160deg,#0f0c29 0%,#1a1040 40%,#0d1b3e 100%);overflow:hidden;position:relative">
+
+    <!-- Floating note letters -->
+    <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none">${floatingNotes}</div>
+
+    <!-- Glow orbs -->
+    <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.3),transparent 70%);top:-80px;right:-60px;pointer-events:none"></div>
+    <div style="position:absolute;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,.25),transparent 70%);bottom:100px;left:-80px;pointer-events:none"></div>
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0;position:relative;z-index:1">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:18px">🎹</div>
+        <span style="font-weight:800;font-size:16px;color:#fff;letter-spacing:-.3px">Piano Learners</span>
+      </div>
+      <div style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)">FREE</div>
+    </div>
+
+    <!-- Hero -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 24px;position:relative;z-index:1;text-align:center">
+
+      <!-- Piano visual -->
+      <div style="width:220px;height:80px;border-radius:16px;background:linear-gradient(135deg,#1e1b4b,#312e81);display:flex;overflow:hidden;margin-bottom:28px;box-shadow:0 8px 40px rgba(139,92,246,.5);animation:wlPulse 3s ease-in-out infinite;border:1px solid rgba(139,92,246,.3)">
+        ${keys}
+      </div>
+
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#8b5cf6;margin-bottom:10px">Learn Piano Today</div>
+      <h1 style="font-size:38px;font-weight:900;color:#fff;margin:0 0 12px;line-height:1.1;letter-spacing:-.5px">Master the Piano<br><span style="background:linear-gradient(135deg,#8b5cf6,#06b6d4,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Step by Step</span></h1>
+      <p style="color:rgba(255,255,255,.6);font-size:15px;margin:0 0 32px;max-width:300px;line-height:1.5">500+ songs with real sheet music, interactive keyboard and guided practice. Completely free.</p>
+
+      <!-- Feature grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:380px;margin-bottom:32px">
+        ${features.map(f=>`
+        <div class="wl-feat" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 12px;text-align:left;backdrop-filter:blur(10px)">
+          <div style="font-size:22px;margin-bottom:8px">${f.icon}</div>
+          <div style="font-weight:700;font-size:13px;color:#fff;margin-bottom:3px">${f.title}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.4">${f.desc}</div>
+        </div>`).join('')}
+      </div>
+
+      <!-- CTA -->
+      <a class="wl-cta" href="#/home" id="start" style="display:block;width:100%;max-width:380px;padding:18px;border-radius:16px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);color:#fff;font-size:18px;font-weight:800;text-align:center;text-decoration:none;letter-spacing:-.2px;margin-bottom:14px">
+        Start Learning Free 🎹
+      </a>
+      <a href="#/library" id="explore" style="color:rgba(255,255,255,.5);font-size:13px;font-weight:600;text-decoration:none">Browse 500+ Songs →</a>
+    </div>
+
+    <!-- Piano strip at bottom -->
+    <div style="height:44px;display:flex;overflow:hidden;position:relative;z-index:1">
+      ${Array.from({length:28},(_,i)=>`<div style="flex:1;background:${i%7===1||i%7===3||i%7===5?'rgba(0,0,0,.5)':'rgba(255,255,255,.07)'};border-right:1px solid rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.1)"></div>`).join('')}
+    </div>
   </section>`;
+
   const seen = () => { setSetting('seenWelcome', true); unlockAudio(); };
   app.querySelector('#start').onclick = seen;
   app.querySelector('#explore').onclick = seen;

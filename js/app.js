@@ -705,7 +705,7 @@ views.welcome = () => {
     {icon:'🎹', color:'#8b5cf6', bg:'rgba(139,92,246,.15)', title:'Interactive Piano', desc:'Full keyboard, play any song'},
     {icon:'🎼', color:'#06b6d4', bg:'rgba(6,182,212,.15)', title:'Real Sheet Music', desc:'With note names on every note'},
     {icon:'📈', color:'#22c55e', bg:'rgba(34,197,94,.15)', title:'Track Progress', desc:'Streaks, scores, achievements'},
-    {icon:'🎵', color:'#f59e0b', bg:'rgba(245,158,11,.15)', title:'500+ Songs', desc:'Pop, classical, jazz & more'},
+    {icon:'🎵', color:'#f59e0b', bg:'rgba(245,158,11,.15)', title:'10,000+ Songs', desc:'Pop, classical, jazz & more'},
   ];
 
   app.innerHTML = `
@@ -746,7 +746,7 @@ views.welcome = () => {
 
       <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:#8b5cf6;margin-bottom:10px">Learn Piano Today</div>
       <h1 style="font-size:38px;font-weight:900;color:#fff;margin:0 0 12px;line-height:1.1;letter-spacing:-.5px">Master the Piano<br><span style="background:linear-gradient(135deg,#8b5cf6,#06b6d4,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Step by Step</span></h1>
-      <p style="color:rgba(255,255,255,.6);font-size:15px;margin:0 0 32px;max-width:300px;line-height:1.5">500+ songs with real sheet music, interactive keyboard and guided practice. Completely free.</p>
+      <p style="color:rgba(255,255,255,.6);font-size:15px;margin:0 0 32px;max-width:300px;line-height:1.5">10,000+ songs with real sheet music, interactive keyboard and guided practice. Completely free.</p>
 
       <!-- Feature grid -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:380px;margin-bottom:32px">
@@ -762,7 +762,7 @@ views.welcome = () => {
       <a class="wl-cta" href="#/home" id="start" style="display:block;width:100%;max-width:380px;padding:18px;border-radius:16px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);color:#fff;font-size:18px;font-weight:800;text-align:center;text-decoration:none;letter-spacing:-.2px;margin-bottom:14px">
         Start Learning Free 🎹
       </a>
-      <a href="#/library" id="explore" style="color:rgba(255,255,255,.5);font-size:13px;font-weight:600;text-decoration:none">Browse 500+ Songs →</a>
+      <a href="#/library" id="explore" style="color:rgba(255,255,255,.5);font-size:13px;font-weight:600;text-decoration:none">Browse 10,000+ Songs →</a>
     </div>
 
     <!-- Piano strip at bottom -->
